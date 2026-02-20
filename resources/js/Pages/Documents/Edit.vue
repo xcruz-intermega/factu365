@@ -1,0 +1,410 @@
+<script setup lang="ts">
+import { ref } from 'vue';
+import { Head, useForm, Link, router } from '@inertiajs/vue3';
+import AppLayout from '@/Layouts/AppLayout.vue';
+import DocumentForm from './Partials/DocumentForm.vue';
+import Badge from '@/Components/Badge.vue';
+import ConfirmDialog from '@/Components/ConfirmDialog.vue';
+import type { LineInput } from '@/composables/useTaxCalculator';
+
+interface Props {
+    document: any;
+    documentType: string;
+    documentTypeLabel: string;
+    clients: any[];
+    products: any[];
+    series: any[];
+    canFinalize: boolean;
+    canConvert: boolean;
+    nextConversionType: string | null;
+}
+
+const props = defineProps<Props>();
+
+const doc = props.document;
+
+const form = useForm({
+    document_type: doc.document_type,
+    invoice_type: doc.invoice_type,
+    client_id: doc.client_id,
+    series_id: doc.series_id,
+    issue_date: doc.issue_date?.split('T')[0] ?? '',
+    due_date: doc.due_date?.split('T')[0] ?? '',
+    operation_date: doc.operation_date?.split('T')[0] ?? '',
+    global_discount_percent: Number(doc.global_discount_percent || 0),
+    regime_key: doc.regime_key || '01',
+    notes: doc.notes || '',
+    footer_text: doc.footer_text || '',
+    corrected_document_id: doc.corrected_document_id,
+    rectificative_type: doc.rectificative_type,
+    lines: (doc.lines || []).map((l: any): LineInput => ({
+        product_id: l.product_id,
+        concept: l.concept,
+        description: l.description || '',
+        quantity: Number(l.quantity),
+        unit_price: Number(l.unit_price),
+        unit: l.unit || '',
+        discount_percent: Number(l.discount_percent || 0),
+        vat_rate: Number(l.vat_rate),
+        exemption_code: l.exemption_code || '',
+        irpf_rate: Number(l.irpf_rate || 0),
+        surcharge_rate: Number(l.surcharge_rate || 0),
+    })),
+});
+
+const submit = () => {
+    form.put(route('documents.update', { type: props.documentType, document: doc.id }));
+};
+
+// Finalize
+const finalizeDialog = ref(false);
+const finalizing = ref(false);
+
+const doFinalize = () => {
+    finalizing.value = true;
+    router.post(route('documents.finalize', { type: props.documentType, document: doc.id }), {}, {
+        onFinish: () => {
+            finalizing.value = false;
+            finalizeDialog.value = false;
+        },
+    });
+};
+
+// Convert
+const converting = ref(false);
+
+const doConvert = () => {
+    converting.value = true;
+    router.post(route('documents.convert', { type: props.documentType, document: doc.id }), {}, {
+        onFinish: () => { converting.value = false; },
+    });
+};
+
+// Rectificative
+const creatingRect = ref(false);
+
+const doCreateRectificative = () => {
+    creatingRect.value = true;
+    router.post(route('documents.rectificative', { document: doc.id }), {}, {
+        onFinish: () => { creatingRect.value = false; },
+    });
+};
+
+// Status update
+const updateStatus = (status: string) => {
+    router.patch(route('documents.update-status', { type: props.documentType, document: doc.id }), {
+        status,
+    });
+};
+
+// PDF actions
+const downloadPdf = () => {
+    window.location.href = route('documents.download-pdf', { type: props.documentType, document: doc.id });
+};
+
+const previewPdf = () => {
+    window.open(route('documents.preview-pdf', { type: props.documentType, document: doc.id }), '_blank');
+};
+
+// Email dialog
+const emailDialog = ref(false);
+const emailForm = useForm({
+    email: doc.client?.email || '',
+    subject: '',
+    message: '',
+});
+const sendingEmail = ref(false);
+
+const openEmailDialog = () => {
+    emailForm.email = doc.client?.email || '';
+    emailForm.subject = `${props.documentTypeLabel} ${doc.number}`;
+    emailForm.message = `Estimado cliente,\n\nAdjunto encontrará el documento ${props.documentTypeLabel} ${doc.number}.\n\nUn saludo.`;
+    emailDialog.value = true;
+};
+
+const doSendEmail = () => {
+    sendingEmail.value = true;
+    router.post(route('documents.send-email', { type: props.documentType, document: doc.id }), {
+        email: emailForm.email,
+        subject: emailForm.subject,
+        message: emailForm.message,
+    }, {
+        onFinish: () => {
+            sendingEmail.value = false;
+            emailDialog.value = false;
+        },
+    });
+};
+
+const statusColors: Record<string, 'gray' | 'green' | 'blue' | 'yellow' | 'red' | 'indigo' | 'purple'> = {
+    draft: 'gray',
+    finalized: 'blue',
+    sent: 'indigo',
+    paid: 'green',
+    partial: 'yellow',
+    overdue: 'red',
+    cancelled: 'red',
+    registered: 'blue',
+};
+
+const statusLabels: Record<string, string> = {
+    draft: 'Borrador',
+    finalized: 'Finalizada',
+    sent: 'Enviada',
+    paid: 'Pagada',
+    partial: 'Pago parcial',
+    overdue: 'Vencida',
+    cancelled: 'Anulada',
+    registered: 'Registrada',
+};
+
+const conversionLabels: Record<string, string> = {
+    invoice: 'factura',
+    delivery_note: 'albarán',
+    quote: 'presupuesto',
+};
+
+const formatCurrency = (val: number | string) => {
+    const num = typeof val === 'string' ? parseFloat(val) : val;
+    return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(num);
+};
+</script>
+
+<template>
+    <Head :title="`${documentTypeLabel} ${doc.number || 'Borrador'}`" />
+
+    <AppLayout>
+        <template #header>
+            <div class="flex items-center gap-4">
+                <Link
+                    :href="route('documents.index', { type: documentType })"
+                    class="text-gray-400 hover:text-gray-600"
+                >
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                    </svg>
+                </Link>
+                <h1 class="text-lg font-semibold text-gray-900">
+                    {{ documentTypeLabel }}
+                    <span v-if="doc.number" class="text-indigo-600">{{ doc.number }}</span>
+                </h1>
+                <Badge :color="statusColors[doc.status] || 'gray'">
+                    {{ statusLabels[doc.status] || doc.status }}
+                </Badge>
+            </div>
+        </template>
+
+        <!-- Action bar (when finalized) -->
+        <div v-if="!doc.isDraft && doc.status !== 'draft'" class="mb-6 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+            <div class="flex flex-wrap items-center gap-3">
+                <span class="text-sm font-medium text-gray-700">Acciones:</span>
+
+                <!-- Status changes -->
+                <template v-if="doc.status === 'finalized'">
+                    <button @click="updateStatus('sent')" class="rounded-md bg-indigo-50 px-3 py-1.5 text-sm font-medium text-indigo-700 hover:bg-indigo-100">
+                        Marcar enviada
+                    </button>
+                    <button @click="updateStatus('paid')" class="rounded-md bg-green-50 px-3 py-1.5 text-sm font-medium text-green-700 hover:bg-green-100">
+                        Marcar pagada
+                    </button>
+                </template>
+                <template v-if="doc.status === 'sent'">
+                    <button @click="updateStatus('paid')" class="rounded-md bg-green-50 px-3 py-1.5 text-sm font-medium text-green-700 hover:bg-green-100">
+                        Marcar pagada
+                    </button>
+                    <button @click="updateStatus('partial')" class="rounded-md bg-yellow-50 px-3 py-1.5 text-sm font-medium text-yellow-700 hover:bg-yellow-100">
+                        Pago parcial
+                    </button>
+                    <button @click="updateStatus('overdue')" class="rounded-md bg-red-50 px-3 py-1.5 text-sm font-medium text-red-700 hover:bg-red-100">
+                        Marcar vencida
+                    </button>
+                </template>
+
+                <!-- Convert -->
+                <button
+                    v-if="canConvert && nextConversionType"
+                    @click="doConvert"
+                    :disabled="converting"
+                    class="rounded-md bg-purple-50 px-3 py-1.5 text-sm font-medium text-purple-700 hover:bg-purple-100 disabled:opacity-50"
+                >
+                    Convertir a {{ conversionLabels[nextConversionType] || nextConversionType }}
+                </button>
+
+                <!-- Create rectificative -->
+                <button
+                    v-if="documentType === 'invoice' && doc.status !== 'draft'"
+                    @click="doCreateRectificative"
+                    :disabled="creatingRect"
+                    class="rounded-md bg-orange-50 px-3 py-1.5 text-sm font-medium text-orange-700 hover:bg-orange-100 disabled:opacity-50"
+                >
+                    Crear rectificativa
+                </button>
+
+                <!-- Cancel -->
+                <button
+                    v-if="!['draft', 'cancelled', 'paid'].includes(doc.status)"
+                    @click="updateStatus('cancelled')"
+                    class="rounded-md bg-red-50 px-3 py-1.5 text-sm font-medium text-red-700 hover:bg-red-100"
+                >
+                    Anular
+                </button>
+
+                <span class="mx-1 text-gray-300">|</span>
+
+                <!-- PDF actions -->
+                <button @click="downloadPdf" class="inline-flex items-center rounded-md bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-200">
+                    <svg class="-ml-0.5 mr-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                    </svg>
+                    Descargar PDF
+                </button>
+                <button @click="previewPdf" class="inline-flex items-center rounded-md bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-200">
+                    <svg class="-ml-0.5 mr-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    Vista previa
+                </button>
+                <button @click="openEmailDialog" class="inline-flex items-center rounded-md bg-blue-50 px-3 py-1.5 text-sm font-medium text-blue-700 hover:bg-blue-100">
+                    <svg class="-ml-0.5 mr-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+                    </svg>
+                    Enviar email
+                </button>
+            </div>
+        </div>
+
+        <!-- Draft: editable form -->
+        <template v-if="doc.status === 'draft'">
+            <DocumentForm
+                :form="form"
+                :document-type="documentType"
+                :document-type-label="documentTypeLabel"
+                :clients="clients"
+                :products="products"
+                :series="series"
+                :is-edit="true"
+                @submit="submit"
+            />
+
+            <!-- Finalize button -->
+            <div v-if="canFinalize" class="mt-4 flex justify-end">
+                <button
+                    type="button"
+                    @click="finalizeDialog = true"
+                    class="inline-flex items-center rounded-md bg-green-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500"
+                >
+                    <svg class="-ml-0.5 mr-1.5 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Finalizar {{ documentTypeLabel.toLowerCase() }}
+                </button>
+            </div>
+        </template>
+
+        <!-- Finalized: read-only summary -->
+        <template v-else>
+            <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+                <div class="grid grid-cols-1 gap-6 sm:grid-cols-3">
+                    <div>
+                        <span class="text-sm text-gray-500">Cliente</span>
+                        <p class="font-medium">{{ doc.client?.trade_name || doc.client?.legal_name || '—' }}</p>
+                        <p v-if="doc.client?.nif" class="text-sm text-gray-500">{{ doc.client.nif }}</p>
+                    </div>
+                    <div>
+                        <span class="text-sm text-gray-500">Fecha emisión</span>
+                        <p class="font-medium">{{ doc.issue_date?.split('T')[0] }}</p>
+                    </div>
+                    <div>
+                        <span class="text-sm text-gray-500">Total</span>
+                        <p class="text-xl font-bold text-indigo-700">{{ formatCurrency(doc.total) }}</p>
+                    </div>
+                </div>
+
+                <!-- Lines summary -->
+                <div class="mt-6 overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">Concepto</th>
+                                <th class="px-4 py-2 text-right text-xs font-medium uppercase text-gray-500">Cant.</th>
+                                <th class="px-4 py-2 text-right text-xs font-medium uppercase text-gray-500">Precio</th>
+                                <th class="px-4 py-2 text-right text-xs font-medium uppercase text-gray-500">IVA</th>
+                                <th class="px-4 py-2 text-right text-xs font-medium uppercase text-gray-500">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                            <tr v-for="line in doc.lines" :key="line.id">
+                                <td class="px-4 py-2 text-sm">{{ line.concept }}</td>
+                                <td class="px-4 py-2 text-right text-sm">{{ Number(line.quantity) }}</td>
+                                <td class="px-4 py-2 text-right text-sm">{{ formatCurrency(line.unit_price) }}</td>
+                                <td class="px-4 py-2 text-right text-sm">{{ Number(line.vat_rate) }}%</td>
+                                <td class="px-4 py-2 text-right text-sm font-medium">{{ formatCurrency(line.line_total) }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Totals -->
+                <div class="mt-4 flex justify-end">
+                    <div class="w-64 space-y-1 text-sm">
+                        <div class="flex justify-between"><span>Base imponible</span><span>{{ formatCurrency(doc.tax_base) }}</span></div>
+                        <div class="flex justify-between"><span>IVA</span><span>{{ formatCurrency(doc.total_vat) }}</span></div>
+                        <div v-if="Number(doc.total_irpf) > 0" class="flex justify-between text-red-600"><span>IRPF</span><span>-{{ formatCurrency(doc.total_irpf) }}</span></div>
+                        <div v-if="Number(doc.total_surcharge) > 0" class="flex justify-between"><span>R.E.</span><span>{{ formatCurrency(doc.total_surcharge) }}</span></div>
+                        <div class="flex justify-between border-t pt-1 text-lg font-bold"><span>Total</span><span class="text-indigo-700">{{ formatCurrency(doc.total) }}</span></div>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- Finalize Confirmation -->
+        <ConfirmDialog
+            :show="finalizeDialog"
+            title="Finalizar documento"
+            :message="`Al finalizar se asignará un número de serie y el documento no podrá ser editado. ¿Continuar?`"
+            confirm-label="Finalizar"
+            :processing="finalizing"
+            @confirm="doFinalize"
+            @cancel="finalizeDialog = false"
+        />
+
+        <!-- Send Email Dialog -->
+        <ConfirmDialog
+            :show="emailDialog"
+            title="Enviar documento por email"
+            confirm-label="Enviar"
+            :processing="sendingEmail"
+            @confirm="doSendEmail"
+            @cancel="emailDialog = false"
+        >
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Destinatario *</label>
+                    <input
+                        type="email"
+                        v-model="emailForm.email"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm"
+                        placeholder="email@ejemplo.com"
+                    />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Asunto</label>
+                    <input
+                        type="text"
+                        v-model="emailForm.subject"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm"
+                    />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Mensaje</label>
+                    <textarea
+                        v-model="emailForm.message"
+                        rows="4"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm"
+                    />
+                </div>
+            </div>
+        </ConfirmDialog>
+    </AppLayout>
+</template>
