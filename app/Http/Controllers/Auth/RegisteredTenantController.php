@@ -31,7 +31,7 @@ class RegisteredTenantController extends Controller
                 'regex:/^[a-z0-9]([a-z0-9-]*[a-z0-9])?$/',
                 function ($attribute, $value, $fail) {
                     $exists = DB::table('domains')
-                        ->where('domain', $value . '.factu01.local')
+                        ->where('domain', $value)
                         ->exists();
                     if ($exists) {
                         $fail('Este subdominio ya está en uso.');
@@ -56,7 +56,7 @@ class RegisteredTenantController extends Controller
         ]);
 
         $tenant->domains()->create([
-            'domain' => $request->subdomain . '.factu01.local',
+            'domain' => $request->subdomain,
         ]);
 
         // Create owner user inside tenant context
