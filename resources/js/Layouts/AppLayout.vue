@@ -122,9 +122,9 @@ function itemHref(item: NavItem): string {
             ]"
         >
             <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-indigo-700 pb-4" :class="collapsed ? 'px-3' : 'px-6'">
-                <div class="flex h-16 shrink-0 items-center" :class="collapsed ? 'justify-center' : ''">
-                    <span v-if="!collapsed" class="text-2xl font-bold text-white">Factu01</span>
-                    <span v-else class="text-xl font-bold text-white">F1</span>
+                <div class="flex h-16 shrink-0 items-center gap-2" :class="collapsed ? 'justify-center' : ''">
+                    <img src="/images/logo.png" alt="Factu365" class="h-9 w-9 object-contain" />
+                    <span v-if="!collapsed" class="text-2xl font-bold text-white">Factu365</span>
                 </div>
                 <nav class="flex flex-1 flex-col">
                     <div class="flex flex-1 flex-col gap-y-4">
