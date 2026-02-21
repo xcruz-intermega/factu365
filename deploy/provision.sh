@@ -148,7 +148,8 @@ if [[ -d "${APP_DIR}" ]]; then
     warn "${APP_DIR} ya existe. Saltando clone..."
 else
     info "Clonando repositorio en ${APP_DIR}..."
-    sudo -u "${PLESK_SYS_USER}" git clone --branch "${BRANCH}" "${REPO_URL}" "${APP_DIR}"
+    git clone --branch "${BRANCH}" "${REPO_URL}" "${APP_DIR}"
+    chown -R "${PLESK_SYS_USER}:psacln" "${APP_DIR}"
 fi
 
 # ---------------------------------------------------------------------------
