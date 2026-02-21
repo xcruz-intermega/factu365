@@ -9,7 +9,7 @@ import { Head, Link } from '@inertiajs/vue3';
         <header class="bg-white shadow-sm">
             <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
                 <div class="flex items-center gap-2">
-                    <img src="/images/logo.png" alt="Factu365" class="h-9 w-9 object-contain" />
+                    <img src="/images/logo.svg" alt="Factu365" class="h-10 w-auto object-contain" />
                     <span class="text-2xl font-bold text-indigo-600">Factu365</span>
                 </div>
                 <div class="flex items-center gap-4">
