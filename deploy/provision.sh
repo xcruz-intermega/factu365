@@ -26,10 +26,10 @@ set -euo pipefail
 # ---------------------------------------------------------------------------
 # CONFIGURACIÓN — Edita estas variables antes de ejecutar
 # ---------------------------------------------------------------------------
-DOMAIN="factu365.tudominio.com"       # Dominio configurado en Plesk
-DB_NAME="factu01_central"             # Base de datos central
+DOMAIN="factu365.intermega.es"        # Dominio configurado en Plesk
+DB_NAME="factu365_central"            # Base de datos central
 DB_USER="factu365"                    # Usuario MySQL de la app
-DB_PASS="CAMBIA_ESTA_PASSWORD"        # ← ¡CÁMBIALA!
+DB_PASS="mysql2622..."                # Password MySQL
 REPO_URL="https://github.com/xcruz-intermega/factu365.git"
 BRANCH="main"
 
@@ -40,7 +40,7 @@ PLESK_HTTPDOCS="${PLESK_VHOSTS}/${DOMAIN}/httpdocs"
 
 # Usuario del sistema que Plesk asigna al dominio (ver en Plesk > Dominios)
 # Normalmente es el nombre del dominio o la suscripción
-PLESK_SYS_USER=""  # ← Déjalo vacío para autodetectar
+PLESK_SYS_USER="intermega.es_2cv01n5y4tm"
 
 # ---------------------------------------------------------------------------
 # Colores para output
