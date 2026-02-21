@@ -165,7 +165,7 @@ fi
 
 # Crear symlink: httpdocs → app/public
 ln -sfn "${APP_DIR}/public" "${PLESK_HTTPDOCS}"
-chown -h "${PLESK_SYS_USER}:${PLESK_SYS_USER}" "${PLESK_HTTPDOCS}"
+chown -h "${PLESK_SYS_USER}:psacln" "${PLESK_HTTPDOCS}"
 info "httpdocs → ${APP_DIR}/public (symlink creado)"
 
 # ---------------------------------------------------------------------------
@@ -242,7 +242,7 @@ TENANCY_CENTRAL_DOMAINS=${DOMAIN}
 VITE_APP_NAME="Factu365"
 ENVFILE
 
-chown "${PLESK_SYS_USER}:${PLESK_SYS_USER}" "${APP_DIR}/.env"
+chown "${PLESK_SYS_USER}:psacln" "${APP_DIR}/.env"
 chmod 600 "${APP_DIR}/.env"
 
 # Generar key + migraciones
@@ -256,7 +256,7 @@ sudo -u "${PLESK_SYS_USER}" bash -c "
 "
 
 # Permisos de storage y cache
-chown -R "${PLESK_SYS_USER}:${PLESK_SYS_USER}" "${APP_DIR}/storage" "${APP_DIR}/bootstrap/cache"
+chown -R "${PLESK_SYS_USER}:psacln" "${APP_DIR}/storage" "${APP_DIR}/bootstrap/cache"
 chmod -R 775 "${APP_DIR}/storage" "${APP_DIR}/bootstrap/cache"
 
 info "Aplicación configurada."
@@ -368,7 +368,7 @@ sudo supervisorctl restart factu365-worker:*
 echo "→ Deploy complete!"
 DEPLOY
 
-chown "${PLESK_SYS_USER}:${PLESK_SYS_USER}" "${APP_DIR}/deploy/deploy-remote.sh"
+chown "${PLESK_SYS_USER}:psacln" "${APP_DIR}/deploy/deploy-remote.sh"
 chmod +x "${APP_DIR}/deploy/deploy-remote.sh"
 
 # ---------------------------------------------------------------------------
