@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import type { InertiaForm } from '@inertiajs/vue3';
+import SearchSelect from '@/Components/SearchSelect.vue';
+import type { SearchSelectOption } from '@/Components/SearchSelect.vue';
 
 interface Category {
     id: number;
@@ -47,6 +49,14 @@ const formatCurrency = (val: number) => {
     return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(val);
 };
 
+const supplierOptions = computed<SearchSelectOption[]>(() =>
+    props.suppliers.map(s => ({
+        value: s.id,
+        label: s.trade_name || s.legal_name,
+        sublabel: s.nif,
+    }))
+);
+
 const handleFileChange = (e: Event) => {
     const input = e.target as HTMLInputElement;
     if (input.files?.length) {
@@ -90,15 +100,13 @@ const handleFileChange = (e: Event) => {
                 <!-- Supplier -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Proveedor</label>
-                    <select
-                        v-model="form.supplier_client_id"
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                    >
-                        <option :value="null">-- Ninguno --</option>
-                        <option v-for="s in suppliers" :key="s.id" :value="s.id">
-                            {{ s.trade_name || s.legal_name }} ({{ s.nif }})
-                        </option>
-                    </select>
+                    <div class="mt-1">
+                        <SearchSelect
+                            v-model="form.supplier_client_id"
+                            :options="supplierOptions"
+                            placeholder="Buscar proveedor..."
+                        />
+                    </div>
                 </div>
 
                 <!-- Supplier name (free text, when no supplier selected) -->

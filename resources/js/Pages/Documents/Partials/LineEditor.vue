@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { calculateLine, getSurchargeRate, type LineInput, type CalculatedLine } from '@/composables/useTaxCalculator';
+import SearchSelect from '@/Components/SearchSelect.vue';
+import type { SearchSelectOption } from '@/Components/SearchSelect.vue';
 
 interface Product {
     id: number;
@@ -103,6 +105,14 @@ const onVatRateChange = (index: number, value: number) => {
     emit('update:lines', newLines);
 };
 
+const productOptions = computed<SearchSelectOption[]>(() =>
+    props.products.map(p => ({
+        value: p.id,
+        label: p.name,
+        sublabel: p.reference || undefined,
+    }))
+);
+
 const lineError = (index: number, field: string): string | undefined => {
     return props.errors[`lines.${index}.${field}`];
 };
@@ -144,16 +154,14 @@ const lineError = (index: number, field: string): string | undefined => {
                     <div class="grid grid-cols-1 gap-3 sm:grid-cols-12">
                         <div class="sm:col-span-4">
                             <label class="block text-xs font-medium text-gray-600">Producto</label>
-                            <select
-                                :value="line.product_id ?? ''"
-                                @change="applyProduct(index, ($event.target as HTMLSelectElement).value ? Number(($event.target as HTMLSelectElement).value) : null)"
-                                class="mt-0.5 block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                            >
-                                <option value="">-- Seleccionar --</option>
-                                <option v-for="p in products" :key="p.id" :value="p.id">
-                                    {{ p.reference ? `[${p.reference}] ` : '' }}{{ p.name }}
-                                </option>
-                            </select>
+                            <div class="mt-0.5">
+                                <SearchSelect
+                                    :model-value="line.product_id ?? null"
+                                    @update:model-value="applyProduct(index, $event as number | null)"
+                                    :options="productOptions"
+                                    placeholder="Buscar producto..."
+                                />
+                            </div>
                         </div>
                         <div class="sm:col-span-8">
                             <label class="block text-xs font-medium text-gray-600">Concepto *</label>

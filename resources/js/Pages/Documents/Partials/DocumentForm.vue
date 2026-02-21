@@ -3,6 +3,8 @@ import { computed, watch } from 'vue';
 import type { InertiaForm } from '@inertiajs/vue3';
 import LineEditor from './LineEditor.vue';
 import TotalsSummary from './TotalsSummary.vue';
+import SearchSelect from '@/Components/SearchSelect.vue';
+import type { SearchSelectOption } from '@/Components/SearchSelect.vue';
 import { calculateDocument, type LineInput, type DocumentTotals } from '@/composables/useTaxCalculator';
 
 interface Client {
@@ -75,6 +77,14 @@ const updateLines = (lines: LineInput[]) => {
     props.form.lines = lines;
 };
 
+const clientOptions = computed<SearchSelectOption[]>(() =>
+    props.clients.map(c => ({
+        value: c.id,
+        label: c.trade_name || c.legal_name,
+        sublabel: c.nif,
+    }))
+);
+
 const todayStr = new Date().toISOString().split('T')[0];
 </script>
 
@@ -87,16 +97,14 @@ const todayStr = new Date().toISOString().split('T')[0];
                 <!-- Client -->
                 <div class="sm:col-span-2">
                     <label class="block text-sm font-medium text-gray-700">Cliente</label>
-                    <select
-                        v-model="form.client_id"
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                        :class="{ 'border-red-500': form.errors.client_id }"
-                    >
-                        <option :value="null">-- Seleccionar cliente --</option>
-                        <option v-for="c in clients" :key="c.id" :value="c.id">
-                            {{ c.trade_name || c.legal_name }} ({{ c.nif }})
-                        </option>
-                    </select>
+                    <div class="mt-1">
+                        <SearchSelect
+                            v-model="form.client_id"
+                            :options="clientOptions"
+                            placeholder="Buscar cliente..."
+                            :has-error="!!form.errors.client_id"
+                        />
+                    </div>
                     <p v-if="form.errors.client_id" class="mt-1 text-sm text-red-600">{{ form.errors.client_id }}</p>
                 </div>
 
