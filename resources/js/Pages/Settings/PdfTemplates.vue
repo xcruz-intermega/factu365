@@ -34,6 +34,7 @@ const setDefault = (template: Template) => {
             <Link :href="route('settings.series')" class="rounded-md px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50">Series</Link>
             <Link :href="route('settings.certificates')" class="rounded-md px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50">Certificados</Link>
             <Link :href="route('settings.pdf-templates')" class="rounded-md bg-indigo-50 px-3 py-1.5 text-sm font-medium text-indigo-700">Plantillas PDF</Link>
+            <Link :href="route('settings.users')" class="rounded-md px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50">Usuarios</Link>
         </div>
 
         <!-- Templates grid -->

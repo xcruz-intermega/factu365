@@ -28,12 +28,12 @@ Route::middleware([
         ->middleware(['auth', 'verified'])->name('dashboard');
 
     Route::middleware('auth')->group(function () {
-        // Profile
+        // Profile (all roles)
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-        // Global search
+        // Global search (all roles)
         Route::get('/search', GlobalSearchController::class)->name('global-search');
 
         // Clients
@@ -74,23 +74,30 @@ Route::middleware([
             Route::get('/fiscal/modelo-390', [ReportController::class, 'modelo390'])->name('fiscal.modelo-390');
         });
 
-        // Settings
-        Route::prefix('settings')->name('settings.')->group(function () {
-            Route::get('/company', [SettingsController::class, 'companyProfile'])->name('company');
-            Route::post('/company', [SettingsController::class, 'updateCompanyProfile'])->name('company.update');
+        // Settings + User management (admin+ only)
+        Route::middleware('role:admin')->group(function () {
+            Route::prefix('settings')->name('settings.')->group(function () {
+                Route::get('/company', [SettingsController::class, 'companyProfile'])->name('company');
+                Route::post('/company', [SettingsController::class, 'updateCompanyProfile'])->name('company.update');
 
-            Route::get('/series', [SettingsController::class, 'series'])->name('series');
-            Route::post('/series', [SettingsController::class, 'storeSeries'])->name('series.store');
-            Route::put('/series/{series}', [SettingsController::class, 'updateSeries'])->name('series.update');
-            Route::delete('/series/{series}', [SettingsController::class, 'destroySeries'])->name('series.destroy');
+                Route::get('/series', [SettingsController::class, 'series'])->name('series');
+                Route::post('/series', [SettingsController::class, 'storeSeries'])->name('series.store');
+                Route::put('/series/{series}', [SettingsController::class, 'updateSeries'])->name('series.update');
+                Route::delete('/series/{series}', [SettingsController::class, 'destroySeries'])->name('series.destroy');
 
-            Route::get('/certificates', [SettingsController::class, 'certificates'])->name('certificates');
-            Route::post('/certificates', [SettingsController::class, 'uploadCertificate'])->name('certificates.upload');
-            Route::post('/certificates/{certificate}/toggle', [SettingsController::class, 'toggleCertificate'])->name('certificates.toggle');
-            Route::delete('/certificates/{certificate}', [SettingsController::class, 'destroyCertificate'])->name('certificates.destroy');
+                Route::get('/certificates', [SettingsController::class, 'certificates'])->name('certificates');
+                Route::post('/certificates', [SettingsController::class, 'uploadCertificate'])->name('certificates.upload');
+                Route::post('/certificates/{certificate}/toggle', [SettingsController::class, 'toggleCertificate'])->name('certificates.toggle');
+                Route::delete('/certificates/{certificate}', [SettingsController::class, 'destroyCertificate'])->name('certificates.destroy');
 
-            Route::get('/pdf-templates', [SettingsController::class, 'pdfTemplates'])->name('pdf-templates');
-            Route::post('/pdf-templates/{template}/default', [SettingsController::class, 'setDefaultTemplate'])->name('pdf-templates.default');
+                Route::get('/pdf-templates', [SettingsController::class, 'pdfTemplates'])->name('pdf-templates');
+                Route::post('/pdf-templates/{template}/default', [SettingsController::class, 'setDefaultTemplate'])->name('pdf-templates.default');
+
+                Route::get('/users', [\App\Http\Controllers\UserController::class, 'index'])->name('users');
+                Route::post('/users', [\App\Http\Controllers\UserController::class, 'store'])->name('users.store');
+                Route::put('/users/{user}', [\App\Http\Controllers\UserController::class, 'update'])->name('users.update');
+                Route::delete('/users/{user}', [\App\Http\Controllers\UserController::class, 'destroy'])->name('users.destroy');
+            });
         });
     });
 

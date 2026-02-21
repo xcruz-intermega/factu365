@@ -18,7 +18,8 @@ const toggleCollapsed = () => {
 };
 
 const page = usePage();
-const user = page.props.auth?.user as { name: string; email: string } | undefined;
+const user = page.props.auth?.user;
+const can = (page.props.auth as any)?.can as { manage_settings?: boolean; manage_users?: boolean; create_edit?: boolean } | undefined;
 const overdueCount = computed(() => (page.props.overdue_count as number) || 0);
 
 interface NavItem {
@@ -33,9 +34,10 @@ interface NavItem {
 interface NavSection {
     title?: string;
     items: NavItem[];
+    hidden?: boolean;
 }
 
-const sections: NavSection[] = [
+const sections = computed<NavSection[]>(() => [
     {
         items: [
             { name: 'Dashboard', href: 'dashboard', routeMatch: 'dashboard', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
@@ -77,11 +79,12 @@ const sections: NavSection[] = [
     },
     {
         title: 'Configuración',
+        hidden: !can?.manage_settings,
         items: [
             { name: 'Empresa', href: 'settings.company', routeMatch: 'settings.*', icon: 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z' },
         ],
     },
-];
+]);
 
 function isActive(item: NavItem): boolean {
     if (item.routeParams?.type) {
@@ -125,7 +128,7 @@ function itemHref(item: NavItem): string {
                 </div>
                 <nav class="flex flex-1 flex-col">
                     <div class="flex flex-1 flex-col gap-y-4">
-                        <div v-for="(section, sIdx) in sections" :key="sIdx">
+                        <div v-for="(section, sIdx) in sections.filter(s => !s.hidden)" :key="sIdx">
                             <p v-if="section.title && !collapsed" class="mb-1 px-2 text-xs font-semibold uppercase tracking-wider text-indigo-300">
                                 {{ section.title }}
                             </p>
