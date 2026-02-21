@@ -5,10 +5,17 @@ namespace Tests\Feature;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use Tests\Traits\WithTenancy;
 
 class ProfileTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, WithTenancy;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->setUpWithTenancy();
+    }
 
     public function test_profile_page_is_displayed(): void
     {
@@ -16,7 +23,7 @@ class ProfileTest extends TestCase
 
         $response = $this
             ->actingAs($user)
-            ->get('/profile');
+            ->get($this->tenantUrl('/profile'));
 
         $response->assertOk();
     }
@@ -27,14 +34,14 @@ class ProfileTest extends TestCase
 
         $response = $this
             ->actingAs($user)
-            ->patch('/profile', [
+            ->patch($this->tenantUrl('/profile'), [
                 'name' => 'Test User',
                 'email' => 'test@example.com',
             ]);
 
         $response
             ->assertSessionHasNoErrors()
-            ->assertRedirect('/profile');
+            ->assertRedirect($this->tenantUrl('/profile'));
 
         $user->refresh();
 
@@ -49,14 +56,14 @@ class ProfileTest extends TestCase
 
         $response = $this
             ->actingAs($user)
-            ->patch('/profile', [
+            ->patch($this->tenantUrl('/profile'), [
                 'name' => 'Test User',
                 'email' => $user->email,
             ]);
 
         $response
             ->assertSessionHasNoErrors()
-            ->assertRedirect('/profile');
+            ->assertRedirect($this->tenantUrl('/profile'));
 
         $this->assertNotNull($user->refresh()->email_verified_at);
     }
@@ -67,7 +74,7 @@ class ProfileTest extends TestCase
 
         $response = $this
             ->actingAs($user)
-            ->delete('/profile', [
+            ->delete($this->tenantUrl('/profile'), [
                 'password' => 'password',
             ]);
 
@@ -85,14 +92,14 @@ class ProfileTest extends TestCase
 
         $response = $this
             ->actingAs($user)
-            ->from('/profile')
-            ->delete('/profile', [
+            ->from($this->tenantUrl('/profile'))
+            ->delete($this->tenantUrl('/profile'), [
                 'password' => 'wrong-password',
             ]);
 
         $response
             ->assertSessionHasErrors('password')
-            ->assertRedirect('/profile');
+            ->assertRedirect($this->tenantUrl('/profile'));
 
         $this->assertNotNull($user->fresh());
     }

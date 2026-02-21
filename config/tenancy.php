@@ -11,7 +11,7 @@ return [
 
     'domain_model' => Domain::class,
 
-    'central_domains' => explode(',', env('TENANCY_CENTRAL_DOMAINS', 'factu01.local,localhost,127.0.0.1')),
+    'central_domains' => explode(',', env('TENANCY_CENTRAL_DOMAINS', 'factu365.local,localhost,127.0.0.1')),
 
     'bootstrappers' => [
         Stancl\Tenancy\Bootstrappers\DatabaseTenancyBootstrapper::class,

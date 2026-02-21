@@ -89,7 +89,7 @@ const sections = computed<NavSection[]>(() => [
 function isActive(item: NavItem): boolean {
     if (item.routeParams?.type) {
         const currentUrl = page.url;
-        return currentUrl.startsWith(`/documents/${item.routeParams.type}`);
+        return currentUrl.includes(`/documents/${item.routeParams.type}`);
     }
     return route().current(item.routeMatch) ?? false;
 }

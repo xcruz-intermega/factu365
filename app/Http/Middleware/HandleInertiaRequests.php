@@ -30,6 +30,8 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $tenant = tenant();
+
         return [
             ...parent::share($request),
             'auth' => [
@@ -46,12 +48,19 @@ class HandleInertiaRequests extends Middleware
                 'info' => fn () => $request->session()->get('info'),
                 'warning' => fn () => $request->session()->get('warning'),
             ],
-            'overdue_count' => fn () => $request->user()
-                ? Document::where('document_type', 'invoice')
-                    ->where('direction', 'issued')
-                    ->where('status', 'overdue')
-                    ->count()
-                : 0,
+            'overdue_count' => function () use ($request) {
+                try {
+                    return $request->user()
+                        ? Document::where('document_type', 'invoice')
+                            ->where('direction', 'issued')
+                            ->where('status', 'overdue')
+                            ->count()
+                        : 0;
+                } catch (\Illuminate\Database\QueryException) {
+                    return 0;
+                }
+            },
+            'tenant' => $tenant ? ['slug' => $tenant->slug] : null,
         ];
     }
 }

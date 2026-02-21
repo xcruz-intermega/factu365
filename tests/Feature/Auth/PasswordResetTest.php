@@ -7,14 +7,21 @@ use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
+use Tests\Traits\WithTenancy;
 
 class PasswordResetTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, WithTenancy;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->setUpWithTenancy();
+    }
 
     public function test_reset_password_link_screen_can_be_rendered(): void
     {
-        $response = $this->get('/forgot-password');
+        $response = $this->get($this->tenantUrl('/forgot-password'));
 
         $response->assertStatus(200);
     }
@@ -25,7 +32,7 @@ class PasswordResetTest extends TestCase
 
         $user = User::factory()->create();
 
-        $this->post('/forgot-password', ['email' => $user->email]);
+        $this->post($this->tenantUrl('/forgot-password'), ['email' => $user->email]);
 
         Notification::assertSentTo($user, ResetPassword::class);
     }
@@ -36,10 +43,10 @@ class PasswordResetTest extends TestCase
 
         $user = User::factory()->create();
 
-        $this->post('/forgot-password', ['email' => $user->email]);
+        $this->post($this->tenantUrl('/forgot-password'), ['email' => $user->email]);
 
         Notification::assertSentTo($user, ResetPassword::class, function ($notification) {
-            $response = $this->get('/reset-password/'.$notification->token);
+            $response = $this->get($this->tenantUrl('/reset-password/'.$notification->token));
 
             $response->assertStatus(200);
 
@@ -53,10 +60,10 @@ class PasswordResetTest extends TestCase
 
         $user = User::factory()->create();
 
-        $this->post('/forgot-password', ['email' => $user->email]);
+        $this->post($this->tenantUrl('/forgot-password'), ['email' => $user->email]);
 
         Notification::assertSentTo($user, ResetPassword::class, function ($notification) use ($user) {
-            $response = $this->post('/reset-password', [
+            $response = $this->post($this->tenantUrl('/reset-password'), [
                 'token' => $notification->token,
                 'email' => $user->email,
                 'password' => 'password',

@@ -8,15 +8,15 @@ import { Head, useForm } from '@inertiajs/vue3';
 
 const form = useForm({
     company_name: '',
-    subdomain: '',
+    slug: '',
     name: '',
     email: '',
     password: '',
     password_confirmation: '',
 });
 
-const sanitizeSubdomain = () => {
-    form.subdomain = form.subdomain
+const sanitizeSlug = () => {
+    form.slug = form.slug
         .toLowerCase()
         .replace(/[^a-z0-9-]/g, '')
         .replace(/^-+|-+$/g, '');
@@ -50,22 +50,22 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
-                <InputLabel for="subdomain" value="Subdominio" />
+                <InputLabel for="slug" value="Identificador de empresa" />
                 <div class="mt-1 flex items-center">
+                    <span class="inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-50 px-3 text-sm text-gray-500">
+                        factu365.local/
+                    </span>
                     <TextInput
-                        id="subdomain"
+                        id="slug"
                         type="text"
-                        class="block w-full rounded-r-none"
-                        v-model="form.subdomain"
-                        @input="sanitizeSubdomain"
+                        class="block w-full rounded-l-none"
+                        v-model="form.slug"
+                        @input="sanitizeSlug"
                         required
                         placeholder="mi-empresa"
                     />
-                    <span class="inline-flex items-center rounded-r-md border border-l-0 border-gray-300 bg-gray-50 px-3 text-sm text-gray-500">
-                        .factu01.local
-                    </span>
                 </div>
-                <InputError class="mt-2" :message="form.errors.subdomain" />
+                <InputError class="mt-2" :message="form.errors.slug" />
             </div>
 
             <div class="mt-4">

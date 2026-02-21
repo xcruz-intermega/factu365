@@ -4,7 +4,7 @@ use App\Http\Controllers\Auth\RegisteredTenantController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-// Central domain routes (factu01.local)
+// Central routes (factu365.local)
 Route::get('/', function () {
     return Inertia::render('Welcome');
 });

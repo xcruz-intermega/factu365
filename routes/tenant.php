@@ -12,13 +12,11 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettingsController;
 use Illuminate\Support\Facades\Route;
-use Stancl\Tenancy\Middleware\InitializeTenancyBySubdomain;
-use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
+use Stancl\Tenancy\Middleware\InitializeTenancyByPath;
 
-Route::middleware([
+Route::prefix('/{tenant}')->middleware([
     'web',
-    InitializeTenancyBySubdomain::class,
-    PreventAccessFromCentralDomains::class,
+    InitializeTenancyByPath::class,
 ])->group(function () {
     Route::get('/', function () {
         return redirect()->route('dashboard');

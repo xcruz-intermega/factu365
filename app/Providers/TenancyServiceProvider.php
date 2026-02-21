@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Resolvers\SlugTenantResolver;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Stancl\JobPipeline\JobPipeline;
 use Stancl\Tenancy\Events;
 use Stancl\Tenancy\Jobs;
 use Stancl\Tenancy\Listeners;
 use Stancl\Tenancy\Middleware;
+use Stancl\Tenancy\Resolvers\PathTenantResolver;
 
 class TenancyServiceProvider extends ServiceProvider
 {
@@ -91,7 +94,8 @@ class TenancyServiceProvider extends ServiceProvider
 
     public function register()
     {
-        //
+        // Bind our slug-based resolver in place of the default path resolver
+        $this->app->bind(PathTenantResolver::class, SlugTenantResolver::class);
     }
 
     public function boot()
@@ -100,6 +104,15 @@ class TenancyServiceProvider extends ServiceProvider
         $this->mapRoutes();
 
         $this->makeTenancyMiddlewareHighestPriority();
+
+        // Set URL defaults so route() in PHP auto-includes the tenant slug
+        Event::listen(Events\TenancyInitialized::class, function (Events\TenancyInitialized $event) {
+            URL::defaults(['tenant' => $event->tenancy->tenant->slug]);
+        });
+
+        Event::listen(Events\TenancyEnded::class, function () {
+            URL::defaults(['tenant' => null]);
+        });
     }
 
     protected function bootEvents()
@@ -128,14 +141,7 @@ class TenancyServiceProvider extends ServiceProvider
     protected function makeTenancyMiddlewareHighestPriority()
     {
         $tenancyMiddleware = [
-            // Even higher priority than the initialization middleware
-            Middleware\PreventAccessFromCentralDomains::class,
-
-            Middleware\InitializeTenancyByDomain::class,
-            Middleware\InitializeTenancyBySubdomain::class,
-            Middleware\InitializeTenancyByDomainOrSubdomain::class,
             Middleware\InitializeTenancyByPath::class,
-            Middleware\InitializeTenancyByRequestData::class,
         ];
 
         foreach (array_reverse($tenancyMiddleware) as $middleware) {

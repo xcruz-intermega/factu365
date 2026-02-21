@@ -8,16 +8,23 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\URL;
 use Tests\TestCase;
+use Tests\Traits\WithTenancy;
 
 class EmailVerificationTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, WithTenancy;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->setUpWithTenancy();
+    }
 
     public function test_email_verification_screen_can_be_rendered(): void
     {
         $user = User::factory()->unverified()->create();
 
-        $response = $this->actingAs($user)->get('/verify-email');
+        $response = $this->actingAs($user)->get($this->tenantUrl('/verify-email'));
 
         $response->assertStatus(200);
     }
