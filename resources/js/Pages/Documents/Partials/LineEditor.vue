@@ -61,7 +61,7 @@ const addLine = () => {
         description: '',
         quantity: 1,
         unit_price: 0,
-        unit: '',
+        unit: 'unidad',
         discount_percent: 0,
         vat_rate: 21,
         exemption_code: '',
