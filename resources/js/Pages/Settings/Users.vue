@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import { Head, useForm, Link, router, usePage } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import SettingsNav from './Partials/SettingsNav.vue';
+import ConfirmDialog from '@/Components/ConfirmDialog.vue';
 interface User {
     id: number;
     name: string;
@@ -94,25 +95,25 @@ const submitEdit = () => {
     });
 };
 
-// Delete
-const confirmingDeleteId = ref<number | null>(null);
+// Delete (modal confirmation)
+const deleteDialog = ref(false);
+const deleteTarget = ref<User | null>(null);
 const deleting = ref(false);
 
 const confirmDelete = (user: User) => {
-    confirmingDeleteId.value = user.id;
+    deleteTarget.value = user;
+    deleteDialog.value = true;
 };
 
-const cancelDelete = () => {
-    confirmingDeleteId.value = null;
-};
-
-const executeDelete = (id: number) => {
+const executeDelete = () => {
+    if (!deleteTarget.value) return;
     deleting.value = true;
-    router.delete(route('settings.users.destroy', id), {
+    router.delete(route('settings.users.destroy', deleteTarget.value.id), {
         preserveScroll: true,
         onFinish: () => {
             deleting.value = false;
-            confirmingDeleteId.value = null;
+            deleteDialog.value = false;
+            deleteTarget.value = null;
         },
     });
 };
@@ -224,27 +225,20 @@ const availableRoles = (user?: User) => {
                             </td>
                             <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-600">{{ user.created_at }}</td>
                             <td class="whitespace-nowrap px-4 py-3 text-right text-sm">
-                                <template v-if="confirmingDeleteId === user.id">
-                                    <span class="text-xs text-red-600 mr-2">Eliminar?</span>
-                                    <button @click="executeDelete(user.id)" :disabled="deleting" class="text-sm font-semibold text-red-600 hover:text-red-900 mr-1 disabled:opacity-50">Si</button>
-                                    <button @click="cancelDelete" class="text-sm text-gray-600 hover:text-gray-900">No</button>
-                                </template>
-                                <template v-else>
-                                    <button
-                                        v-if="user.role !== 'owner' || user.id === currentUser.id"
-                                        @click="startEdit(user)"
-                                        class="text-indigo-600 hover:text-indigo-900"
-                                    >
-                                        Editar
-                                    </button>
-                                    <button
-                                        v-if="user.id !== currentUser.id && user.role !== 'owner'"
-                                        @click="confirmDelete(user)"
-                                        class="ml-3 text-red-600 hover:text-red-900"
-                                    >
-                                        Eliminar
-                                    </button>
-                                </template>
+                                <button
+                                    v-if="user.role !== 'owner' || user.id === currentUser.id"
+                                    @click="startEdit(user)"
+                                    class="text-indigo-600 hover:text-indigo-900"
+                                >
+                                    Editar
+                                </button>
+                                <button
+                                    v-if="user.id !== currentUser.id && user.role !== 'owner'"
+                                    @click="confirmDelete(user)"
+                                    class="ml-3 text-red-600 hover:text-red-900"
+                                >
+                                    Eliminar
+                                </button>
                             </td>
                         </template>
                         <!-- Edit mode -->
@@ -306,5 +300,14 @@ const availableRoles = (user?: User) => {
             </div>
         </div>
 
+        <ConfirmDialog
+            :show="deleteDialog"
+            title="Eliminar usuario"
+            :message="`¿Estás seguro de que quieres eliminar '${deleteTarget?.name}'?`"
+            confirm-label="Eliminar"
+            :processing="deleting"
+            @confirm="executeDelete"
+            @cancel="deleteDialog = false"
+        />
     </AppLayout>
 </template>

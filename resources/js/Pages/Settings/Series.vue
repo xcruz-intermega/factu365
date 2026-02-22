@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import { Head, useForm, Link, router } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import SettingsNav from './Partials/SettingsNav.vue';
+import ConfirmDialog from '@/Components/ConfirmDialog.vue';
 interface Series {
     id: number;
     document_type: string;
@@ -66,24 +67,24 @@ const saveEdit = (id: number) => {
 
 const cancelEdit = () => { editingId.value = null; };
 
-// Delete
-const confirmingDeleteId = ref<number | null>(null);
+// Delete (modal confirmation)
+const deleteDialog = ref(false);
+const deleteTarget = ref<Series | null>(null);
 const deleting = ref(false);
 
 const confirmDelete = (s: Series) => {
-    confirmingDeleteId.value = s.id;
+    deleteTarget.value = s;
+    deleteDialog.value = true;
 };
 
-const cancelDelete = () => {
-    confirmingDeleteId.value = null;
-};
-
-const executeDelete = (id: number) => {
+const executeDelete = () => {
+    if (!deleteTarget.value) return;
     deleting.value = true;
-    router.delete(route('settings.series.destroy', id), {
+    router.delete(route('settings.series.destroy', deleteTarget.value.id), {
         onFinish: () => {
             deleting.value = false;
-            confirmingDeleteId.value = null;
+            deleteDialog.value = false;
+            deleteTarget.value = null;
         },
     });
 };
@@ -176,15 +177,8 @@ const executeDelete = (id: number) => {
                                 <span v-else class="text-xs text-gray-400">No</span>
                             </td>
                             <td class="whitespace-nowrap px-4 py-3 text-right text-sm">
-                                <template v-if="confirmingDeleteId === s.id">
-                                    <span class="text-xs text-red-600 mr-2">Eliminar?</span>
-                                    <button @click="executeDelete(s.id)" :disabled="deleting" class="text-sm font-semibold text-red-600 hover:text-red-900 mr-1 disabled:opacity-50">Si</button>
-                                    <button @click="cancelDelete" class="text-sm text-gray-600 hover:text-gray-900">No</button>
-                                </template>
-                                <template v-else>
-                                    <button @click="startEdit(s)" class="text-indigo-600 hover:text-indigo-900 mr-3">Editar</button>
-                                    <button @click="confirmDelete(s)" class="text-red-600 hover:text-red-900">Eliminar</button>
-                                </template>
+                                <button @click="startEdit(s)" class="text-indigo-600 hover:text-indigo-900 mr-3">Editar</button>
+                                <button @click="confirmDelete(s)" class="text-red-600 hover:text-red-900">Eliminar</button>
                             </td>
                         </template>
                     </tr>
@@ -195,5 +189,14 @@ const executeDelete = (id: number) => {
             </table>
         </div>
 
+        <ConfirmDialog
+            :show="deleteDialog"
+            title="Eliminar serie"
+            :message="`¿Estás seguro de que quieres eliminar la serie '${deleteTarget?.prefix}'?`"
+            confirm-label="Eliminar"
+            :processing="deleting"
+            @confirm="executeDelete"
+            @cancel="deleteDialog = false"
+        />
     </AppLayout>
 </template>

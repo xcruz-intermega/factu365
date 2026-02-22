@@ -4,6 +4,7 @@ import { Head, useForm, Link, router } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import SettingsNav from './Partials/SettingsNav.vue';
 import Badge from '@/Components/Badge.vue';
+import ConfirmDialog from '@/Components/ConfirmDialog.vue';
 
 interface Cert {
     id: number;
@@ -47,23 +48,24 @@ const toggleActive = (cert: Cert) => {
     router.post(route('settings.certificates.toggle', cert.id));
 };
 
-const confirmingDeleteId = ref<number | null>(null);
+// Delete (modal confirmation)
+const deleteDialog = ref(false);
+const deleteTarget = ref<Cert | null>(null);
 const deleting = ref(false);
 
 const confirmDelete = (cert: Cert) => {
-    confirmingDeleteId.value = cert.id;
+    deleteTarget.value = cert;
+    deleteDialog.value = true;
 };
 
-const cancelDelete = () => {
-    confirmingDeleteId.value = null;
-};
-
-const executeDelete = (id: number) => {
+const executeDelete = () => {
+    if (!deleteTarget.value) return;
     deleting.value = true;
-    router.delete(route('settings.certificates.destroy', id), {
+    router.delete(route('settings.certificates.destroy', deleteTarget.value.id), {
         onFinish: () => {
             deleting.value = false;
-            confirmingDeleteId.value = null;
+            deleteDialog.value = false;
+            deleteTarget.value = null;
         },
     });
 };
@@ -128,17 +130,10 @@ const executeDelete = (id: number) => {
                         </p>
                     </div>
                     <div class="flex items-center gap-3">
-                        <template v-if="confirmingDeleteId === cert.id">
-                            <span class="text-xs text-red-600 mr-2">Eliminar?</span>
-                            <button @click="executeDelete(cert.id)" :disabled="deleting" class="text-sm font-semibold text-red-600 hover:text-red-900 mr-1 disabled:opacity-50">Si</button>
-                            <button @click="cancelDelete" class="text-sm text-gray-600 hover:text-gray-900">No</button>
-                        </template>
-                        <template v-else>
-                            <button @click="toggleActive(cert)" class="text-sm" :class="cert.is_active ? 'text-amber-600 hover:text-amber-800' : 'text-green-600 hover:text-green-800'">
-                                {{ cert.is_active ? 'Desactivar' : 'Activar' }}
-                            </button>
-                            <button @click="confirmDelete(cert)" class="text-sm text-red-600 hover:text-red-900">Eliminar</button>
-                        </template>
+                        <button @click="toggleActive(cert)" class="text-sm" :class="cert.is_active ? 'text-amber-600 hover:text-amber-800' : 'text-green-600 hover:text-green-800'">
+                            {{ cert.is_active ? 'Desactivar' : 'Activar' }}
+                        </button>
+                        <button @click="confirmDelete(cert)" class="text-sm text-red-600 hover:text-red-900">Eliminar</button>
                     </div>
                 </div>
             </div>
@@ -148,5 +143,14 @@ const executeDelete = (id: number) => {
             </div>
         </div>
 
+        <ConfirmDialog
+            :show="deleteDialog"
+            title="Eliminar certificado"
+            :message="`¿Estás seguro de que quieres eliminar '${deleteTarget?.name}'?`"
+            confirm-label="Eliminar"
+            :processing="deleting"
+            @confirm="executeDelete"
+            @cancel="deleteDialog = false"
+        />
     </AppLayout>
 </template>

@@ -58,6 +58,7 @@ onMounted(() => document.addEventListener('keydown', closeOnEscape));
 onUnmounted(() => {
     document.removeEventListener('keydown', closeOnEscape);
 
+    dialog.value?.close();
     document.body.style.overflow = '';
 });
 

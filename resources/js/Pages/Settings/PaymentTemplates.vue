@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import { Head, router, useForm } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import SettingsNav from './Partials/SettingsNav.vue';
+import ConfirmDialog from '@/Components/ConfirmDialog.vue';
 
 interface TemplateLine {
     days_from_issue: number;
@@ -78,24 +79,24 @@ const submitEdit = (id: number) => {
     });
 };
 
-// Delete
-const confirmingDeleteId = ref<number | null>(null);
+// Delete (modal confirmation)
+const deleteDialog = ref(false);
+const deleteTarget = ref<Template | null>(null);
 const deleting = ref(false);
 
 const confirmDelete = (tpl: Template) => {
-    confirmingDeleteId.value = tpl.id;
+    deleteTarget.value = tpl;
+    deleteDialog.value = true;
 };
 
-const cancelDelete = () => {
-    confirmingDeleteId.value = null;
-};
-
-const executeDelete = (id: number) => {
+const executeDelete = () => {
+    if (!deleteTarget.value) return;
     deleting.value = true;
-    router.delete(route('settings.payment-templates.destroy', id), {
+    router.delete(route('settings.payment-templates.destroy', deleteTarget.value.id), {
         onFinish: () => {
             deleting.value = false;
-            confirmingDeleteId.value = null;
+            deleteDialog.value = false;
+            deleteTarget.value = null;
         },
     });
 };
@@ -227,15 +228,8 @@ const totalPercentage = (lines: TemplateLine[]) => {
                                 <span v-if="tpl.is_default" class="ml-2 rounded-full bg-indigo-100 px-2 py-0.5 text-xs font-medium text-indigo-700">Por defecto</span>
                             </div>
                             <div class="flex items-center gap-2">
-                                <template v-if="confirmingDeleteId === tpl.id">
-                                    <span class="text-xs text-red-600 mr-2">Eliminar?</span>
-                                    <button @click="executeDelete(tpl.id)" :disabled="deleting" class="text-sm font-semibold text-red-600 hover:text-red-900 mr-1 disabled:opacity-50">Si</button>
-                                    <button @click="cancelDelete" class="text-sm text-gray-600 hover:text-gray-900">No</button>
-                                </template>
-                                <template v-else>
-                                    <button @click="startEdit(tpl)" class="text-sm text-indigo-600 hover:text-indigo-900">Editar</button>
-                                    <button @click="confirmDelete(tpl)" class="text-sm text-red-600 hover:text-red-900">Eliminar</button>
-                                </template>
+                                <button @click="startEdit(tpl)" class="text-sm text-indigo-600 hover:text-indigo-900">Editar</button>
+                                <button @click="confirmDelete(tpl)" class="text-sm text-red-600 hover:text-red-900">Eliminar</button>
                             </div>
                         </div>
                         <div class="mt-2 flex flex-wrap gap-3">
@@ -252,5 +246,14 @@ const totalPercentage = (lines: TemplateLine[]) => {
             </div>
         </div>
 
+        <ConfirmDialog
+            :show="deleteDialog"
+            title="Eliminar plantilla"
+            :message="`¿Estás seguro de que quieres eliminar '${deleteTarget?.name}'?`"
+            confirm-label="Eliminar"
+            :processing="deleting"
+            @confirm="executeDelete"
+            @cancel="deleteDialog = false"
+        />
     </AppLayout>
 </template>
