@@ -2,7 +2,6 @@
 import { ref } from 'vue';
 import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import ConfirmDialog from '@/Components/ConfirmDialog.vue';
 import SettingsNav from './Partials/SettingsNav.vue';
 
 interface Family {
@@ -70,24 +69,24 @@ const submitEdit = (id: number) => {
     });
 };
 
-// Delete
-const deleteDialog = ref(false);
-const deleteTarget = ref<Family | null>(null);
+// Delete (inline confirmation)
+const confirmingDeleteId = ref<number | null>(null);
 const deleting = ref(false);
 
 const confirmDelete = (family: Family) => {
-    deleteTarget.value = family;
-    deleteDialog.value = true;
+    confirmingDeleteId.value = family.id;
 };
 
-const executeDelete = () => {
-    if (!deleteTarget.value) return;
+const cancelDelete = () => {
+    confirmingDeleteId.value = null;
+};
+
+const executeDelete = (id: number) => {
     deleting.value = true;
-    router.delete(route('settings.product-families.destroy', deleteTarget.value.id), {
+    router.delete(route('settings.product-families.destroy', id), {
         onFinish: () => {
             deleting.value = false;
-            deleteDialog.value = false;
-            deleteTarget.value = null;
+            confirmingDeleteId.value = null;
         },
     });
 };
@@ -230,8 +229,15 @@ const flattenFamilies = (families: Family[], depth = 0): Array<Family & { depth:
                             <td class="px-4 py-2 text-sm text-gray-500">{{ family.code || '—' }}</td>
                             <td class="px-4 py-2 text-right text-sm text-gray-500">{{ family.sort_order }}</td>
                             <td class="px-4 py-2 text-right">
-                                <button @click="startEdit(family)" class="text-sm text-indigo-600 hover:text-indigo-900 mr-2">Editar</button>
-                                <button @click="confirmDelete(family)" class="text-sm text-red-600 hover:text-red-900">Eliminar</button>
+                                <template v-if="confirmingDeleteId === family.id">
+                                    <span class="text-xs text-red-600 mr-2">Eliminar?</span>
+                                    <button @click="executeDelete(family.id)" :disabled="deleting" class="text-sm font-semibold text-red-600 hover:text-red-900 mr-1 disabled:opacity-50">Si</button>
+                                    <button @click="cancelDelete" class="text-sm text-gray-600 hover:text-gray-900">No</button>
+                                </template>
+                                <template v-else>
+                                    <button @click="startEdit(family)" class="text-sm text-indigo-600 hover:text-indigo-900 mr-2">Editar</button>
+                                    <button @click="confirmDelete(family)" class="text-sm text-red-600 hover:text-red-900">Eliminar</button>
+                                </template>
                             </td>
                         </template>
                     </tr>
@@ -244,14 +250,5 @@ const flattenFamilies = (families: Family[], depth = 0): Array<Family & { depth:
             </table>
         </div>
 
-        <ConfirmDialog
-            :show="deleteDialog"
-            title="Eliminar familia"
-            :message="`¿Estás seguro de que quieres eliminar '${deleteTarget?.name}'?`"
-            confirm-label="Eliminar"
-            :processing="deleting"
-            @confirm="executeDelete"
-            @cancel="deleteDialog = false"
-        />
     </AppLayout>
 </template>

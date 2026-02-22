@@ -3,8 +3,6 @@ import { ref } from 'vue';
 import { Head, useForm, Link, router, usePage } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import SettingsNav from './Partials/SettingsNav.vue';
-import ConfirmDialog from '@/Components/ConfirmDialog.vue';
-
 interface User {
     id: number;
     name: string;
@@ -97,14 +95,24 @@ const submitEdit = () => {
 };
 
 // Delete
-const confirmDelete = ref<User | null>(null);
+const confirmingDeleteId = ref<number | null>(null);
+const deleting = ref(false);
 
-const deleteUser = () => {
-    if (!confirmDelete.value) return;
-    router.delete(route('settings.users.destroy', confirmDelete.value.id), {
+const confirmDelete = (user: User) => {
+    confirmingDeleteId.value = user.id;
+};
+
+const cancelDelete = () => {
+    confirmingDeleteId.value = null;
+};
+
+const executeDelete = (id: number) => {
+    deleting.value = true;
+    router.delete(route('settings.users.destroy', id), {
         preserveScroll: true,
         onFinish: () => {
-            confirmDelete.value = null;
+            deleting.value = false;
+            confirmingDeleteId.value = null;
         },
     });
 };
@@ -216,20 +224,27 @@ const availableRoles = (user?: User) => {
                             </td>
                             <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-600">{{ user.created_at }}</td>
                             <td class="whitespace-nowrap px-4 py-3 text-right text-sm">
-                                <button
-                                    v-if="user.role !== 'owner' || user.id === currentUser.id"
-                                    @click="startEdit(user)"
-                                    class="text-indigo-600 hover:text-indigo-900"
-                                >
-                                    Editar
-                                </button>
-                                <button
-                                    v-if="user.id !== currentUser.id && user.role !== 'owner'"
-                                    @click="confirmDelete = user"
-                                    class="ml-3 text-red-600 hover:text-red-900"
-                                >
-                                    Eliminar
-                                </button>
+                                <template v-if="confirmingDeleteId === user.id">
+                                    <span class="text-xs text-red-600 mr-2">Eliminar?</span>
+                                    <button @click="executeDelete(user.id)" :disabled="deleting" class="text-sm font-semibold text-red-600 hover:text-red-900 mr-1 disabled:opacity-50">Si</button>
+                                    <button @click="cancelDelete" class="text-sm text-gray-600 hover:text-gray-900">No</button>
+                                </template>
+                                <template v-else>
+                                    <button
+                                        v-if="user.role !== 'owner' || user.id === currentUser.id"
+                                        @click="startEdit(user)"
+                                        class="text-indigo-600 hover:text-indigo-900"
+                                    >
+                                        Editar
+                                    </button>
+                                    <button
+                                        v-if="user.id !== currentUser.id && user.role !== 'owner'"
+                                        @click="confirmDelete(user)"
+                                        class="ml-3 text-red-600 hover:text-red-900"
+                                    >
+                                        Eliminar
+                                    </button>
+                                </template>
                             </td>
                         </template>
                         <!-- Edit mode -->
@@ -291,16 +306,5 @@ const availableRoles = (user?: User) => {
             </div>
         </div>
 
-        <!-- Confirm delete dialog -->
-        <ConfirmDialog
-            :show="!!confirmDelete"
-            title="Eliminar usuario"
-            :message="`&iquest;Est&aacute;s seguro de que quieres eliminar a ${confirmDelete?.name}? Esta acci&oacute;n no se puede deshacer.`"
-            confirm-label="Eliminar"
-            cancel-label="Cancelar"
-            variant="danger"
-            @confirm="deleteUser"
-            @cancel="confirmDelete = null"
-        />
     </AppLayout>
 </template>

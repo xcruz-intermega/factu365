@@ -3,8 +3,6 @@ import { ref } from 'vue';
 import { Head, useForm, Link, router } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import SettingsNav from './Partials/SettingsNav.vue';
-import ConfirmDialog from '@/Components/ConfirmDialog.vue';
-
 interface Series {
     id: number;
     document_type: string;
@@ -69,23 +67,23 @@ const saveEdit = (id: number) => {
 const cancelEdit = () => { editingId.value = null; };
 
 // Delete
-const deleteDialog = ref(false);
-const deleteTarget = ref<Series | null>(null);
+const confirmingDeleteId = ref<number | null>(null);
 const deleting = ref(false);
 
 const confirmDelete = (s: Series) => {
-    deleteTarget.value = s;
-    deleteDialog.value = true;
+    confirmingDeleteId.value = s.id;
 };
 
-const executeDelete = () => {
-    if (!deleteTarget.value) return;
+const cancelDelete = () => {
+    confirmingDeleteId.value = null;
+};
+
+const executeDelete = (id: number) => {
     deleting.value = true;
-    router.delete(route('settings.series.destroy', deleteTarget.value.id), {
+    router.delete(route('settings.series.destroy', id), {
         onFinish: () => {
             deleting.value = false;
-            deleteDialog.value = false;
-            deleteTarget.value = null;
+            confirmingDeleteId.value = null;
         },
     });
 };
@@ -178,8 +176,15 @@ const executeDelete = () => {
                                 <span v-else class="text-xs text-gray-400">No</span>
                             </td>
                             <td class="whitespace-nowrap px-4 py-3 text-right text-sm">
-                                <button @click="startEdit(s)" class="text-indigo-600 hover:text-indigo-900 mr-3">Editar</button>
-                                <button @click="confirmDelete(s)" class="text-red-600 hover:text-red-900">Eliminar</button>
+                                <template v-if="confirmingDeleteId === s.id">
+                                    <span class="text-xs text-red-600 mr-2">Eliminar?</span>
+                                    <button @click="executeDelete(s.id)" :disabled="deleting" class="text-sm font-semibold text-red-600 hover:text-red-900 mr-1 disabled:opacity-50">Si</button>
+                                    <button @click="cancelDelete" class="text-sm text-gray-600 hover:text-gray-900">No</button>
+                                </template>
+                                <template v-else>
+                                    <button @click="startEdit(s)" class="text-indigo-600 hover:text-indigo-900 mr-3">Editar</button>
+                                    <button @click="confirmDelete(s)" class="text-red-600 hover:text-red-900">Eliminar</button>
+                                </template>
                             </td>
                         </template>
                     </tr>
@@ -190,14 +195,5 @@ const executeDelete = () => {
             </table>
         </div>
 
-        <ConfirmDialog
-            :show="deleteDialog"
-            title="Eliminar serie"
-            :message="`¿Eliminar la serie '${deleteTarget?.prefix}'? Solo se puede eliminar si no tiene documentos asociados.`"
-            confirm-label="Eliminar"
-            :processing="deleting"
-            @confirm="executeDelete"
-            @cancel="deleteDialog = false"
-        />
     </AppLayout>
 </template>
