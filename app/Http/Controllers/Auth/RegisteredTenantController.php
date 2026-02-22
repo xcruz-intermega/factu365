@@ -76,6 +76,6 @@ class RegisteredTenantController extends Controller
             ]);
         });
 
-        return redirect("/{$request->slug}/login");
+        return Inertia::location("/{$request->slug}/login");
     }
 }
