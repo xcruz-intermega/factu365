@@ -137,11 +137,11 @@ const executeDelete = () => {
 </script>
 
 <template>
-    <Head :title="documentTypeLabel + 's'" />
+    <Head :title="$t('documents.title_' + documentType)" />
 
     <AppLayout>
         <template #header>
-            <h1 class="text-lg font-semibold text-gray-900">{{ documentTypeLabel }}s</h1>
+            <h1 class="text-lg font-semibold text-gray-900">{{ $t('documents.title_' + documentType) }}</h1>
         </template>
 
         <!-- Toolbar -->
@@ -170,7 +170,7 @@ const executeDelete = () => {
                 <svg class="-ml-0.5 mr-1.5 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
                 </svg>
-                {{ $t('documents.new_document', { type: documentTypeLabel.toLowerCase() }) }}
+                {{ $t('documents.new_' + documentType) }}
             </Link>
         </div>
 

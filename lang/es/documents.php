@@ -21,12 +21,22 @@ return [
     'col_status' => 'Estado',
     'search_placeholder' => 'Buscar por número o cliente...',
     'all_statuses' => 'Todos los estados',
-    'new_document' => 'Nuevo :type',
     'delete_title' => 'Eliminar documento',
+
+    // Per-type titles (gender-aware)
+    'title_invoice' => 'Facturas',
+    'title_quote' => 'Presupuestos',
+    'title_delivery_note' => 'Albaranes',
+    'title_rectificative' => 'Rectificativas',
+    'title_purchase_invoice' => 'Facturas recibidas',
+    'new_invoice' => 'Nueva factura',
+    'new_quote' => 'Nuevo presupuesto',
+    'new_delivery_note' => 'Nuevo albarán',
+    'new_rectificative' => 'Nueva rectificativa',
+    'new_purchase_invoice' => 'Nueva factura recibida',
     'delete_message' => '¿Estás seguro de que quieres eliminar este documento? Esta acción no se puede deshacer.',
 
     // Create / Edit
-    'new' => 'Nuevo :type',
     'edit_header' => ':type :number',
 
     // Actions bar
@@ -135,11 +145,25 @@ return [
     'line_discounts' => 'Descuentos línea',
     'global_discount' => 'Dto. global',
 
-    // Flash messages
-    'flash_created' => ':type creado correctamente.',
-    'flash_updated' => ':type actualizado correctamente.',
-    'flash_deleted' => ':type eliminado correctamente.',
-    'flash_finalized' => ':type finalizado con número :number.',
+    // Flash messages (per-type, gender-aware)
+    'flash_created_invoice' => 'Factura creada correctamente.',
+    'flash_created_quote' => 'Presupuesto creado correctamente.',
+    'flash_created_delivery_note' => 'Albarán creado correctamente.',
+    'flash_created_rectificative' => 'Rectificativa creada correctamente.',
+    'flash_created_purchase_invoice' => 'Factura recibida creada correctamente.',
+    'flash_updated_invoice' => 'Factura actualizada correctamente.',
+    'flash_updated_quote' => 'Presupuesto actualizado correctamente.',
+    'flash_updated_delivery_note' => 'Albarán actualizado correctamente.',
+    'flash_updated_rectificative' => 'Rectificativa actualizada correctamente.',
+    'flash_updated_purchase_invoice' => 'Factura recibida actualizada correctamente.',
+    'flash_deleted_invoice' => 'Factura eliminada correctamente.',
+    'flash_deleted_quote' => 'Presupuesto eliminado correctamente.',
+    'flash_deleted_delivery_note' => 'Albarán eliminado correctamente.',
+    'flash_deleted_rectificative' => 'Rectificativa eliminada correctamente.',
+    'flash_deleted_purchase_invoice' => 'Factura recibida eliminada correctamente.',
+    'flash_finalized_invoice' => 'Factura finalizada con número :number.',
+    'flash_finalized_rectificative' => 'Rectificativa finalizada con número :number.',
+    'flash_finalized_purchase_invoice' => 'Factura recibida finalizada con número :number.',
     'flash_converted' => 'Documento convertido a :type.',
     'flash_rectificative_created' => 'Factura rectificativa creada como borrador.',
     'flash_status_updated' => 'Estado actualizado a :status.',

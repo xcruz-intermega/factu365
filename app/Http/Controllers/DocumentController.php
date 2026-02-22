@@ -171,7 +171,7 @@ class DocumentController extends Controller
         });
 
         return redirect()->route('documents.edit', [$type, $document])
-            ->with('success', __('documents.flash_created', ['type' => Document::documentTypeLabel($type)]));
+            ->with('success', __("documents.flash_created_{$type}"));
     }
 
     public function edit(string $type, Document $document)
@@ -283,7 +283,7 @@ class DocumentController extends Controller
         });
 
         return redirect()->route('documents.edit', [$type, $document])
-            ->with('success', __('documents.flash_updated', ['type' => Document::documentTypeLabel($type)]));
+            ->with('success', __("documents.flash_updated_{$type}"));
     }
 
     public function finalize(string $type, Document $document)
@@ -319,7 +319,7 @@ class DocumentController extends Controller
         InvoiceFinalized::dispatch($document->fresh());
 
         return redirect()->route('documents.edit', [$type, $document])
-            ->with('success', __('documents.flash_finalized', ['type' => Document::documentTypeLabel($type), 'number' => $document->number]));
+            ->with('success', __("documents.flash_finalized_{$type}", ['number' => $document->number]));
     }
 
     public function destroy(string $type, Document $document)
@@ -335,7 +335,7 @@ class DocumentController extends Controller
         $document->delete();
 
         return redirect()->route('documents.index', $type)
-            ->with('success', __('documents.flash_deleted', ['type' => Document::documentTypeLabel($type)]));
+            ->with('success', __("documents.flash_deleted_{$type}"));
     }
 
     public function convert(Request $request, string $type, Document $document)

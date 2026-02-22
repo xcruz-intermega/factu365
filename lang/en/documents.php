@@ -21,12 +21,22 @@ return [
     'col_status' => 'Status',
     'search_placeholder' => 'Search by number or client...',
     'all_statuses' => 'All statuses',
-    'new_document' => 'New :type',
     'delete_title' => 'Delete document',
+
+    // Per-type titles
+    'title_invoice' => 'Invoices',
+    'title_quote' => 'Quotes',
+    'title_delivery_note' => 'Delivery notes',
+    'title_rectificative' => 'Credit notes',
+    'title_purchase_invoice' => 'Purchase invoices',
+    'new_invoice' => 'New invoice',
+    'new_quote' => 'New quote',
+    'new_delivery_note' => 'New delivery note',
+    'new_rectificative' => 'New credit note',
+    'new_purchase_invoice' => 'New purchase invoice',
     'delete_message' => 'Are you sure you want to delete this document? This action cannot be undone.',
 
     // Create / Edit
-    'new' => 'New :type',
     'edit_header' => ':type :number',
 
     // Actions bar
@@ -135,11 +145,25 @@ return [
     'type_proforma' => 'Proforma',
     'type_receipt' => 'Receipt',
 
-    // Flash messages
-    'flash_created' => ':type created successfully.',
-    'flash_updated' => ':type updated successfully.',
-    'flash_deleted' => ':type deleted successfully.',
-    'flash_finalized' => ':type finalised with number :number.',
+    // Flash messages (per-type)
+    'flash_created_invoice' => 'Invoice created successfully.',
+    'flash_created_quote' => 'Quote created successfully.',
+    'flash_created_delivery_note' => 'Delivery note created successfully.',
+    'flash_created_rectificative' => 'Credit note created successfully.',
+    'flash_created_purchase_invoice' => 'Purchase invoice created successfully.',
+    'flash_updated_invoice' => 'Invoice updated successfully.',
+    'flash_updated_quote' => 'Quote updated successfully.',
+    'flash_updated_delivery_note' => 'Delivery note updated successfully.',
+    'flash_updated_rectificative' => 'Credit note updated successfully.',
+    'flash_updated_purchase_invoice' => 'Purchase invoice updated successfully.',
+    'flash_deleted_invoice' => 'Invoice deleted successfully.',
+    'flash_deleted_quote' => 'Quote deleted successfully.',
+    'flash_deleted_delivery_note' => 'Delivery note deleted successfully.',
+    'flash_deleted_rectificative' => 'Credit note deleted successfully.',
+    'flash_deleted_purchase_invoice' => 'Purchase invoice deleted successfully.',
+    'flash_finalized_invoice' => 'Invoice finalised with number :number.',
+    'flash_finalized_rectificative' => 'Credit note finalised with number :number.',
+    'flash_finalized_purchase_invoice' => 'Purchase invoice finalised with number :number.',
     'flash_converted' => 'Document converted to :type.',
     'flash_rectificative_created' => 'Credit note created as draft.',
     'flash_status_updated' => 'Status updated to :status.',

@@ -21,12 +21,22 @@ return [
     'col_status' => 'Estat',
     'search_placeholder' => 'Cercar per número o client...',
     'all_statuses' => 'Tots els estats',
-    'new_document' => 'Nou :type',
     'delete_title' => 'Eliminar document',
+
+    // Per-type titles (gender-aware)
+    'title_invoice' => 'Factures',
+    'title_quote' => 'Pressupostos',
+    'title_delivery_note' => 'Albarans',
+    'title_rectificative' => 'Rectificatives',
+    'title_purchase_invoice' => 'Factures rebudes',
+    'new_invoice' => 'Nova factura',
+    'new_quote' => 'Nou pressupost',
+    'new_delivery_note' => 'Nou albarà',
+    'new_rectificative' => 'Nova rectificativa',
+    'new_purchase_invoice' => 'Nova factura rebuda',
     'delete_message' => 'Esteu segur que voleu eliminar aquest document? Aquesta acció no es pot desfer.',
 
     // Create / Edit
-    'new' => 'Nou :type',
     'edit_header' => ':type :number',
 
     // Actions bar
@@ -135,11 +145,25 @@ return [
     'line_discounts' => 'Descomptes línia',
     'global_discount' => 'Dte. global',
 
-    // Flash messages
-    'flash_created' => ':type creat correctament.',
-    'flash_updated' => ':type actualitzat correctament.',
-    'flash_deleted' => ':type eliminat correctament.',
-    'flash_finalized' => ':type finalitzat amb número :number.',
+    // Flash messages (per-type, gender-aware)
+    'flash_created_invoice' => 'Factura creada correctament.',
+    'flash_created_quote' => 'Pressupost creat correctament.',
+    'flash_created_delivery_note' => 'Albarà creat correctament.',
+    'flash_created_rectificative' => 'Rectificativa creada correctament.',
+    'flash_created_purchase_invoice' => 'Factura rebuda creada correctament.',
+    'flash_updated_invoice' => 'Factura actualitzada correctament.',
+    'flash_updated_quote' => 'Pressupost actualitzat correctament.',
+    'flash_updated_delivery_note' => 'Albarà actualitzat correctament.',
+    'flash_updated_rectificative' => 'Rectificativa actualitzada correctament.',
+    'flash_updated_purchase_invoice' => 'Factura rebuda actualitzada correctament.',
+    'flash_deleted_invoice' => 'Factura eliminada correctament.',
+    'flash_deleted_quote' => 'Pressupost eliminat correctament.',
+    'flash_deleted_delivery_note' => 'Albarà eliminat correctament.',
+    'flash_deleted_rectificative' => 'Rectificativa eliminada correctament.',
+    'flash_deleted_purchase_invoice' => 'Factura rebuda eliminada correctament.',
+    'flash_finalized_invoice' => 'Factura finalitzada amb número :number.',
+    'flash_finalized_rectificative' => 'Rectificativa finalitzada amb número :number.',
+    'flash_finalized_purchase_invoice' => 'Factura rebuda finalitzada amb número :number.',
     'flash_converted' => 'Document convertit a :type.',
     'flash_rectificative_created' => 'Factura rectificativa creada com a esborrany.',
     'flash_status_updated' => 'Estat actualitzat a :status.',
