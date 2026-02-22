@@ -3,15 +3,15 @@
 
 @theme {
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
-  --color-indigo-50: #f5f0fb;
-  --color-indigo-100: #ebe0f7;
-  --color-indigo-200: #d4bbed;
-  --color-indigo-300: #b88fdf;
-  --color-indigo-400: #9c63cf;
-  --color-indigo-500: #7f45b5;
-  --color-indigo-600: #6b3a9a;
-  --color-indigo-700: #5a2d80;
-  --color-indigo-800: #4a2569;
-  --color-indigo-900: #3d1f57;
-  --color-indigo-950: #240f38;
+  --color-indigo-50: #eff6ff;
+  --color-indigo-100: #dbeafe;
+  --color-indigo-200: #bfdbfe;
+  --color-indigo-300: #93c5fd;
+  --color-indigo-400: #60a5fa;
+  --color-indigo-500: #3b82f6;
+  --color-indigo-600: #2563eb;
+  --color-indigo-700: #1d4ed8;
+  --color-indigo-800: #1e40af;
+  --color-indigo-900: #1e3a8a;
+  --color-indigo-950: #172554;
 }
