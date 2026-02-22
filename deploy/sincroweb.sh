@@ -39,8 +39,8 @@ warn() { echo -e "${YELLOW}  ⚠ $1${NC}"; }
 # ---------------------------------------------------------------------------
 step "Verificando cambios locales..."
 
-if [[ -n $(git status --porcelain 2>/dev/null) ]]; then
-    warn "Hay cambios sin commitear. Haz commit primero."
+if [[ -n $(git diff --name-only 2>/dev/null) || -n $(git diff --cached --name-only 2>/dev/null) ]]; then
+    warn "Hay cambios sin commitear en archivos tracked. Haz commit primero."
     exit 1
 fi
 
