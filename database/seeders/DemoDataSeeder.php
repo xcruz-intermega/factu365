@@ -476,6 +476,31 @@ class DemoDataSeeder extends Seeder
 
     private function seedExpenses(): void
     {
+        // Ensure expense categories exist (tenant may have been created before the seeder added them)
+        if (ExpenseCategory::count() === 0) {
+            $defaultCategories = [
+                ['code' => 'ALQ', 'name' => 'Alquiler de local', 'sort_order' => 1],
+                ['code' => 'SUM', 'name' => 'Suministros (luz, agua, gas)', 'sort_order' => 2],
+                ['code' => 'TEL', 'name' => 'Telecomunicaciones e internet', 'sort_order' => 3],
+                ['code' => 'MAT', 'name' => 'Material de oficina', 'sort_order' => 4],
+                ['code' => 'EQU', 'name' => 'Equipos informáticos', 'sort_order' => 5],
+                ['code' => 'SOF', 'name' => 'Software y licencias', 'sort_order' => 6],
+                ['code' => 'VEH', 'name' => 'Vehículo (combustible, mantenimiento)', 'sort_order' => 7],
+                ['code' => 'VIA', 'name' => 'Viajes y desplazamientos', 'sort_order' => 8],
+                ['code' => 'DIE', 'name' => 'Dietas y comidas', 'sort_order' => 9],
+                ['code' => 'SEG', 'name' => 'Seguros', 'sort_order' => 10],
+                ['code' => 'ASE', 'name' => 'Asesoría y gestoría', 'sort_order' => 11],
+                ['code' => 'PUB', 'name' => 'Publicidad y marketing', 'sort_order' => 12],
+                ['code' => 'FOR', 'name' => 'Formación', 'sort_order' => 13],
+                ['code' => 'BAN', 'name' => 'Gastos bancarios', 'sort_order' => 14],
+                ['code' => 'IMP', 'name' => 'Impuestos y tasas', 'sort_order' => 15],
+                ['code' => 'OTR', 'name' => 'Otros gastos', 'sort_order' => 99],
+            ];
+            foreach ($defaultCategories as $cat) {
+                ExpenseCategory::create($cat);
+            }
+        }
+
         $categories = ExpenseCategory::all();
         $suppliers = Client::where('type', 'supplier')->get();
 
@@ -499,7 +524,7 @@ class DemoDataSeeder extends Seeder
         for ($i = 0; $i < 100; $i++) {
             $expenseDate = Carbon::now()->subDays(rand(1, 365));
             $category = $categories->random();
-            $useSupplier = rand(0, 1);
+            $useSupplier = rand(0, 1) && $suppliers->isNotEmpty();
             $supplier = $useSupplier ? $suppliers->random() : null;
             $subtotal = round(rand(500, 250000) / 100, 2);
             $vatRate = [21.00, 21.00, 21.00, 10.00, 4.00, 0.00][array_rand([21.00, 21.00, 21.00, 10.00, 4.00, 0.00])];
