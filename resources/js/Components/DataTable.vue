@@ -8,6 +8,7 @@ export interface Column {
     label: string;
     sortable?: boolean;
     class?: string;
+    wrap?: boolean;
 }
 
 export interface PaginationData {
@@ -29,10 +30,12 @@ const props = withDefaults(defineProps<{
     routeName?: string;
     queryParams?: Record<string, any>;
     emptyMessage?: string;
+    compact?: boolean;
 }>(), {
     sortBy: '',
     sortDir: 'asc',
     emptyMessage: '',
+    compact: false,
 });
 
 const resolvedEmptyMessage = computed(() => props.emptyMessage || trans('common.no_records'));
@@ -69,8 +72,8 @@ const sortIcon = (column: Column) => {
                             v-for="col in columns"
                             :key="col.key"
                             scope="col"
-                            class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
-                            :class="[col.class, { 'cursor-pointer hover:text-gray-700 select-none': col.sortable }]"
+                            class="py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                            :class="[compact ? 'px-3' : 'px-6', col.class, { 'cursor-pointer hover:text-gray-700 select-none': col.sortable }]"
                             @click="handleSort(col)"
                         >
                             <span class="flex items-center gap-1">
@@ -78,14 +81,14 @@ const sortIcon = (column: Column) => {
                                 <span v-if="sortIcon(col)" class="text-indigo-600">{{ sortIcon(col) }}</span>
                             </span>
                         </th>
-                        <th scope="col" class="relative px-6 py-3">
+                        <th scope="col" class="relative py-3" :class="compact ? 'px-3' : 'px-6'">
                             <span class="sr-only">{{ $t('common.actions') }}</span>
                         </th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200 bg-white">
                     <tr v-if="rows.length === 0">
-                        <td :colspan="columns.length + 1" class="px-6 py-12 text-center text-sm text-gray-500">
+                        <td :colspan="columns.length + 1" class="py-12 text-center text-sm text-gray-500" :class="compact ? 'px-3' : 'px-6'">
                             {{ resolvedEmptyMessage }}
                         </td>
                     </tr>
@@ -93,14 +96,14 @@ const sortIcon = (column: Column) => {
                         <td
                             v-for="col in columns"
                             :key="col.key"
-                            class="whitespace-nowrap px-6 py-4 text-sm text-gray-900"
-                            :class="col.class"
+                            class="text-sm text-gray-900"
+                            :class="[compact ? 'px-3 py-3' : 'px-6 py-4', col.class, { 'whitespace-nowrap': !col.wrap }]"
                         >
                             <slot :name="`cell-${col.key}`" :row="row" :value="row[col.key]">
                                 {{ row[col.key] }}
                             </slot>
                         </td>
-                        <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
+                        <td class="whitespace-nowrap text-right text-sm font-medium" :class="compact ? 'px-3 py-3' : 'px-6 py-4'">
                             <slot name="actions" :row="row" />
                         </td>
                     </tr>
