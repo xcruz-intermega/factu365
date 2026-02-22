@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue';
 import { Link } from '@inertiajs/vue3';
 import { trans } from 'laravel-vue-i18n';
 
@@ -6,7 +7,7 @@ defineProps<{
     current: string;
 }>();
 
-const tabs = [
+const tabs = computed(() => [
     { key: 'company', label: trans('settings.tab_company'), route: 'settings.company' },
     { key: 'series', label: trans('settings.tab_series'), route: 'settings.series' },
     { key: 'product-families', label: trans('settings.tab_families'), route: 'settings.product-families' },
@@ -14,7 +15,7 @@ const tabs = [
     { key: 'certificates', label: trans('settings.tab_certificates'), route: 'settings.certificates' },
     { key: 'pdf-templates', label: trans('settings.tab_pdf_templates'), route: 'settings.pdf-templates' },
     { key: 'users', label: trans('settings.tab_users'), route: 'settings.users' },
-];
+]);
 </script>
 
 <template>
