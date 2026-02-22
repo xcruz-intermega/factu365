@@ -21,3 +21,13 @@
 input, select, textarea {
   color: var(--color-gray-900, #111827);
 }
+
+/* Override browser autofill ugly yellow/green background */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px white inset !important;
+  -webkit-text-fill-color: #111827 !important;
+}
