@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\CentralLoginController;
 use App\Http\Controllers\Auth\RegisteredTenantController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -12,4 +13,5 @@ Route::get('/', function () {
 Route::middleware('guest')->group(function () {
     Route::get('/register', [RegisteredTenantController::class, 'create'])->name('register');
     Route::post('/register', [RegisteredTenantController::class, 'store']);
+    Route::post('/login', [CentralLoginController::class, 'store'])->name('central.login');
 });

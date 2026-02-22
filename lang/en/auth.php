@@ -35,4 +35,13 @@ return [
     'verify_text' => 'Thanks for signing up! Before getting started, could you verify your email address by clicking the link we just sent you? If you didn\'t receive the email, we\'ll gladly send you another.',
     'verify_sent' => 'A new verification link has been sent to the email address you provided during registration.',
     'resend_verification' => 'Resend verification email',
+
+    // Central Login
+    'company' => 'Company',
+    'company_placeholder' => 'Company ID or name',
+    'company_not_found' => 'Company not found. Check the identifier.',
+    'company_multiple' => 'Multiple companies with that name. Use the identifier.',
+    'login_button' => 'Log in',
+    'create_account' => 'Create free account',
+    'start_free' => 'Start for free',
 ];

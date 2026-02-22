@@ -35,4 +35,13 @@ return [
     'verify_text' => '¡Gracias por registrarte! Antes de empezar, ¿podrías verificar tu dirección de email haciendo clic en el enlace que te acabamos de enviar? Si no recibiste el email, te enviaremos otro con gusto.',
     'verify_sent' => 'Se ha enviado un nuevo enlace de verificación a la dirección de email que proporcionaste durante el registro.',
     'resend_verification' => 'Reenviar email de verificación',
+
+    // Central Login
+    'company' => 'Empresa',
+    'company_placeholder' => 'Identificador o nombre de empresa',
+    'company_not_found' => 'No se encontró la empresa. Verifica el identificador.',
+    'company_multiple' => 'Hay varias empresas con ese nombre. Usa el identificador.',
+    'login_button' => 'Iniciar sesión',
+    'create_account' => 'Crear cuenta gratis',
+    'start_free' => 'Empezar gratis',
 ];

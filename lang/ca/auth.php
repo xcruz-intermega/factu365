@@ -35,4 +35,13 @@ return [
     'verify_text' => 'Gràcies per registrar-te! Abans de començar, podries verificar la teva adreça d\'email fent clic a l\'enllaç que t\'acabem d\'enviar? Si no has rebut l\'email, te n\'enviarem un altre de bon grat.',
     'verify_sent' => 'S\'ha enviat un nou enllaç de verificació a l\'adreça d\'email que vas proporcionar durant el registre.',
     'resend_verification' => 'Reenviar email de verificació',
+
+    // Central Login
+    'company' => 'Empresa',
+    'company_placeholder' => 'Identificador o nom d\'empresa',
+    'company_not_found' => 'No s\'ha trobat l\'empresa. Verifiqueu l\'identificador.',
+    'company_multiple' => 'Hi ha diverses empreses amb aquest nom. Useu l\'identificador.',
+    'login_button' => 'Iniciar sessió',
+    'create_account' => 'Crear compte gratis',
+    'start_free' => 'Comença gratis',
 ];

@@ -1,5 +1,28 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, useForm } from '@inertiajs/vue3';
+import { ref } from 'vue';
+import InputLabel from '@/Components/InputLabel.vue';
+import TextInput from '@/Components/TextInput.vue';
+import InputError from '@/Components/InputError.vue';
+import Checkbox from '@/Components/Checkbox.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+
+const showLogin = ref(false);
+
+const form = useForm({
+    company: '',
+    email: '',
+    password: '',
+    remember: false,
+});
+
+const submit = () => {
+    form.post(route('central.login'), {
+        onFinish: () => {
+            form.reset('password');
+        },
+    });
+};
 </script>
 
 <template>
@@ -13,12 +36,79 @@ import { Head, Link } from '@inertiajs/vue3';
                     <span class="text-2xl font-bold text-indigo-600">Factu365</span>
                 </div>
                 <div class="flex items-center gap-4">
+                    <button
+                        type="button"
+                        class="rounded-md px-4 py-2 text-sm font-semibold text-indigo-600 hover:text-indigo-500"
+                        @click="showLogin = !showLogin"
+                    >
+                        Iniciar sesión
+                    </button>
                     <Link
                         :href="route('register')"
                         class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500"
                     >
                         Crear cuenta gratis
                     </Link>
+                </div>
+            </div>
+
+            <!-- Login dropdown panel -->
+            <div v-if="showLogin" class="border-t border-gray-200 bg-white">
+                <div class="mx-auto max-w-md px-4 py-6 sm:px-6">
+                    <form @submit.prevent="submit" class="space-y-4">
+                        <div>
+                            <InputLabel for="company" value="Empresa" />
+                            <TextInput
+                                id="company"
+                                v-model="form.company"
+                                type="text"
+                                class="mt-1 block w-full"
+                                placeholder="Identificador o nombre de empresa"
+                                required
+                                autofocus
+                            />
+                            <InputError class="mt-2" :message="form.errors.company" />
+                        </div>
+
+                        <div>
+                            <InputLabel for="login-email" value="Email" />
+                            <TextInput
+                                id="login-email"
+                                v-model="form.email"
+                                type="email"
+                                class="mt-1 block w-full"
+                                required
+                            />
+                            <InputError class="mt-2" :message="form.errors.email" />
+                        </div>
+
+                        <div>
+                            <InputLabel for="login-password" value="Contraseña" />
+                            <TextInput
+                                id="login-password"
+                                v-model="form.password"
+                                type="password"
+                                class="mt-1 block w-full"
+                                required
+                            />
+                            <InputError class="mt-2" :message="form.errors.password" />
+                        </div>
+
+                        <div class="flex items-center">
+                            <Checkbox id="remember" v-model:checked="form.remember" />
+                            <label for="remember" class="ms-2 text-sm text-gray-600">
+                                Recordarme
+                            </label>
+                        </div>
+
+                        <PrimaryButton
+                            class="w-full justify-center"
+                            :class="{ 'opacity-25': form.processing }"
+                            :disabled="form.processing"
+                        >
+                            Iniciar sesión
+                        </PrimaryButton>
+                    </form>
                 </div>
             </div>
         </header>
