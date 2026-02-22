@@ -2,7 +2,6 @@
 import { Head, useForm, Link, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import ConfirmDialog from '@/Components/ConfirmDialog.vue';
 
 interface Company {
     id?: number;
@@ -201,23 +200,39 @@ const seedDemoData = () => {
                 Genera datos ficticios para demostración: ~100 clientes, 70 productos,
                 200 documentos (facturas, presupuestos, albaranes) y 100 gastos.
             </p>
-            <button
-                type="button"
-                @click="showDemoConfirm = true"
-                class="inline-flex items-center rounded-md bg-amber-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-amber-500"
-            >
-                Generar datos de prueba
-            </button>
-        </div>
 
-        <ConfirmDialog
-            :show="showDemoConfirm"
-            title="Generar datos de prueba"
-            message="Se crearán ~1.000 registros ficticios (clientes, productos, facturas y gastos). Esta acción no se puede deshacer fácilmente. ¿Continuar?"
-            confirm-label="Generar"
-            :processing="demoProcessing"
-            @confirm="seedDemoData"
-            @cancel="showDemoConfirm = false"
-        />
+            <div v-if="!showDemoConfirm">
+                <button
+                    type="button"
+                    @click="showDemoConfirm = true"
+                    class="inline-flex items-center rounded-md bg-amber-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-amber-500"
+                >
+                    Generar datos de prueba
+                </button>
+            </div>
+            <div v-else class="rounded-md border border-amber-400 bg-amber-100 p-3">
+                <p class="mb-3 text-sm font-medium text-amber-900">
+                    Se crearán ~1.000 registros ficticios. Esta acción no se puede deshacer fácilmente. ¿Continuar?
+                </p>
+                <div class="flex gap-2">
+                    <button
+                        type="button"
+                        @click="seedDemoData"
+                        :disabled="demoProcessing"
+                        class="inline-flex items-center rounded-md bg-amber-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-amber-500 disabled:opacity-50"
+                    >
+                        {{ demoProcessing ? 'Generando...' : 'Confirmar' }}
+                    </button>
+                    <button
+                        type="button"
+                        @click="showDemoConfirm = false"
+                        :disabled="demoProcessing"
+                        class="inline-flex items-center rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:opacity-50"
+                    >
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
     </AppLayout>
 </template>
