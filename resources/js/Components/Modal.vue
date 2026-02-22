@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, onMounted, onUnmounted, ref, watch } from 'vue';
 
 const props = withDefaults(
     defineProps<{
@@ -55,10 +55,17 @@ const closeOnEscape = (e: KeyboardEvent) => {
 
 onMounted(() => document.addEventListener('keydown', closeOnEscape));
 
+// Close the native dialog BEFORE DOM detach — this is critical
+// because dialog.close() on a detached element doesn't clear the top layer
+onBeforeUnmount(() => {
+    if (dialog.value?.open) {
+        dialog.value.close();
+    }
+    document.body.style.overflow = '';
+});
+
 onUnmounted(() => {
     document.removeEventListener('keydown', closeOnEscape);
-
-    dialog.value?.close();
     document.body.style.overflow = '';
 });
 
