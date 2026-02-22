@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
@@ -8,6 +8,7 @@ import Checkbox from '@/Components/Checkbox.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 
 const showLogin = ref(false);
+const appVersion = usePage().props.app_version as string;
 
 const form = useForm({
     company: '',
@@ -155,5 +156,9 @@ const submit = () => {
                 </div>
             </div>
         </main>
+
+        <footer class="border-t border-gray-200 py-6 text-center text-xs text-gray-400">
+            Factu365 v{{ appVersion }}
+        </footer>
     </div>
 </template>

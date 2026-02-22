@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
+
+const appVersion = usePage().props.app_version as string;
 </script>
 
 <template>
@@ -19,5 +21,7 @@ import { Link } from '@inertiajs/vue3';
         >
             <slot />
         </div>
+
+        <p class="mt-6 text-center text-xs text-gray-400">v{{ appVersion }}</p>
     </div>
 </template>

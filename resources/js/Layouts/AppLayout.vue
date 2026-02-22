@@ -23,6 +23,7 @@ const page = usePage();
 const user = page.props.auth?.user;
 const can = (page.props.auth as any)?.can as { manage_settings?: boolean; manage_users?: boolean; create_edit?: boolean } | undefined;
 const overdueCount = computed(() => (page.props.overdue_count as number) || 0);
+const appVersion = page.props.app_version as string;
 
 interface NavItem {
     name: string;
@@ -219,6 +220,9 @@ function itemHref(item: NavItem): string {
                             <span v-if="!collapsed">{{ $t('common.logout') }}</span>
                         </Link>
                     </div>
+
+                    <!-- Version -->
+                    <p class="mt-2 text-center text-xs text-indigo-400/60">v{{ appVersion }}</p>
                 </nav>
             </div>
         </div>
