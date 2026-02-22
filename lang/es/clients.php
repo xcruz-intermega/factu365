@@ -3,7 +3,11 @@
 return [
     // Index
     'title' => 'Clientes',
+    'title_customers' => 'Clientes',
+    'title_suppliers' => 'Proveedores',
+    'title_all' => 'Clientes y Proveedores',
     'new_client' => 'Nuevo cliente',
+    'new_supplier' => 'Nuevo proveedor',
     'search_placeholder' => 'Buscar por nombre, NIF o email...',
     'all_types' => 'Todos los tipos',
     'type_client' => 'Cliente',
@@ -14,6 +18,7 @@ return [
     'filter_both' => 'Ambos',
     'type_client_supplier' => 'Cliente y proveedor',
     'no_clients' => 'No se encontraron clientes.',
+    'no_suppliers' => 'No se encontraron proveedores.',
     'delete_title' => 'Eliminar cliente',
     'delete_message' => '¿Estás seguro de que quieres eliminar a :name? Esta acción se puede deshacer.',
 

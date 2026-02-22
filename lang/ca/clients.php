@@ -3,7 +3,11 @@
 return [
     // Index
     'title' => 'Clients',
+    'title_customers' => 'Clients',
+    'title_suppliers' => 'Proveïdors',
+    'title_all' => 'Clients i Proveïdors',
     'new_client' => 'Nou client',
+    'new_supplier' => 'Nou proveïdor',
     'search_placeholder' => 'Cercar per nom, NIF o email...',
     'all_types' => 'Tots els tipus',
     'type_client' => 'Client',
@@ -14,6 +18,7 @@ return [
     'filter_both' => 'Ambdós',
     'type_client_supplier' => 'Client i proveïdor',
     'no_clients' => 'No s\'han trobat clients.',
+    'no_suppliers' => 'No s\'han trobat proveïdors.',
     'delete_title' => 'Eliminar client',
     'delete_message' => 'Esteu segur que voleu eliminar :name? Aquesta acció es pot desfer.',
 

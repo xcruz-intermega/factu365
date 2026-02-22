@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head, useForm, usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
+import { trans } from 'laravel-vue-i18n';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import ClientForm from './Partials/ClientForm.vue';
 
@@ -7,8 +9,17 @@ const props = defineProps<{
     paymentTemplates: Array<{ id: number; name: string }>;
 }>();
 
+const page = usePage();
+const urlParams = new URLSearchParams(page.url.split('?')[1] || '');
+const initialType = ['customer', 'supplier', 'both'].includes(urlParams.get('type') || '') ? urlParams.get('type')! : 'customer';
+
+const pageTitle = computed(() => {
+    if (initialType === 'supplier') return trans('clients.new_supplier');
+    return trans('clients.new_client');
+});
+
 const form = useForm({
-    type: 'customer',
+    type: initialType,
     legal_name: '',
     trade_name: '',
     nif: '',
@@ -34,11 +45,11 @@ const submit = () => {
 </script>
 
 <template>
-    <Head :title="$t('clients.new_client')" />
+    <Head :title="pageTitle" />
 
     <AppLayout>
         <template #header>
-            <h1 class="text-lg font-semibold text-gray-900">{{ $t('clients.new_client') }}</h1>
+            <h1 class="text-lg font-semibold text-gray-900">{{ pageTitle }}</h1>
         </template>
 
         <ClientForm :form="form" :payment-templates="paymentTemplates" :submit-label="$t('clients.create_client')" @submit="submit" />

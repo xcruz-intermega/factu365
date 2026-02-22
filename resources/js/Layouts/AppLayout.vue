@@ -29,6 +29,7 @@ interface NavItem {
     name: string;
     href: string;
     routeParams?: Record<string, string>;
+    queryParams?: Record<string, string>;
     routeMatch: string;
     icon: string;
     badge?: () => number;
@@ -76,7 +77,8 @@ const sections = computed<NavSection[]>(() => [
     {
         title: trans('nav.management'),
         items: [
-            { name: trans('nav.clients'), href: 'clients.index', routeMatch: 'clients.*', icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z' },
+            { name: trans('nav.clients'), href: 'clients.index', queryParams: { type: 'customer' }, routeMatch: 'clients.*', icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z' },
+            { name: trans('nav.suppliers'), href: 'clients.index', queryParams: { type: 'supplier' }, routeMatch: 'clients.*', icon: 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4' },
             { name: trans('nav.products'), href: 'products.index', routeMatch: 'products.*', icon: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4' },
         ],
     },
@@ -91,17 +93,24 @@ const sections = computed<NavSection[]>(() => [
 
 function isActive(item: NavItem): boolean {
     if (item.routeParams?.type) {
-        const currentUrl = page.url;
-        return currentUrl.includes(`/documents/${item.routeParams.type}`);
+        return page.url.includes(`/documents/${item.routeParams.type}`);
+    }
+    if (item.queryParams) {
+        if (!route().current(item.routeMatch)) return false;
+        return Object.entries(item.queryParams).every(
+            ([k, v]) => page.url.includes(`${k}=${v}`)
+        );
     }
     return route().current(item.routeMatch) ?? false;
 }
 
 function itemHref(item: NavItem): string {
-    if (item.routeParams) {
-        return route(item.href, item.routeParams);
+    const base = item.routeParams ? route(item.href, item.routeParams) : route(item.href);
+    if (item.queryParams) {
+        const qs = new URLSearchParams(item.queryParams).toString();
+        return `${base}?${qs}`;
     }
-    return route(item.href);
+    return base;
 }
 </script>
 
@@ -137,7 +146,7 @@ function itemHref(item: NavItem): string {
                             </p>
                             <div v-else-if="section.title && collapsed" class="mb-1 border-t border-indigo-600"></div>
                             <ul class="flex flex-col gap-y-1">
-                                <li v-for="item in section.items" :key="item.name + (item.routeParams?.type || '')">
+                                <li v-for="item in section.items" :key="item.name + (item.routeParams?.type || '') + (item.queryParams?.type || '')">
                                     <Link
                                         :href="itemHref(item)"
                                         class="group relative flex items-center gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-indigo-200 hover:bg-indigo-600 hover:text-white"

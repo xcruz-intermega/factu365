@@ -3,7 +3,11 @@
 return [
     // Index
     'title' => 'Clients',
+    'title_customers' => 'Customers',
+    'title_suppliers' => 'Suppliers',
+    'title_all' => 'Customers & Suppliers',
     'new_client' => 'New client',
+    'new_supplier' => 'New supplier',
     'search_placeholder' => 'Search by name, tax ID or email...',
     'all_types' => 'All types',
     'type_client' => 'Client',
@@ -14,6 +18,7 @@ return [
     'filter_both' => 'Both',
     'type_client_supplier' => 'Client and supplier',
     'no_clients' => 'No clients found.',
+    'no_suppliers' => 'No suppliers found.',
     'delete_title' => 'Delete client',
     'delete_message' => 'Are you sure you want to delete :name? This action can be undone.',
 

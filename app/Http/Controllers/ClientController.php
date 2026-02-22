@@ -16,7 +16,11 @@ class ClientController extends Controller
     {
         $clients = Client::query()
             ->search($request->input('search'))
-            ->when($request->input('type'), fn ($q, $type) => $q->where('type', $type))
+            ->when($request->input('type'), function ($q, $type) {
+                if ($type === 'customer') return $q->customers();
+                if ($type === 'supplier') return $q->suppliers();
+                return $q->where('type', $type);
+            })
             ->when(
                 $request->input('sort'),
                 fn ($q) => $q->orderBy($request->input('sort'), $request->input('dir', 'asc')),

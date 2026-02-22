@@ -53,6 +53,28 @@ const typeColors: Record<string, 'blue' | 'green' | 'purple'> = {
     both: 'purple',
 };
 
+const pageTitle = computed(() => {
+    if (props.filters.type === 'customer') return trans('clients.title_customers');
+    if (props.filters.type === 'supplier') return trans('clients.title_suppliers');
+    return trans('clients.title_all');
+});
+
+const newButtonLabel = computed(() => {
+    if (props.filters.type === 'supplier') return trans('clients.new_supplier');
+    return trans('clients.new_client');
+});
+
+const newButtonHref = computed(() => {
+    if (props.filters.type === 'customer') return route('clients.create') + '?type=customer';
+    if (props.filters.type === 'supplier') return route('clients.create') + '?type=supplier';
+    return route('clients.create');
+});
+
+const emptyMessage = computed(() => {
+    if (props.filters.type === 'supplier') return trans('clients.no_suppliers');
+    return trans('clients.no_clients');
+});
+
 const applyFilters = () => {
     router.get(route('clients.index'), {
         search: search.value || undefined,
@@ -105,11 +127,11 @@ const executeDelete = () => {
 </script>
 
 <template>
-    <Head :title="$t('clients.title')" />
+    <Head :title="pageTitle" />
 
     <AppLayout>
         <template #header>
-            <h1 class="text-lg font-semibold text-gray-900">{{ $t('clients.title') }}</h1>
+            <h1 class="text-lg font-semibold text-gray-900">{{ pageTitle }}</h1>
         </template>
 
         <!-- Toolbar -->
@@ -134,13 +156,13 @@ const executeDelete = () => {
                 </select>
             </div>
             <Link
-                :href="route('clients.create')"
+                :href="newButtonHref"
                 class="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500"
             >
                 <svg class="-ml-0.5 mr-1.5 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
                 </svg>
-                {{ $t('clients.new_client') }}
+                {{ newButtonLabel }}
             </Link>
         </div>
 
@@ -153,7 +175,7 @@ const executeDelete = () => {
             :sort-dir="sortDir"
             compact
             @sort="handleSort"
-            :empty-message="$t('clients.no_clients')"
+            :empty-message="emptyMessage"
         >
             <template #cell-legal_name="{ row }">
                 <Link

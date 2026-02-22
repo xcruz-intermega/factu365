@@ -19,6 +19,7 @@ return [
     'modelo_390' => 'Modelo 390',
     'management' => 'Gestión',
     'clients' => 'Clientes',
+    'suppliers' => 'Proveedores',
     'products' => 'Productos',
     'settings' => 'Configuración',
     'company' => 'Empresa',
