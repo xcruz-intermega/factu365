@@ -176,4 +176,19 @@ return [
     'flash_template_created' => 'Plantilla de venciment creada.',
     'flash_template_updated' => 'Plantilla actualitzada.',
     'flash_template_deleted' => 'Plantilla eliminada.',
+
+    // VeriFactu
+    'section_verifactu' => 'VeriFactu',
+    'verifactu_description' => 'Configura l\'enviament automàtic de factures a l\'AEAT mitjançant el sistema VeriFactu.',
+    'verifactu_enabled' => 'VeriFactu activat',
+    'verifactu_disabled' => 'VeriFactu desactivat',
+    'verifactu_environment' => 'Entorn',
+    'verifactu_sandbox' => 'Proves (sandbox)',
+    'verifactu_production' => 'Producció',
+    'verifactu_production_locked' => 'L\'entorn de producció no es pot revertir a proves.',
+    'verifactu_confirm_production_title' => 'Activar entorn de producció',
+    'verifactu_confirm_production_message' => 'Atenció! Un cop activat l\'entorn de producció, les factures s\'enviaran directament a l\'AEAT. Aquest canvi és IRREVERSIBLE i no podreu tornar a l\'entorn de proves.',
+    'verifactu_confirm_production_button' => 'Sí, activar producció',
+    'flash_verifactu_updated' => 'Configuració VeriFactu actualitzada.',
+    'error_verifactu_production_irreversible' => 'No es pot revertir de producció a proves.',
 ];

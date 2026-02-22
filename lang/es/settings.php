@@ -176,4 +176,19 @@ return [
     'flash_template_created' => 'Plantilla de vencimiento creada.',
     'flash_template_updated' => 'Plantilla actualizada.',
     'flash_template_deleted' => 'Plantilla eliminada.',
+
+    // VeriFactu
+    'section_verifactu' => 'VeriFactu',
+    'verifactu_description' => 'Configura el envío automático de facturas a la AEAT mediante el sistema VeriFactu.',
+    'verifactu_enabled' => 'VeriFactu activado',
+    'verifactu_disabled' => 'VeriFactu desactivado',
+    'verifactu_environment' => 'Entorno',
+    'verifactu_sandbox' => 'Pruebas (sandbox)',
+    'verifactu_production' => 'Producción',
+    'verifactu_production_locked' => 'El entorno de producción no puede revertirse a pruebas.',
+    'verifactu_confirm_production_title' => 'Activar entorno de producción',
+    'verifactu_confirm_production_message' => '¡Atención! Una vez activado el entorno de producción, las facturas se enviarán directamente a la AEAT. Este cambio es IRREVERSIBLE y no podrás volver al entorno de pruebas.',
+    'verifactu_confirm_production_button' => 'Sí, activar producción',
+    'flash_verifactu_updated' => 'Configuración VeriFactu actualizada.',
+    'error_verifactu_production_irreversible' => 'No se puede revertir de producción a pruebas.',
 ];

@@ -14,9 +14,9 @@ class AeatSoapClient
      *
      * Uses mutual TLS with client certificate for authentication.
      */
-    public function submit(InvoicingRecord $record, string $certPath, string $keyPath): AeatSubmission
+    public function submit(InvoicingRecord $record, string $certPath, string $keyPath, string $environment = 'sandbox'): AeatSubmission
     {
-        $env = config('verifactu.environment', 'sandbox');
+        $env = $environment;
         $endpoints = config("verifactu.endpoints.{$env}");
 
         $isAnulacion = $record->record_type === InvoicingRecord::TYPE_ANULACION;

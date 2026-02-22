@@ -176,4 +176,19 @@ return [
     'flash_template_created' => 'Due date template created.',
     'flash_template_updated' => 'Template updated.',
     'flash_template_deleted' => 'Template deleted.',
+
+    // VeriFactu
+    'section_verifactu' => 'VeriFactu',
+    'verifactu_description' => 'Configure automatic invoice submission to AEAT via the VeriFactu system.',
+    'verifactu_enabled' => 'VeriFactu enabled',
+    'verifactu_disabled' => 'VeriFactu disabled',
+    'verifactu_environment' => 'Environment',
+    'verifactu_sandbox' => 'Testing (sandbox)',
+    'verifactu_production' => 'Production',
+    'verifactu_production_locked' => 'The production environment cannot be reverted to testing.',
+    'verifactu_confirm_production_title' => 'Activate production environment',
+    'verifactu_confirm_production_message' => 'Warning! Once the production environment is activated, invoices will be submitted directly to AEAT. This change is IRREVERSIBLE and you will not be able to switch back to testing.',
+    'verifactu_confirm_production_button' => 'Yes, activate production',
+    'flash_verifactu_updated' => 'VeriFactu settings updated.',
+    'error_verifactu_production_irreversible' => 'Cannot revert from production to testing.',
 ];

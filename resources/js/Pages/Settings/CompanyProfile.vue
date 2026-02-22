@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { Head, useForm, Link, router } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import SettingsNav from './Partials/SettingsNav.vue';
+import ConfirmDialog from '@/Components/ConfirmDialog.vue';
 
 interface Company {
     id?: number;
@@ -20,6 +21,8 @@ interface Company {
     tax_regime: string | null;
     irpf_rate: string | null;
     logo_path: string | null;
+    verifactu_enabled: boolean;
+    verifactu_environment: string;
 }
 
 const props = defineProps<{
@@ -56,6 +59,38 @@ const submit = () => {
     form.post(route('settings.company.update'), {
         forceFormData: true,
     });
+};
+
+// VeriFactu settings (separate form)
+const verifactuForm = useForm({
+    verifactu_enabled: c?.verifactu_enabled ?? false,
+    verifactu_environment: c?.verifactu_environment ?? 'sandbox',
+});
+
+const isProductionLocked = computed(() => c?.verifactu_environment === 'production');
+const showProductionConfirm = ref(false);
+const pendingEnvironment = ref('sandbox');
+
+const onEnvironmentChange = (value: string) => {
+    if (value === 'production') {
+        pendingEnvironment.value = 'production';
+        showProductionConfirm.value = true;
+        // Revert select until confirmed
+        verifactuForm.verifactu_environment = 'sandbox';
+    }
+};
+
+const confirmProduction = () => {
+    verifactuForm.verifactu_environment = 'production';
+    showProductionConfirm.value = false;
+};
+
+const cancelProduction = () => {
+    showProductionConfirm.value = false;
+};
+
+const submitVerifactu = () => {
+    verifactuForm.patch(route('settings.company.verifactu.update'));
 };
 
 const showDemoConfirm = ref(false);
@@ -186,6 +221,82 @@ const seedDemoData = () => {
                 </button>
             </div>
         </form>
+
+        <!-- VeriFactu -->
+        <div class="mt-6 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+            <h3 class="mb-1 text-sm font-semibold text-gray-900">{{ $t('settings.section_verifactu') }}</h3>
+            <p class="mb-4 text-sm text-gray-500">{{ $t('settings.verifactu_description') }}</p>
+
+            <form @submit.prevent="submitVerifactu" class="space-y-4">
+                <!-- Toggle -->
+                <div class="flex items-center gap-3">
+                    <button
+                        type="button"
+                        role="switch"
+                        :aria-checked="verifactuForm.verifactu_enabled"
+                        @click="verifactuForm.verifactu_enabled = !verifactuForm.verifactu_enabled"
+                        class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2"
+                        :class="verifactuForm.verifactu_enabled ? 'bg-indigo-600' : 'bg-gray-200'"
+                    >
+                        <span
+                            class="pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                            :class="verifactuForm.verifactu_enabled ? 'translate-x-5' : 'translate-x-0'"
+                        />
+                    </button>
+                    <span class="text-sm font-medium text-gray-700">
+                        {{ verifactuForm.verifactu_enabled ? $t('settings.verifactu_enabled') : $t('settings.verifactu_disabled') }}
+                    </span>
+                </div>
+
+                <!-- Environment selector (only visible if enabled) -->
+                <div v-if="verifactuForm.verifactu_enabled" class="max-w-xs">
+                    <label class="block text-sm font-medium text-gray-700">{{ $t('settings.verifactu_environment') }}</label>
+
+                    <!-- Locked production badge -->
+                    <div v-if="isProductionLocked" class="mt-1 flex items-center gap-2">
+                        <span class="inline-flex items-center gap-1.5 rounded-md bg-red-50 px-3 py-1.5 text-sm font-medium text-red-700 ring-1 ring-inset ring-red-600/20">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                            </svg>
+                            {{ $t('settings.verifactu_production') }}
+                        </span>
+                        <span class="text-xs text-gray-500">{{ $t('settings.verifactu_production_locked') }}</span>
+                    </div>
+
+                    <!-- Editable selector -->
+                    <select
+                        v-else
+                        v-model="verifactuForm.verifactu_environment"
+                        @change="onEnvironmentChange(($event.target as HTMLSelectElement).value)"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    >
+                        <option value="sandbox">{{ $t('settings.verifactu_sandbox') }}</option>
+                        <option value="production">{{ $t('settings.verifactu_production') }}</option>
+                    </select>
+                </div>
+
+                <!-- Save button -->
+                <div class="flex justify-end">
+                    <button
+                        type="submit"
+                        :disabled="verifactuForm.processing"
+                        class="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 disabled:opacity-50"
+                    >
+                        {{ verifactuForm.processing ? $t('common.saving') : $t('common.save_changes') }}
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Confirm production dialog -->
+        <ConfirmDialog
+            :show="showProductionConfirm"
+            :title="$t('settings.verifactu_confirm_production_title')"
+            :message="$t('settings.verifactu_confirm_production_message')"
+            :confirm-label="$t('settings.verifactu_confirm_production_button')"
+            @confirm="confirmProduction"
+            @cancel="cancelProduction"
+        />
 
         <!-- Demo Data -->
         <div class="mt-6 rounded-lg border border-amber-300 bg-amber-50 p-4 shadow-sm">

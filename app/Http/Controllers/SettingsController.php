@@ -209,6 +209,31 @@ class SettingsController extends Controller
         return back()->with('success', __('settings.flash_pdf_default', ['name' => $template->name]));
     }
 
+    // ─── VeriFactu Settings ───
+
+    public function updateVerifactu(Request $request)
+    {
+        $validated = $request->validate([
+            'verifactu_enabled' => ['required', 'boolean'],
+            'verifactu_environment' => ['required', 'string', 'in:sandbox,production'],
+        ]);
+
+        $company = CompanyProfile::first();
+
+        // Guard: once in production, cannot revert to sandbox
+        if ($company && $company->verifactu_environment === 'production' && $validated['verifactu_environment'] === 'sandbox') {
+            return back()->with('error', __('settings.error_verifactu_production_irreversible'));
+        }
+
+        if ($company) {
+            $company->update($validated);
+        } else {
+            CompanyProfile::create($validated);
+        }
+
+        return back()->with('success', __('settings.flash_verifactu_updated'));
+    }
+
     // ─── Demo Data ───
 
     public function seedDemoData(): \Illuminate\Http\RedirectResponse

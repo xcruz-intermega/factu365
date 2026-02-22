@@ -36,6 +36,10 @@ class ProcessInvoiceFinalized
                 return;
             }
 
+            if (! $company->verifactu_enabled) {
+                return;
+            }
+
             // 1. Generate hash chain record
             $record = $this->hashChainService->generateRecord($document);
 
@@ -44,7 +48,7 @@ class ProcessInvoiceFinalized
             $record->update(['xml_content' => $xml]);
 
             // 3. Generate QR code
-            $qrUrl = $this->qrCodeService->buildValidationUrl($document, $company->nif);
+            $qrUrl = $this->qrCodeService->buildValidationUrl($document, $company->nif, $company->verifactu_environment);
             $document->update([
                 'qr_code_url' => $qrUrl,
                 'verifactu_status' => 'pending',

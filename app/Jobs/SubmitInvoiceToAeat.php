@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\CompanyProfile;
 use App\Models\InvoicingRecord;
 use App\Services\VeriFactu\AeatSoapClient;
 use App\Services\VeriFactu\CertificateManager;
@@ -71,7 +72,9 @@ class SubmitInvoiceToAeat implements ShouldQueue
             $record->update(['submission_status' => InvoicingRecord::STATUS_SUBMITTED]);
 
             // Submit to AEAT
-            $submission = $soapClient->submit($record, $pemPaths['cert_path'], $pemPaths['key_path']);
+            $company = CompanyProfile::first();
+            $environment = $company?->verifactu_environment ?? config('verifactu.environment', 'sandbox');
+            $submission = $soapClient->submit($record, $pemPaths['cert_path'], $pemPaths['key_path'], $environment);
 
             // Update document verifactu_status
             $document = $record->document;

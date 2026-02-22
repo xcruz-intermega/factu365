@@ -25,12 +25,15 @@ class CompanyProfile extends Model
         'software_name',
         'software_version',
         'software_nif',
+        'verifactu_enabled',
+        'verifactu_environment',
     ];
 
     protected function casts(): array
     {
         return [
             'irpf_rate' => 'decimal:2',
+            'verifactu_enabled' => 'boolean',
         ];
     }
 }

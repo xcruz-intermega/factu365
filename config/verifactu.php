@@ -24,12 +24,14 @@ return [
             'registro' => '/wlpl/TIKE-CONT/ws/SistemaFacturacion/RegistroFacturacion',
             'anulacion' => '/wlpl/TIKE-CONT/ws/SistemaFacturacion/AnulacionFacturacion',
             'consulta' => '/wlpl/TIKE-CONT/ws/SistemaFacturacion/ConsultaFacturacion',
+            'qr_validation_url' => 'https://prewww2.aeat.es/wlpl/TIKE-CONT/ValidarQR',
         ],
         'production' => [
             'base_url' => 'https://www2.agenciatributaria.gob.es',
             'registro' => '/wlpl/TIKE-CONT/ws/SistemaFacturacion/RegistroFacturacion',
             'anulacion' => '/wlpl/TIKE-CONT/ws/SistemaFacturacion/AnulacionFacturacion',
             'consulta' => '/wlpl/TIKE-CONT/ws/SistemaFacturacion/ConsultaFacturacion',
+            'qr_validation_url' => 'https://www2.agenciatributaria.gob.es/wlpl/TIKE-CONT/ValidarQR',
         ],
     ],
 
