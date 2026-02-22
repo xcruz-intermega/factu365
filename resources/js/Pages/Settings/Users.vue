@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import { Head, useForm, Link, router, usePage } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
+import SettingsNav from './Partials/SettingsNav.vue';
 import ConfirmDialog from '@/Components/ConfirmDialog.vue';
 
 interface User {
@@ -128,14 +129,7 @@ const availableRoles = (user?: User) => {
             <h1 class="text-lg font-semibold text-gray-900">Usuarios</h1>
         </template>
 
-        <!-- Settings nav -->
-        <div class="mb-6 flex gap-2 border-b border-gray-200 pb-3">
-            <Link :href="route('settings.company')" class="rounded-md px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50">Empresa</Link>
-            <Link :href="route('settings.series')" class="rounded-md px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50">Series</Link>
-            <Link :href="route('settings.certificates')" class="rounded-md px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50">Certificados</Link>
-            <Link :href="route('settings.pdf-templates')" class="rounded-md px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50">Plantillas PDF</Link>
-            <Link :href="route('settings.users')" class="rounded-md bg-indigo-50 px-3 py-1.5 text-sm font-medium text-indigo-700">Usuarios</Link>
-        </div>
+        <SettingsNav current="users" />
 
         <!-- Add user button -->
         <div class="mb-4 flex justify-end">

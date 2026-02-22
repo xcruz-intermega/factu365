@@ -10,6 +10,8 @@ use App\Http\Controllers\GlobalSearchController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\PaymentTemplateController;
+use App\Http\Controllers\ProductFamilyController;
 use App\Http\Controllers\SettingsController;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyByPath;
@@ -36,9 +38,14 @@ Route::prefix('/{tenant}')->middleware([
 
         // Clients
         Route::resource('clients', ClientController::class)->except(['show']);
+        Route::post('/clients/{client}/discounts', [ClientController::class, 'storeDiscount'])->name('clients.discounts.store');
+        Route::put('/clients/{client}/discounts/{discount}', [ClientController::class, 'updateDiscount'])->name('clients.discounts.update');
+        Route::delete('/clients/{client}/discounts/{discount}', [ClientController::class, 'destroyDiscount'])->name('clients.discounts.destroy');
 
         // Products
         Route::resource('products', ProductController::class)->except(['show']);
+        Route::post('/products/{product}/components', [ProductController::class, 'storeComponent'])->name('products.components.store');
+        Route::delete('/products/{product}/components/{component}', [ProductController::class, 'destroyComponent'])->name('products.components.destroy');
 
         // Documents (type-prefixed routes)
         Route::prefix('documents/{type}')->name('documents.')->group(function () {
@@ -54,6 +61,7 @@ Route::prefix('/{tenant}')->middleware([
             Route::get('/{document}/pdf', [DocumentController::class, 'downloadPdf'])->name('download-pdf');
             Route::get('/{document}/pdf/preview', [DocumentController::class, 'previewPdf'])->name('preview-pdf');
             Route::post('/{document}/send-email', [DocumentController::class, 'sendEmail'])->name('send-email');
+            Route::post('/{document}/due-dates/{dueDate}/toggle-paid', [DocumentController::class, 'markDueDatePaid'])->name('due-date.toggle-paid');
         });
         Route::post('/documents/{document}/rectificative', [DocumentController::class, 'createRectificative'])->name('documents.rectificative');
 
@@ -92,6 +100,16 @@ Route::prefix('/{tenant}')->middleware([
                 Route::post('/pdf-templates/{template}/default', [SettingsController::class, 'setDefaultTemplate'])->name('pdf-templates.default');
 
                 Route::post('/demo-data', [SettingsController::class, 'seedDemoData'])->name('demo-data');
+
+                Route::get('/product-families', [ProductFamilyController::class, 'index'])->name('product-families');
+                Route::post('/product-families', [ProductFamilyController::class, 'store'])->name('product-families.store');
+                Route::put('/product-families/{family}', [ProductFamilyController::class, 'update'])->name('product-families.update');
+                Route::delete('/product-families/{family}', [ProductFamilyController::class, 'destroy'])->name('product-families.destroy');
+
+                Route::get('/payment-templates', [PaymentTemplateController::class, 'index'])->name('payment-templates');
+                Route::post('/payment-templates', [PaymentTemplateController::class, 'store'])->name('payment-templates.store');
+                Route::put('/payment-templates/{template}', [PaymentTemplateController::class, 'update'])->name('payment-templates.update');
+                Route::delete('/payment-templates/{template}', [PaymentTemplateController::class, 'destroy'])->name('payment-templates.destroy');
 
                 Route::get('/users', [\App\Http\Controllers\UserController::class, 'index'])->name('users');
                 Route::post('/users', [\App\Http\Controllers\UserController::class, 'store'])->name('users.store');

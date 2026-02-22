@@ -1,8 +1,25 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { calculateLine, getSurchargeRate, type LineInput, type CalculatedLine } from '@/composables/useTaxCalculator';
+import { resolveClientDiscount, type ClientDiscountData } from '@/composables/useClientDiscountResolver';
 import SearchSelect from '@/Components/SearchSelect.vue';
 import type { SearchSelectOption } from '@/Components/SearchSelect.vue';
+
+interface ProductComponent {
+    id: number;
+    component_product_id: number;
+    quantity: string;
+    component: {
+        id: number;
+        name: string;
+        reference: string;
+        unit_price: number;
+        vat_rate: number;
+        exemption_code: string | null;
+        irpf_applicable: boolean;
+        unit: string | null;
+    };
+}
 
 interface Product {
     id: number;
@@ -13,12 +30,16 @@ interface Product {
     exemption_code: string | null;
     irpf_applicable: boolean;
     unit: string | null;
+    type: string;
+    product_family_id: number | null;
+    components?: ProductComponent[];
 }
 
 const props = defineProps<{
     lines: LineInput[];
     products: Product[];
     errors: Record<string, string>;
+    clientDiscounts?: ClientDiscountData[];
 }>();
 
 const emit = defineEmits<{
@@ -70,6 +91,18 @@ const applyProduct = (index: number, productId: number | null) => {
     const product = props.products.find(p => p.id === productId);
     if (!product) return;
 
+    // Resolve client discount for this product
+    let discountPercent = 0;
+    if (props.clientDiscounts && props.clientDiscounts.length > 0) {
+        const lineAmount = Number(product.unit_price) * (props.lines[index]?.quantity || 1);
+        const resolved = resolveClientDiscount(
+            props.clientDiscounts,
+            { id: product.id, type: product.type, product_family_id: product.product_family_id ?? null },
+            lineAmount,
+        );
+        if (resolved !== null) discountPercent = resolved;
+    }
+
     const newLines = [...props.lines];
     newLines[index] = {
         ...newLines[index],
@@ -81,6 +114,7 @@ const applyProduct = (index: number, productId: number | null) => {
         irpf_rate: product.irpf_applicable ? 15 : 0,
         surcharge_rate: 0,
         unit: product.unit || '',
+        discount_percent: discountPercent,
     };
     emit('update:lines', newLines);
 };
@@ -113,6 +147,61 @@ const productOptions = computed<SearchSelectOption[]>(() =>
     }))
 );
 
+const isComposite = (line: LineInput): boolean => {
+    if (!line.product_id) return false;
+    const product = props.products.find(p => p.id === line.product_id);
+    return !!(product?.components && product.components.length > 0);
+};
+
+const componentCount = (line: LineInput): number => {
+    if (!line.product_id) return 0;
+    const product = props.products.find(p => p.id === line.product_id);
+    return product?.components?.length ?? 0;
+};
+
+const expandComponents = (index: number) => {
+    const line = props.lines[index];
+    if (!line.product_id) return;
+
+    const product = props.products.find(p => p.id === line.product_id);
+    if (!product?.components || product.components.length === 0) return;
+
+    const parentQty = line.quantity;
+    const newLines = [...props.lines];
+
+    // Build expanded lines from components
+    const expandedLines: LineInput[] = product.components.map(comp => ({
+        product_id: comp.component.id,
+        concept: comp.component.name,
+        description: '',
+        quantity: Number((parentQty * Number(comp.quantity)).toFixed(4)),
+        unit_price: Number(comp.component.unit_price),
+        unit: comp.component.unit || '',
+        discount_percent: line.discount_percent,
+        vat_rate: Number(comp.component.vat_rate),
+        exemption_code: comp.component.exemption_code || '',
+        irpf_rate: comp.component.irpf_applicable ? 15 : 0,
+        surcharge_rate: 0,
+    }));
+
+    // Replace the composite line with expanded lines
+    newLines.splice(index, 1, ...expandedLines);
+    emit('update:lines', newLines);
+};
+
+const hasClientDiscount = (line: LineInput): boolean => {
+    if (!line.product_id || !props.clientDiscounts || props.clientDiscounts.length === 0) return false;
+    if (line.discount_percent === 0) return false;
+    const product = props.products.find(p => p.id === line.product_id);
+    if (!product) return false;
+    const resolved = resolveClientDiscount(
+        props.clientDiscounts,
+        { id: product.id, type: product.type, product_family_id: product.product_family_id ?? null },
+        Number(line.unit_price) * line.quantity,
+    );
+    return resolved !== null && resolved === line.discount_percent;
+};
+
 const lineError = (index: number, field: string): string | undefined => {
     return props.errors[`lines.${index}.${field}`];
 };
@@ -141,10 +230,13 @@ const lineError = (index: number, field: string): string | undefined => {
 
         <div v-for="(line, index) in lines" :key="index" class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
             <div class="flex items-start justify-between gap-4">
-                <!-- Line number & remove -->
-                <div class="flex items-center gap-2 pt-1">
+                <!-- Line number & composite badge -->
+                <div class="flex flex-col items-center gap-1 pt-1">
                     <span class="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-100 text-xs font-bold text-indigo-700">
                         {{ index + 1 }}
+                    </span>
+                    <span v-if="isComposite(line)" class="inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-medium text-amber-800">
+                        {{ componentCount(line) }} comp.
                     </span>
                 </div>
 
@@ -175,6 +267,21 @@ const lineError = (index: number, field: string): string | undefined => {
                             />
                             <p v-if="lineError(index, 'concept')" class="mt-1 text-xs text-red-600">{{ lineError(index, 'concept') }}</p>
                         </div>
+                    </div>
+
+                    <!-- Expand components button for composite products -->
+                    <div v-if="isComposite(line)" class="flex items-center">
+                        <button
+                            type="button"
+                            @click="expandComponents(index)"
+                            class="inline-flex items-center gap-1 rounded-md bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-700 hover:bg-amber-100"
+                        >
+                            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                            </svg>
+                            Expandir componentes ({{ componentCount(line) }})
+                        </button>
+                        <span class="ml-2 text-xs text-gray-400">Reemplaza esta línea por sus componentes individuales</span>
                     </div>
 
                     <!-- Row 2: Quantity, Unit Price, Unit, Discount -->
@@ -214,7 +321,12 @@ const lineError = (index: number, field: string): string | undefined => {
                             />
                         </div>
                         <div class="sm:col-span-2">
-                            <label class="block text-xs font-medium text-gray-600">Dto. %</label>
+                            <label class="flex items-center gap-1 text-xs font-medium text-gray-600">
+                                Dto. %
+                                <span v-if="hasClientDiscount(line)" class="inline-flex items-center rounded-full bg-green-100 px-1.5 py-0.5 text-[9px] font-medium text-green-700" title="Descuento automático del cliente">
+                                    Dto. cliente
+                                </span>
+                            </label>
                             <input
                                 type="number"
                                 :value="line.discount_percent"

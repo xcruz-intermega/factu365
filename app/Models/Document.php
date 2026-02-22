@@ -26,6 +26,12 @@ class Document extends Model
     public const STATUS_OVERDUE = 'overdue';
     public const STATUS_CANCELLED = 'cancelled';
 
+    // Non-fiscal statuses (quotes / delivery notes)
+    public const STATUS_CREATED = 'created';
+    public const STATUS_ACCEPTED = 'accepted';
+    public const STATUS_REJECTED = 'rejected';
+    public const STATUS_CONVERTED = 'converted';
+
     // Received statuses
     public const STATUS_REGISTERED = 'registered';
 
@@ -47,6 +53,7 @@ class Document extends Model
         'direction',
         'series_id',
         'number',
+        'title',
         'status',
         'client_id',
         'parent_document_id',
@@ -120,6 +127,11 @@ class Document extends Model
     public function childDocuments(): HasMany
     {
         return $this->hasMany(self::class, 'parent_document_id');
+    }
+
+    public function dueDates(): HasMany
+    {
+        return $this->hasMany(DocumentDueDate::class)->orderBy('sort_order');
     }
 
     public function invoicingRecords(): HasMany
@@ -196,20 +208,62 @@ class Document extends Model
         return $this->document_type === self::TYPE_RECTIFICATIVE;
     }
 
+    public function isNonFiscalType(): bool
+    {
+        return in_array($this->document_type, [self::TYPE_QUOTE, self::TYPE_DELIVERY_NOTE]);
+    }
+
     public function canBeEdited(): bool
     {
+        if ($this->isNonFiscalType()) {
+            return ! in_array($this->status, [self::STATUS_CONVERTED, self::STATUS_CANCELLED]);
+        }
+
         return $this->isDraft();
     }
 
     public function canBeFinalized(): bool
     {
+        if ($this->isNonFiscalType()) {
+            return false;
+        }
+
         return $this->isDraft() && $this->lines()->count() > 0 && $this->client_id !== null;
     }
 
     public function canBeConverted(): bool
     {
-        return in_array($this->document_type, [self::TYPE_QUOTE, self::TYPE_DELIVERY_NOTE])
-            && $this->isFinalized();
+        if ($this->document_type === self::TYPE_QUOTE) {
+            return in_array($this->status, [self::STATUS_CREATED, self::STATUS_SENT, self::STATUS_ACCEPTED]);
+        }
+
+        if ($this->document_type === self::TYPE_DELIVERY_NOTE) {
+            return in_array($this->status, [self::STATUS_CREATED, self::STATUS_SENT]);
+        }
+
+        return false;
+    }
+
+    public function canBeDeleted(): bool
+    {
+        if ($this->isNonFiscalType()) {
+            return in_array($this->status, [self::STATUS_CREATED, self::STATUS_DRAFT]);
+        }
+
+        return $this->isDraft();
+    }
+
+    public function conversionTargets(): array
+    {
+        if ($this->document_type === self::TYPE_QUOTE) {
+            return [self::TYPE_DELIVERY_NOTE, self::TYPE_INVOICE];
+        }
+
+        if ($this->document_type === self::TYPE_DELIVERY_NOTE) {
+            return [self::TYPE_INVOICE];
+        }
+
+        return [];
     }
 
     public static function documentTypeLabel(string $type): string
@@ -237,6 +291,10 @@ class Document extends Model
             self::STATUS_OVERDUE => 'Vencida',
             self::STATUS_CANCELLED => 'Anulada',
             self::STATUS_REGISTERED => 'Registrada',
+            self::STATUS_CREATED => 'Creado',
+            self::STATUS_ACCEPTED => 'Aceptado',
+            self::STATUS_REJECTED => 'Rechazado',
+            self::STATUS_CONVERTED => 'Convertido',
             default => $status,
         };
     }

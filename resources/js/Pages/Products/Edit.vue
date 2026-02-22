@@ -3,10 +3,26 @@ import { Head, useForm } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import ProductForm from './Partials/ProductForm.vue';
 
+interface ComponentProduct {
+    id: number;
+    name: string;
+    reference: string;
+    unit_price: number;
+}
+
+interface ProductComponentData {
+    id: number;
+    parent_product_id: number;
+    component_product_id: number;
+    quantity: string;
+    component: ComponentProduct;
+}
+
 const props = defineProps<{
     product: {
         id: number;
         type: string;
+        product_family_id: number | null;
         reference: string;
         name: string;
         description: string;
@@ -15,11 +31,15 @@ const props = defineProps<{
         exemption_code: string;
         irpf_applicable: boolean;
         unit: string;
+        components: ProductComponentData[];
     };
+    families: Array<{ id: number; name: string; parent_id: number | null }>;
+    allProducts: Array<{ id: number; name: string; reference: string; unit_price: number }>;
 }>();
 
 const form = useForm({
     type: props.product.type || 'product',
+    product_family_id: props.product.product_family_id ?? null,
     reference: props.product.reference || '',
     name: props.product.name || '',
     description: props.product.description || '',
@@ -43,6 +63,14 @@ const submit = () => {
             <h1 class="text-lg font-semibold text-gray-900">Editar: {{ product.name }}</h1>
         </template>
 
-        <ProductForm :form="form" submit-label="Guardar cambios" @submit="submit" />
+        <ProductForm
+            :form="form"
+            :families="families"
+            :product-id="product.id"
+            :components="product.components"
+            :all-products="allProducts"
+            submit-label="Guardar cambios"
+            @submit="submit"
+        />
     </AppLayout>
 </template>

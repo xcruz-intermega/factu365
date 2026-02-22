@@ -15,8 +15,11 @@ interface Props {
     products: any[];
     series: any[];
     canFinalize: boolean;
+    canEdit: boolean;
     canConvert: boolean;
+    conversionTargets: string[];
     nextConversionType: string | null;
+    paymentTemplates: any[];
 }
 
 const props = defineProps<Props>();
@@ -26,6 +29,7 @@ const doc = props.document;
 const form = useForm({
     document_type: doc.document_type,
     invoice_type: doc.invoice_type,
+    title: doc.title || '',
     client_id: doc.client_id,
     series_id: doc.series_id,
     issue_date: doc.issue_date?.split('T')[0] ?? '',
@@ -37,6 +41,11 @@ const form = useForm({
     footer_text: doc.footer_text || '',
     corrected_document_id: doc.corrected_document_id,
     rectificative_type: doc.rectificative_type,
+    due_dates: (doc.due_dates || []).map((dd: any) => ({
+        due_date: dd.due_date?.split('T')[0] ?? '',
+        amount: Number(dd.amount),
+        percentage: Number(dd.percentage),
+    })),
     lines: (doc.lines || []).map((l: any): LineInput => ({
         product_id: l.product_id,
         concept: l.concept,
@@ -73,12 +82,16 @@ const doFinalize = () => {
 // Convert
 const converting = ref(false);
 
-const doConvert = () => {
+const doConvert = (targetType?: string) => {
     converting.value = true;
-    router.post(route('documents.convert', { type: props.documentType, document: doc.id }), {}, {
+    router.post(route('documents.convert', { type: props.documentType, document: doc.id }), {
+        target_type: targetType || undefined,
+    }, {
         onFinish: () => { converting.value = false; },
     });
 };
+
+const isNonFiscal = ['quote', 'delivery_note'].includes(props.documentType);
 
 // Rectificative
 const creatingRect = ref(false);
@@ -145,6 +158,10 @@ const statusColors: Record<string, 'gray' | 'green' | 'blue' | 'yellow' | 'red' 
     overdue: 'red',
     cancelled: 'red',
     registered: 'blue',
+    created: 'blue',
+    accepted: 'green',
+    rejected: 'red',
+    converted: 'purple',
 };
 
 const statusLabels: Record<string, string> = {
@@ -156,6 +173,10 @@ const statusLabels: Record<string, string> = {
     overdue: 'Vencida',
     cancelled: 'Anulada',
     registered: 'Registrada',
+    created: 'Creado',
+    accepted: 'Aceptado',
+    rejected: 'Rechazado',
+    converted: 'Convertido',
 };
 
 const conversionLabels: Record<string, string> = {
@@ -194,41 +215,63 @@ const formatCurrency = (val: number | string) => {
             </div>
         </template>
 
-        <!-- Action bar (when finalized) -->
-        <div v-if="!doc.isDraft && doc.status !== 'draft'" class="mb-6 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+        <!-- Action bar -->
+        <div v-if="!canEdit || isNonFiscal" class="mb-6 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
             <div class="flex flex-wrap items-center gap-3">
                 <span class="text-sm font-medium text-gray-700">Acciones:</span>
 
-                <!-- Status changes -->
-                <template v-if="doc.status === 'finalized'">
-                    <button @click="updateStatus('sent')" class="rounded-md bg-indigo-50 px-3 py-1.5 text-sm font-medium text-indigo-700 hover:bg-indigo-100">
-                        Marcar enviada
-                    </button>
-                    <button @click="updateStatus('paid')" class="rounded-md bg-green-50 px-3 py-1.5 text-sm font-medium text-green-700 hover:bg-green-100">
-                        Marcar pagada
-                    </button>
-                </template>
-                <template v-if="doc.status === 'sent'">
-                    <button @click="updateStatus('paid')" class="rounded-md bg-green-50 px-3 py-1.5 text-sm font-medium text-green-700 hover:bg-green-100">
-                        Marcar pagada
-                    </button>
-                    <button @click="updateStatus('partial')" class="rounded-md bg-yellow-50 px-3 py-1.5 text-sm font-medium text-yellow-700 hover:bg-yellow-100">
-                        Pago parcial
-                    </button>
-                    <button @click="updateStatus('overdue')" class="rounded-md bg-red-50 px-3 py-1.5 text-sm font-medium text-red-700 hover:bg-red-100">
-                        Marcar vencida
-                    </button>
+                <!-- Non-fiscal status changes (quotes) -->
+                <template v-if="isNonFiscal">
+                    <template v-if="doc.status === 'created'">
+                        <button @click="updateStatus('sent')" class="rounded-md bg-indigo-50 px-3 py-1.5 text-sm font-medium text-indigo-700 hover:bg-indigo-100">
+                            Marcar enviado
+                        </button>
+                    </template>
+                    <template v-if="documentType === 'quote' && ['created', 'sent'].includes(doc.status)">
+                        <button @click="updateStatus('accepted')" class="rounded-md bg-green-50 px-3 py-1.5 text-sm font-medium text-green-700 hover:bg-green-100">
+                            Aceptar
+                        </button>
+                        <button @click="updateStatus('rejected')" class="rounded-md bg-red-50 px-3 py-1.5 text-sm font-medium text-red-700 hover:bg-red-100">
+                            Rechazar
+                        </button>
+                    </template>
                 </template>
 
-                <!-- Convert -->
-                <button
-                    v-if="canConvert && nextConversionType"
-                    @click="doConvert"
-                    :disabled="converting"
-                    class="rounded-md bg-purple-50 px-3 py-1.5 text-sm font-medium text-purple-700 hover:bg-purple-100 disabled:opacity-50"
-                >
-                    Convertir a {{ conversionLabels[nextConversionType] || nextConversionType }}
-                </button>
+                <!-- Fiscal status changes -->
+                <template v-if="!isNonFiscal">
+                    <template v-if="doc.status === 'finalized'">
+                        <button @click="updateStatus('sent')" class="rounded-md bg-indigo-50 px-3 py-1.5 text-sm font-medium text-indigo-700 hover:bg-indigo-100">
+                            Marcar enviada
+                        </button>
+                        <button @click="updateStatus('paid')" class="rounded-md bg-green-50 px-3 py-1.5 text-sm font-medium text-green-700 hover:bg-green-100">
+                            Marcar pagada
+                        </button>
+                    </template>
+                    <template v-if="doc.status === 'sent'">
+                        <button @click="updateStatus('paid')" class="rounded-md bg-green-50 px-3 py-1.5 text-sm font-medium text-green-700 hover:bg-green-100">
+                            Marcar pagada
+                        </button>
+                        <button @click="updateStatus('partial')" class="rounded-md bg-yellow-50 px-3 py-1.5 text-sm font-medium text-yellow-700 hover:bg-yellow-100">
+                            Pago parcial
+                        </button>
+                        <button @click="updateStatus('overdue')" class="rounded-md bg-red-50 px-3 py-1.5 text-sm font-medium text-red-700 hover:bg-red-100">
+                            Marcar vencida
+                        </button>
+                    </template>
+                </template>
+
+                <!-- Convert (with target type options) -->
+                <template v-if="canConvert && conversionTargets.length > 0">
+                    <button
+                        v-for="target in conversionTargets"
+                        :key="target"
+                        @click="doConvert(target)"
+                        :disabled="converting"
+                        class="rounded-md bg-purple-50 px-3 py-1.5 text-sm font-medium text-purple-700 hover:bg-purple-100 disabled:opacity-50"
+                    >
+                        Convertir a {{ conversionLabels[target] || target }}
+                    </button>
+                </template>
 
                 <!-- Create rectificative -->
                 <button
@@ -242,7 +285,7 @@ const formatCurrency = (val: number | string) => {
 
                 <!-- Cancel -->
                 <button
-                    v-if="!['draft', 'cancelled', 'paid'].includes(doc.status)"
+                    v-if="!['draft', 'cancelled', 'paid', 'converted', 'rejected'].includes(doc.status)"
                     @click="updateStatus('cancelled')"
                     class="rounded-md bg-red-50 px-3 py-1.5 text-sm font-medium text-red-700 hover:bg-red-100"
                 >
@@ -274,8 +317,8 @@ const formatCurrency = (val: number | string) => {
             </div>
         </div>
 
-        <!-- Draft: editable form -->
-        <template v-if="doc.status === 'draft'">
+        <!-- Editable form (drafts + non-fiscal editable) -->
+        <template v-if="canEdit">
             <DocumentForm
                 :form="form"
                 :document-type="documentType"
@@ -283,11 +326,12 @@ const formatCurrency = (val: number | string) => {
                 :clients="clients"
                 :products="products"
                 :series="series"
+                :payment-templates="paymentTemplates"
                 :is-edit="true"
                 @submit="submit"
             />
 
-            <!-- Finalize button -->
+            <!-- Finalize button (only for fiscal types) -->
             <div v-if="canFinalize" class="mt-4 flex justify-end">
                 <button
                     type="button"
@@ -302,7 +346,7 @@ const formatCurrency = (val: number | string) => {
             </div>
         </template>
 
-        <!-- Finalized: read-only summary -->
+        <!-- Read-only summary -->
         <template v-else>
             <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
                 <div class="grid grid-cols-1 gap-6 sm:grid-cols-3">
@@ -354,6 +398,43 @@ const formatCurrency = (val: number | string) => {
                         <div v-if="Number(doc.total_surcharge) > 0" class="flex justify-between"><span>R.E.</span><span>{{ formatCurrency(doc.total_surcharge) }}</span></div>
                         <div class="flex justify-between border-t pt-1 text-lg font-bold"><span>Total</span><span class="text-indigo-700">{{ formatCurrency(doc.total) }}</span></div>
                     </div>
+                </div>
+
+                <!-- Due dates -->
+                <div v-if="doc.due_dates && doc.due_dates.length > 0" class="mt-6">
+                    <h4 class="mb-2 text-sm font-semibold text-gray-900">Vencimientos</h4>
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">Fecha</th>
+                                <th class="px-4 py-2 text-right text-xs font-medium uppercase text-gray-500">%</th>
+                                <th class="px-4 py-2 text-right text-xs font-medium uppercase text-gray-500">Importe</th>
+                                <th class="px-4 py-2 text-center text-xs font-medium uppercase text-gray-500">Estado</th>
+                                <th class="px-4 py-2 text-right text-xs font-medium uppercase text-gray-500">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                            <tr v-for="dd in doc.due_dates" :key="dd.id">
+                                <td class="px-4 py-2 text-sm">{{ dd.due_date?.split('T')[0] }}</td>
+                                <td class="px-4 py-2 text-right text-sm">{{ Number(dd.percentage) }}%</td>
+                                <td class="px-4 py-2 text-right text-sm font-medium">{{ formatCurrency(dd.amount) }}</td>
+                                <td class="px-4 py-2 text-center">
+                                    <Badge :color="dd.payment_status === 'paid' ? 'green' : 'yellow'">
+                                        {{ dd.payment_status === 'paid' ? 'Pagado' : 'Pendiente' }}
+                                    </Badge>
+                                </td>
+                                <td class="px-4 py-2 text-right">
+                                    <button
+                                        @click="router.post(route('documents.due-date.toggle-paid', { type: documentType, document: doc.id, dueDate: dd.id }))"
+                                        class="text-sm"
+                                        :class="dd.payment_status === 'paid' ? 'text-yellow-600 hover:text-yellow-800' : 'text-green-600 hover:text-green-800'"
+                                    >
+                                        {{ dd.payment_status === 'paid' ? 'Desmarcar' : 'Marcar pagado' }}
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </template>

@@ -35,6 +35,7 @@ class DocumentRequest extends FormRequest
                 Document::INVOICE_TYPE_R4,
                 Document::INVOICE_TYPE_R5,
             ])],
+            'title' => ['nullable', 'string', 'max:500'],
             'client_id' => ['nullable', 'exists:clients,id'],
             'series_id' => ['nullable', 'exists:document_series,id'],
             'issue_date' => ['required', 'date'],
@@ -46,6 +47,12 @@ class DocumentRequest extends FormRequest
             'footer_text' => ['nullable', 'string', 'max:2000'],
             'corrected_document_id' => ['nullable', 'exists:documents,id'],
             'rectificative_type' => ['nullable', Rule::in(['substitution', 'differences'])],
+
+            // Due dates
+            'due_dates' => ['nullable', 'array'],
+            'due_dates.*.due_date' => ['required', 'date'],
+            'due_dates.*.amount' => ['required', 'numeric', 'min:0'],
+            'due_dates.*.percentage' => ['required', 'numeric', 'min:0', 'max:100'],
 
             // Lines
             'lines' => ['required', 'array', 'min:1'],

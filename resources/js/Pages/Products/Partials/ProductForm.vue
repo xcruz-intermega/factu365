@@ -1,17 +1,48 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { ref, computed } from 'vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import Checkbox from '@/Components/Checkbox.vue';
-import { Link } from '@inertiajs/vue3';
+import SearchSelect from '@/Components/SearchSelect.vue';
+import type { SearchSelectOption } from '@/Components/SearchSelect.vue';
+import { Link, router } from '@inertiajs/vue3';
 import type { InertiaForm } from '@inertiajs/vue3';
+
+interface FamilyOption {
+    id: number;
+    name: string;
+    parent_id: number | null;
+}
+
+interface ComponentProduct {
+    id: number;
+    name: string;
+    reference: string;
+    unit_price: number;
+}
+
+interface ProductComponentData {
+    id: number;
+    parent_product_id: number;
+    component_product_id: number;
+    quantity: string;
+    component: ComponentProduct;
+}
+
+interface AllProduct {
+    id: number;
+    name: string;
+    reference: string;
+    unit_price: number;
+}
 
 const props = defineProps<{
     form: InertiaForm<{
         type: string;
+        product_family_id: number | null;
         reference: string;
         name: string;
         description: string;
@@ -22,6 +53,10 @@ const props = defineProps<{
         unit: string;
     }>;
     submitLabel: string;
+    families?: FamilyOption[];
+    productId?: number;
+    components?: ProductComponentData[];
+    allProducts?: AllProduct[];
 }>();
 
 const emit = defineEmits<{
@@ -29,6 +64,62 @@ const emit = defineEmits<{
 }>();
 
 const showExemption = computed(() => Number(props.form.vat_rate) === 0);
+
+// Escandallo state
+const newComponentId = ref<number | null>(null);
+const newComponentQty = ref<number>(1);
+const addingComponent = ref(false);
+
+const componentOptions = computed<SearchSelectOption[]>(() => {
+    if (!props.allProducts) return [];
+    const existingIds = (props.components || []).map(c => c.component_product_id);
+    return props.allProducts
+        .filter(p => !existingIds.includes(p.id))
+        .map(p => ({
+            value: p.id,
+            label: p.name,
+            sublabel: p.reference || undefined,
+        }));
+});
+
+const totalComponentCost = computed(() => {
+    if (!props.components) return 0;
+    return props.components.reduce((sum, c) => {
+        return sum + Number(c.quantity) * Number(c.component.unit_price);
+    }, 0);
+});
+
+const formatCurrency = (val: number) => {
+    return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(val);
+};
+
+const addComponent = () => {
+    if (!newComponentId.value || !props.productId) return;
+    addingComponent.value = true;
+    router.post(
+        route('products.components.store', props.productId),
+        {
+            component_product_id: newComponentId.value,
+            quantity: newComponentQty.value,
+        },
+        {
+            preserveScroll: true,
+            onFinish: () => {
+                newComponentId.value = null;
+                newComponentQty.value = 1;
+                addingComponent.value = false;
+            },
+        }
+    );
+};
+
+const removeComponent = (componentId: number) => {
+    if (!props.productId) return;
+    router.delete(
+        route('products.components.destroy', [props.productId, componentId]),
+        { preserveScroll: true }
+    );
+};
 
 const exemptionCodes = [
     { value: 'E1', label: 'E1 - Exenta por el artículo 20' },
@@ -93,6 +184,21 @@ const units = [
                         <option v-for="u in units" :key="u.value" :value="u.value">{{ u.label }}</option>
                     </select>
                     <InputError class="mt-2" :message="form.errors.unit" />
+                </div>
+
+                <div v-if="families && families.length > 0">
+                    <InputLabel for="product_family_id" value="Familia" />
+                    <select
+                        id="product_family_id"
+                        v-model="form.product_family_id"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    >
+                        <option :value="null">Sin familia</option>
+                        <option v-for="f in families" :key="f.id" :value="f.id">
+                            {{ f.parent_id ? '— ' : '' }}{{ f.name }}
+                        </option>
+                    </select>
+                    <InputError class="mt-2" :message="form.errors.product_family_id" />
                 </div>
 
                 <div class="sm:col-span-2 lg:col-span-3">
@@ -178,6 +284,88 @@ const units = [
                     </label>
                     <InputError class="mt-2" :message="form.errors.irpf_applicable" />
                 </div>
+            </div>
+        </div>
+
+        <!-- Escandallo (only in edit mode when productId is available) -->
+        <div v-if="productId" class="rounded-lg bg-white p-6 shadow">
+            <div class="mb-4 flex items-center justify-between">
+                <h3 class="text-base font-semibold text-gray-900">Escandallo (componentes)</h3>
+                <span v-if="components && components.length > 0" class="text-sm text-gray-500">
+                    Coste total: <span class="font-semibold text-gray-900">{{ formatCurrency(totalComponentCost) }}</span>
+                </span>
+            </div>
+
+            <!-- Component list -->
+            <div v-if="components && components.length > 0" class="mb-4">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-3 py-2 text-left text-xs font-medium uppercase text-gray-500">Componente</th>
+                            <th class="px-3 py-2 text-left text-xs font-medium uppercase text-gray-500">Referencia</th>
+                            <th class="px-3 py-2 text-right text-xs font-medium uppercase text-gray-500">Cantidad</th>
+                            <th class="px-3 py-2 text-right text-xs font-medium uppercase text-gray-500">Precio ud.</th>
+                            <th class="px-3 py-2 text-right text-xs font-medium uppercase text-gray-500">Coste</th>
+                            <th class="px-3 py-2 w-10"></th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        <tr v-for="comp in components" :key="comp.id">
+                            <td class="px-3 py-2 text-sm text-gray-900">{{ comp.component.name }}</td>
+                            <td class="px-3 py-2 text-sm text-gray-500">{{ comp.component.reference || '—' }}</td>
+                            <td class="px-3 py-2 text-sm text-right text-gray-900">{{ Number(comp.quantity) }}</td>
+                            <td class="px-3 py-2 text-sm text-right text-gray-500">{{ formatCurrency(Number(comp.component.unit_price)) }}</td>
+                            <td class="px-3 py-2 text-sm text-right font-medium text-gray-900">{{ formatCurrency(Number(comp.quantity) * Number(comp.component.unit_price)) }}</td>
+                            <td class="px-3 py-2">
+                                <button
+                                    type="button"
+                                    @click="removeComponent(comp.id)"
+                                    class="rounded p-1 text-gray-400 hover:bg-red-50 hover:text-red-600"
+                                    title="Eliminar componente"
+                                >
+                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div v-else class="mb-4 rounded-lg border-2 border-dashed border-gray-300 p-4 text-center">
+                <p class="text-sm text-gray-500">Sin componentes. Producto simple.</p>
+            </div>
+
+            <!-- Add component form -->
+            <div class="flex items-end gap-3">
+                <div class="flex-1">
+                    <label class="block text-xs font-medium text-gray-600">Añadir componente</label>
+                    <div class="mt-0.5">
+                        <SearchSelect
+                            v-model="newComponentId"
+                            :options="componentOptions"
+                            placeholder="Buscar producto..."
+                        />
+                    </div>
+                </div>
+                <div class="w-28">
+                    <label class="block text-xs font-medium text-gray-600">Cantidad</label>
+                    <input
+                        type="number"
+                        v-model.number="newComponentQty"
+                        min="0.0001"
+                        step="0.0001"
+                        class="mt-0.5 block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    />
+                </div>
+                <button
+                    type="button"
+                    @click="addComponent"
+                    :disabled="!newComponentId || addingComponent"
+                    class="inline-flex items-center rounded-md bg-indigo-50 px-3 py-2 text-sm font-semibold text-indigo-600 hover:bg-indigo-100 disabled:opacity-50"
+                >
+                    Añadir
+                </button>
             </div>
         </div>
 

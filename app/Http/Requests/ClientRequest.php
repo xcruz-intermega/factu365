@@ -29,6 +29,7 @@ class ClientRequest extends FormRequest
             'website' => 'nullable|string|max:255',
             'contact_person' => 'nullable|string|max:255',
             'payment_terms_days' => 'nullable|integer|min:0|max:365',
+            'payment_template_id' => 'nullable|exists:payment_templates,id',
             'payment_method' => 'nullable|string|in:transfer,cash,card,check,direct_debit',
             'iban' => 'nullable|string|max:34',
             'notes' => 'nullable|string|max:2000',

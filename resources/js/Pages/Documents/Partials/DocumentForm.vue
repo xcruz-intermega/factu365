@@ -6,6 +6,24 @@ import TotalsSummary from './TotalsSummary.vue';
 import SearchSelect from '@/Components/SearchSelect.vue';
 import type { SearchSelectOption } from '@/Components/SearchSelect.vue';
 import { calculateDocument, type LineInput, type DocumentTotals } from '@/composables/useTaxCalculator';
+import { resolveClientDiscount, type ClientDiscountData } from '@/composables/useClientDiscountResolver';
+
+interface DueDateInput {
+    due_date: string;
+    amount: number;
+    percentage: number;
+}
+
+interface PaymentTemplateLine {
+    days_from_issue: number;
+    percentage: number;
+}
+
+interface PaymentTemplateData {
+    id: number;
+    name: string;
+    lines: PaymentTemplateLine[];
+}
 
 interface Client {
     id: number;
@@ -14,6 +32,8 @@ interface Client {
     nif: string;
     type: string;
     payment_terms_days: number | null;
+    payment_template_id: number | null;
+    discounts?: ClientDiscountData[];
 }
 
 interface Product {
@@ -25,6 +45,23 @@ interface Product {
     exemption_code: string | null;
     irpf_applicable: boolean;
     unit: string | null;
+    type: string;
+    product_family_id: number | null;
+    components?: Array<{
+        id: number;
+        component_product_id: number;
+        quantity: string;
+        component: {
+            id: number;
+            name: string;
+            reference: string;
+            unit_price: number;
+            vat_rate: number;
+            exemption_code: string | null;
+            irpf_applicable: boolean;
+            unit: string | null;
+        };
+    }>;
 }
 
 interface Series {
@@ -41,6 +78,7 @@ const props = defineProps<{
     clients: Client[];
     products: Product[];
     series: Series[];
+    paymentTemplates?: PaymentTemplateData[];
     isEdit?: boolean;
 }>();
 
@@ -55,6 +93,57 @@ const totals = computed<DocumentTotals>(() => {
 const isInvoiceType = computed(() =>
     ['invoice', 'rectificative'].includes(props.documentType)
 );
+
+const isNonFiscal = computed(() =>
+    ['quote', 'delivery_note'].includes(props.documentType)
+);
+
+const isQuote = computed(() => props.documentType === 'quote');
+
+// Due dates management
+const applyPaymentTemplate = (templateId: number | null) => {
+    if (!templateId || !props.paymentTemplates) {
+        props.form.due_dates = [];
+        return;
+    }
+    const template = props.paymentTemplates.find(t => t.id === templateId);
+    if (!template) return;
+
+    const issueDate = props.form.issue_date ? new Date(props.form.issue_date) : new Date();
+    const total = totals.value.total;
+
+    let remaining = total;
+    const dueDates: DueDateInput[] = template.lines.map((line, index) => {
+        const date = new Date(issueDate);
+        date.setDate(date.getDate() + line.days_from_issue);
+        const isLast = index === template.lines.length - 1;
+        const amount = isLast ? remaining : Math.round(total * line.percentage / 100 * 100) / 100;
+        remaining -= amount;
+        return {
+            due_date: date.toISOString().split('T')[0],
+            amount,
+            percentage: line.percentage,
+        };
+    });
+
+    props.form.due_dates = dueDates;
+    if (dueDates.length > 0) {
+        props.form.due_date = dueDates[0].due_date;
+    }
+};
+
+const addDueDate = () => {
+    if (!props.form.due_dates) props.form.due_dates = [];
+    props.form.due_dates.push({
+        due_date: props.form.issue_date || new Date().toISOString().split('T')[0],
+        amount: 0,
+        percentage: 0,
+    });
+};
+
+const removeDueDate = (index: number) => {
+    props.form.due_dates.splice(index, 1);
+};
 
 const invoiceTypes = computed(() => {
     if (props.documentType === 'rectificative') {
@@ -71,6 +160,12 @@ const invoiceTypes = computed(() => {
         { value: 'F2', label: 'F2 - Factura simplificada' },
         { value: 'F3', label: 'F3 - Factura emitida en sustitución' },
     ];
+});
+
+const selectedClientDiscounts = computed<ClientDiscountData[]>(() => {
+    if (!props.form.client_id) return [];
+    const client = props.clients.find(c => c.id === props.form.client_id);
+    return client?.discounts ?? [];
 });
 
 const updateLines = (lines: LineInput[]) => {
@@ -108,6 +203,18 @@ const todayStr = new Date().toISOString().split('T')[0];
                     <p v-if="form.errors.client_id" class="mt-1 text-sm text-red-600">{{ form.errors.client_id }}</p>
                 </div>
 
+                <!-- Title (only for quotes) -->
+                <div v-if="isQuote" class="sm:col-span-2 lg:col-span-4">
+                    <label class="block text-sm font-medium text-gray-700">Título del presupuesto</label>
+                    <input
+                        type="text"
+                        v-model="form.title"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                        placeholder="Ej: Presupuesto para Jardinería 400h"
+                    />
+                    <p v-if="form.errors.title" class="mt-1 text-sm text-red-600">{{ form.errors.title }}</p>
+                </div>
+
                 <!-- Invoice type (only for invoices/rectificativas) -->
                 <div v-if="isInvoiceType">
                     <label class="block text-sm font-medium text-gray-700">Tipo factura</label>
@@ -119,8 +226,8 @@ const todayStr = new Date().toISOString().split('T')[0];
                     </select>
                 </div>
 
-                <!-- Series -->
-                <div v-if="series.length > 1">
+                <!-- Series (hidden for non-fiscal, they auto-assign) -->
+                <div v-if="series.length > 1 && !isNonFiscal">
                     <label class="block text-sm font-medium text-gray-700">Serie</label>
                     <select
                         v-model="form.series_id"
@@ -143,8 +250,8 @@ const todayStr = new Date().toISOString().split('T')[0];
                     <p v-if="form.errors.issue_date" class="mt-1 text-sm text-red-600">{{ form.errors.issue_date }}</p>
                 </div>
 
-                <!-- Due date -->
-                <div>
+                <!-- Due date (simple, hidden if using due_dates) -->
+                <div v-if="!form.due_dates || form.due_dates.length === 0">
                     <label class="block text-sm font-medium text-gray-700">Fecha vencimiento</label>
                     <input
                         type="date"
@@ -184,8 +291,57 @@ const todayStr = new Date().toISOString().split('T')[0];
             :lines="form.lines"
             :products="products"
             :errors="form.errors"
+            :client-discounts="selectedClientDiscounts"
             @update:lines="updateLines"
         />
+
+        <!-- Due dates section -->
+        <div v-if="paymentTemplates && paymentTemplates.length > 0" class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+            <div class="mb-3 flex items-center justify-between">
+                <h3 class="text-sm font-semibold text-gray-900">Vencimientos</h3>
+                <div class="flex items-center gap-3">
+                    <select
+                        @change="applyPaymentTemplate(Number(($event.target as HTMLSelectElement).value) || null)"
+                        class="rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    >
+                        <option :value="null">Seleccionar plantilla...</option>
+                        <option v-for="tpl in paymentTemplates" :key="tpl.id" :value="tpl.id">{{ tpl.name }}</option>
+                    </select>
+                    <button type="button" @click="addDueDate" class="text-sm text-indigo-600 hover:text-indigo-800">+ Añadir</button>
+                </div>
+            </div>
+            <div v-if="form.due_dates && form.due_dates.length > 0">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-3 py-2 text-left text-xs font-medium uppercase text-gray-500">Fecha</th>
+                            <th class="px-3 py-2 text-right text-xs font-medium uppercase text-gray-500">%</th>
+                            <th class="px-3 py-2 text-right text-xs font-medium uppercase text-gray-500">Importe</th>
+                            <th class="px-3 py-2 w-10"></th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        <tr v-for="(dd, i) in form.due_dates" :key="i">
+                            <td class="px-3 py-2">
+                                <input type="date" v-model="dd.due_date" class="block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+                            </td>
+                            <td class="px-3 py-2">
+                                <input type="number" v-model.number="dd.percentage" min="0" max="100" step="0.01" class="block w-20 rounded-md border-gray-300 text-sm text-right shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+                            </td>
+                            <td class="px-3 py-2">
+                                <input type="number" v-model.number="dd.amount" min="0" step="0.01" class="block w-28 rounded-md border-gray-300 text-sm text-right shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+                            </td>
+                            <td class="px-3 py-2">
+                                <button type="button" @click="removeDueDate(i)" class="text-red-500 hover:text-red-700">
+                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p v-else class="text-sm text-gray-500">Sin vencimientos configurados. Se usará la fecha de vencimiento simple.</p>
+        </div>
 
         <!-- Bottom section: Notes + Totals side by side -->
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
@@ -236,7 +392,7 @@ const todayStr = new Date().toISOString().split('T')[0];
                 :disabled="form.processing"
                 class="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 disabled:opacity-50"
             >
-                {{ form.processing ? 'Guardando...' : (isEdit ? 'Guardar cambios' : 'Crear borrador') }}
+                {{ form.processing ? 'Guardando...' : (isEdit ? 'Guardar cambios' : (isNonFiscal ? `Crear ${documentTypeLabel.toLowerCase()}` : 'Crear borrador')) }}
             </button>
         </div>
     </form>

@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import { Head, useForm, Link, router } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
+import SettingsNav from './Partials/SettingsNav.vue';
 import Badge from '@/Components/Badge.vue';
 import ConfirmDialog from '@/Components/ConfirmDialog.vue';
 
@@ -77,14 +78,7 @@ const executeDelete = () => {
             <h1 class="text-lg font-semibold text-gray-900">Certificados digitales</h1>
         </template>
 
-        <!-- Settings nav -->
-        <div class="mb-6 flex gap-2 border-b border-gray-200 pb-3">
-            <Link :href="route('settings.company')" class="rounded-md px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50">Empresa</Link>
-            <Link :href="route('settings.series')" class="rounded-md px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50">Series</Link>
-            <Link :href="route('settings.certificates')" class="rounded-md bg-indigo-50 px-3 py-1.5 text-sm font-medium text-indigo-700">Certificados</Link>
-            <Link :href="route('settings.pdf-templates')" class="rounded-md px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50">Plantillas PDF</Link>
-            <Link :href="route('settings.users')" class="rounded-md px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50">Usuarios</Link>
-        </div>
+        <SettingsNav current="certificates" />
 
         <div class="mb-4 flex justify-end">
             <button @click="showUpload = !showUpload" class="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500">

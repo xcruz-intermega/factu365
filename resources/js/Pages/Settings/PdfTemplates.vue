@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Head, Link, router } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
+import SettingsNav from './Partials/SettingsNav.vue';
 import Badge from '@/Components/Badge.vue';
 
 interface Template {
@@ -28,14 +29,7 @@ const setDefault = (template: Template) => {
             <h1 class="text-lg font-semibold text-gray-900">Plantillas PDF</h1>
         </template>
 
-        <!-- Settings nav -->
-        <div class="mb-6 flex gap-2 border-b border-gray-200 pb-3">
-            <Link :href="route('settings.company')" class="rounded-md px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50">Empresa</Link>
-            <Link :href="route('settings.series')" class="rounded-md px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50">Series</Link>
-            <Link :href="route('settings.certificates')" class="rounded-md px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50">Certificados</Link>
-            <Link :href="route('settings.pdf-templates')" class="rounded-md bg-indigo-50 px-3 py-1.5 text-sm font-medium text-indigo-700">Plantillas PDF</Link>
-            <Link :href="route('settings.users')" class="rounded-md px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50">Usuarios</Link>
-        </div>
+        <SettingsNav current="pdf-templates" />
 
         <!-- Templates grid -->
         <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">

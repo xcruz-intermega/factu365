@@ -6,7 +6,9 @@ use App\Events\InvoiceFinalized;
 use App\Http\Requests\DocumentRequest;
 use App\Models\Client;
 use App\Models\Document;
+use App\Models\DocumentDueDate;
 use App\Models\DocumentSeries;
+use App\Models\PaymentTemplate;
 use App\Models\PdfTemplate;
 use App\Models\Product;
 use App\Services\NumberingService;
@@ -64,9 +66,10 @@ class DocumentController extends Controller
             'documentType' => $type,
             'documentTypeLabel' => Document::documentTypeLabel($type),
             'direction' => $direction,
-            'clients' => Client::orderBy('legal_name')->get(['id', 'legal_name', 'trade_name', 'nif', 'type', 'payment_terms_days']),
-            'products' => Product::orderBy('name')->get(['id', 'name', 'reference', 'unit_price', 'vat_rate', 'exemption_code', 'irpf_applicable', 'unit']),
+            'clients' => Client::with('discounts')->orderBy('legal_name')->get(['id', 'legal_name', 'trade_name', 'nif', 'type', 'payment_terms_days', 'payment_template_id']),
+            'products' => Product::with(['components.component:id,name,reference,unit_price,vat_rate,exemption_code,irpf_applicable,unit,type,product_family_id'])->orderBy('name')->get(['id', 'name', 'reference', 'unit_price', 'vat_rate', 'exemption_code', 'irpf_applicable', 'unit', 'type', 'product_family_id']),
             'series' => DocumentSeries::forType($type)->forYear(now()->year)->get(),
+            'paymentTemplates' => PaymentTemplate::with('lines')->orderBy('name')->get(),
             'parentDocument' => $request->input('from')
                 ? Document::with('lines')->find($request->input('from'))
                 : null,
@@ -79,20 +82,33 @@ class DocumentController extends Controller
 
         $validated = $request->validated();
         $direction = $type === Document::TYPE_PURCHASE_INVOICE ? 'received' : 'issued';
+        $isNonFiscal = in_array($type, [Document::TYPE_QUOTE, Document::TYPE_DELIVERY_NOTE]);
 
-        $document = DB::transaction(function () use ($validated, $type, $direction) {
+        $document = DB::transaction(function () use ($validated, $type, $direction, $isNonFiscal) {
             // Calculate totals
             $calculated = $this->taxCalculator->calculateDocument(
                 $validated['lines'],
                 (float) ($validated['global_discount_percent'] ?? 0)
             );
 
+            // Auto-number non-fiscal documents on create
+            $numbering = null;
+            if ($isNonFiscal) {
+                $numbering = $this->numberingService->generateNumber(
+                    $type,
+                    $validated['series_id'] ?? null,
+                );
+            }
+
             // Create document
             $document = Document::create([
                 'document_type' => $type,
                 'invoice_type' => $validated['invoice_type'] ?? $this->defaultInvoiceType($type),
                 'direction' => $direction,
-                'status' => Document::STATUS_DRAFT,
+                'status' => $isNonFiscal ? Document::STATUS_CREATED : Document::STATUS_DRAFT,
+                'series_id' => $numbering ? $numbering['series_id'] : null,
+                'number' => $numbering ? $numbering['number'] : null,
+                'title' => $validated['title'] ?? null,
                 'client_id' => $validated['client_id'] ?? null,
                 'issue_date' => $validated['issue_date'],
                 'due_date' => $validated['due_date'] ?? null,
@@ -137,6 +153,20 @@ class DocumentController extends Controller
                 ]);
             }
 
+            // Save due dates if provided
+            if (! empty($validated['due_dates'])) {
+                foreach ($validated['due_dates'] as $index => $dd) {
+                    $document->dueDates()->create([
+                        'due_date' => $dd['due_date'],
+                        'amount' => $dd['amount'],
+                        'percentage' => $dd['percentage'],
+                        'sort_order' => $index + 1,
+                    ]);
+                }
+                // Sync main due_date with first entry
+                $document->update(['due_date' => $validated['due_dates'][0]['due_date']]);
+            }
+
             return $document;
         });
 
@@ -149,18 +179,21 @@ class DocumentController extends Controller
         $this->validateDocumentType($type);
         $this->ensureDocumentMatchesType($document, $type);
 
-        $document->load(['lines' => fn ($q) => $q->orderBy('sort_order'), 'client', 'series']);
+        $document->load(['lines' => fn ($q) => $q->orderBy('sort_order'), 'client', 'series', 'dueDates']);
 
         return Inertia::render('Documents/Edit', [
             'document' => $document,
             'documentType' => $type,
             'documentTypeLabel' => Document::documentTypeLabel($type),
-            'clients' => Client::orderBy('legal_name')->get(['id', 'legal_name', 'trade_name', 'nif', 'type', 'payment_terms_days']),
-            'products' => Product::orderBy('name')->get(['id', 'name', 'reference', 'unit_price', 'vat_rate', 'exemption_code', 'irpf_applicable', 'unit']),
+            'clients' => Client::with('discounts')->orderBy('legal_name')->get(['id', 'legal_name', 'trade_name', 'nif', 'type', 'payment_terms_days', 'payment_template_id']),
+            'products' => Product::with(['components.component:id,name,reference,unit_price,vat_rate,exemption_code,irpf_applicable,unit,type,product_family_id'])->orderBy('name')->get(['id', 'name', 'reference', 'unit_price', 'vat_rate', 'exemption_code', 'irpf_applicable', 'unit', 'type', 'product_family_id']),
             'series' => DocumentSeries::forType($type)->forYear(now()->year)->get(),
             'canFinalize' => $document->canBeFinalized(),
+            'canEdit' => $document->canBeEdited(),
             'canConvert' => $document->canBeConverted(),
+            'conversionTargets' => $document->conversionTargets(),
             'nextConversionType' => Document::nextConversionType($type),
+            'paymentTemplates' => PaymentTemplate::with('lines')->orderBy('name')->get(),
         ]);
     }
 
@@ -185,6 +218,7 @@ class DocumentController extends Controller
             // Update document
             $document->update([
                 'invoice_type' => $validated['invoice_type'] ?? $document->invoice_type,
+                'title' => $validated['title'] ?? $document->title,
                 'client_id' => $validated['client_id'] ?? null,
                 'issue_date' => $validated['issue_date'],
                 'due_date' => $validated['due_date'] ?? null,
@@ -230,6 +264,22 @@ class DocumentController extends Controller
                     'line_total' => $line['line_total'],
                 ]);
             }
+
+            // Replace due dates if provided
+            if (isset($validated['due_dates'])) {
+                $document->dueDates()->delete();
+                foreach ($validated['due_dates'] as $index => $dd) {
+                    $document->dueDates()->create([
+                        'due_date' => $dd['due_date'],
+                        'amount' => $dd['amount'],
+                        'percentage' => $dd['percentage'],
+                        'sort_order' => $index + 1,
+                    ]);
+                }
+                if (! empty($validated['due_dates'])) {
+                    $document->update(['due_date' => $validated['due_dates'][0]['due_date']]);
+                }
+            }
         });
 
         return redirect()->route('documents.edit', [$type, $document])
@@ -240,6 +290,10 @@ class DocumentController extends Controller
     {
         $this->validateDocumentType($type);
         $this->ensureDocumentMatchesType($document, $type);
+
+        if ($document->isNonFiscalType()) {
+            return back()->with('error', 'Los presupuestos y albaranes no requieren finalización.');
+        }
 
         if (! $document->canBeFinalized()) {
             return back()->with('error', 'Este documento no puede ser finalizado. Verifique que tiene cliente y líneas.');
@@ -273,8 +327,8 @@ class DocumentController extends Controller
         $this->validateDocumentType($type);
         $this->ensureDocumentMatchesType($document, $type);
 
-        if (! $document->canBeEdited()) {
-            return back()->with('error', 'Solo se pueden eliminar documentos en borrador.');
+        if (! $document->canBeDeleted()) {
+            return back()->with('error', 'Este documento no puede ser eliminado.');
         }
 
         $document->lines()->delete();
@@ -284,7 +338,7 @@ class DocumentController extends Controller
             ->with('success', Document::documentTypeLabel($type) . ' eliminado correctamente.');
     }
 
-    public function convert(string $type, Document $document)
+    public function convert(Request $request, string $type, Document $document)
     {
         $this->validateDocumentType($type);
         $this->ensureDocumentMatchesType($document, $type);
@@ -293,21 +347,31 @@ class DocumentController extends Controller
             return back()->with('error', 'Este documento no puede ser convertido.');
         }
 
-        $newType = Document::nextConversionType($type);
-        if (! $newType) {
-            return back()->with('error', 'No hay tipo de conversión disponible.');
+        // Accept target_type from request, default to next in chain
+        $newType = $request->input('target_type') ?? Document::nextConversionType($type);
+        if (! $newType || ! in_array($newType, $document->conversionTargets())) {
+            return back()->with('error', 'Tipo de conversión no válido.');
         }
 
         $document->load('lines');
+        $isTargetNonFiscal = in_array($newType, [Document::TYPE_QUOTE, Document::TYPE_DELIVERY_NOTE]);
 
-        $newDocument = DB::transaction(function () use ($document, $newType) {
+        $newDocument = DB::transaction(function () use ($document, $newType, $isTargetNonFiscal) {
             $direction = $newType === Document::TYPE_PURCHASE_INVOICE ? 'received' : 'issued';
+
+            // Auto-number non-fiscal targets
+            $numbering = null;
+            if ($isTargetNonFiscal) {
+                $numbering = $this->numberingService->generateNumber($newType);
+            }
 
             $newDocument = Document::create([
                 'document_type' => $newType,
                 'invoice_type' => $this->defaultInvoiceType($newType),
                 'direction' => $direction,
-                'status' => Document::STATUS_DRAFT,
+                'status' => $isTargetNonFiscal ? Document::STATUS_CREATED : Document::STATUS_DRAFT,
+                'series_id' => $numbering ? $numbering['series_id'] : null,
+                'number' => $numbering ? $numbering['number'] : null,
                 'client_id' => $document->client_id,
                 'parent_document_id' => $document->id,
                 'issue_date' => now()->toDateString(),
@@ -336,6 +400,11 @@ class DocumentController extends Controller
                         'line_subtotal', 'line_total',
                     ])
                 );
+            }
+
+            // Mark origin as converted if non-fiscal
+            if ($document->isNonFiscalType()) {
+                $document->update(['status' => Document::STATUS_CONVERTED]);
             }
 
             return $newDocument;
@@ -483,6 +552,38 @@ class DocumentController extends Controller
         return back()->with('success', 'Documento enviado por email a ' . $validated['email'] . '.');
     }
 
+    public function markDueDatePaid(string $type, Document $document, DocumentDueDate $dueDate)
+    {
+        $this->validateDocumentType($type);
+        $this->ensureDocumentMatchesType($document, $type);
+
+        if ($dueDate->document_id !== $document->id) {
+            abort(404);
+        }
+
+        $dueDate->update([
+            'payment_status' => $dueDate->isPaid() ? 'pending' : 'paid',
+            'payment_date' => $dueDate->isPaid() ? null : now()->toDateString(),
+        ]);
+
+        // Auto-update document status based on due dates
+        $allDueDates = $document->dueDates()->get();
+        if ($allDueDates->isNotEmpty()) {
+            $allPaid = $allDueDates->every(fn ($dd) => $dd->payment_status === 'paid');
+            $anyPaid = $allDueDates->contains(fn ($dd) => $dd->payment_status === 'paid');
+
+            if ($allPaid) {
+                $document->update(['status' => Document::STATUS_PAID]);
+            } elseif ($anyPaid) {
+                $document->update(['status' => Document::STATUS_PARTIAL]);
+            } elseif ($document->status === Document::STATUS_PAID || $document->status === Document::STATUS_PARTIAL) {
+                $document->update(['status' => Document::STATUS_FINALIZED]);
+            }
+        }
+
+        return back()->with('success', $dueDate->isPaid() ? 'Vencimiento marcado como pagado.' : 'Vencimiento desmarcado.');
+    }
+
     // -- Private helpers --
 
     private function validateDocumentType(string $type): void
@@ -525,6 +626,26 @@ class DocumentController extends Controller
                 ['value' => Document::STATUS_DRAFT, 'label' => 'Borrador'],
                 ['value' => Document::STATUS_REGISTERED, 'label' => 'Registrada'],
                 ['value' => Document::STATUS_PAID, 'label' => 'Pagada'],
+            ];
+        }
+
+        if ($type === Document::TYPE_QUOTE) {
+            return [
+                ['value' => Document::STATUS_CREATED, 'label' => 'Creado'],
+                ['value' => Document::STATUS_SENT, 'label' => 'Enviado'],
+                ['value' => Document::STATUS_ACCEPTED, 'label' => 'Aceptado'],
+                ['value' => Document::STATUS_REJECTED, 'label' => 'Rechazado'],
+                ['value' => Document::STATUS_CONVERTED, 'label' => 'Convertido'],
+                ['value' => Document::STATUS_CANCELLED, 'label' => 'Anulado'],
+            ];
+        }
+
+        if ($type === Document::TYPE_DELIVERY_NOTE) {
+            return [
+                ['value' => Document::STATUS_CREATED, 'label' => 'Creado'],
+                ['value' => Document::STATUS_SENT, 'label' => 'Enviado'],
+                ['value' => Document::STATUS_CONVERTED, 'label' => 'Convertido'],
+                ['value' => Document::STATUS_CANCELLED, 'label' => 'Anulado'],
             ];
         }
 

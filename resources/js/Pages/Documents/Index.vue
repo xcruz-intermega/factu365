@@ -52,6 +52,10 @@ const statusColors: Record<string, 'gray' | 'green' | 'blue' | 'yellow' | 'red' 
     overdue: 'red',
     cancelled: 'red',
     registered: 'blue',
+    created: 'blue',
+    accepted: 'green',
+    rejected: 'red',
+    converted: 'purple',
 };
 
 const statusLabels: Record<string, string> = {
@@ -63,6 +67,10 @@ const statusLabels: Record<string, string> = {
     overdue: 'Vencida',
     cancelled: 'Anulada',
     registered: 'Registrada',
+    created: 'Creado',
+    accepted: 'Aceptado',
+    rejected: 'Rechazado',
+    converted: 'Convertido',
 };
 
 const formatCurrency = (val: number | string) => {
@@ -215,7 +223,7 @@ const executeDelete = () => {
                         Editar
                     </Link>
                     <button
-                        v-if="row.status === 'draft'"
+                        v-if="['draft', 'created'].includes(row.status)"
                         @click="confirmDelete(row)"
                         class="text-red-600 hover:text-red-900"
                     >

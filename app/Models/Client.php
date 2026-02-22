@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Client extends Model
@@ -24,6 +26,7 @@ class Client extends Model
         'website',
         'contact_person',
         'payment_terms_days',
+        'payment_template_id',
         'payment_method',
         'iban',
         'notes',
@@ -58,6 +61,16 @@ class Client extends Model
               ->orWhere('nif', 'like', "%{$search}%")
               ->orWhere('email', 'like', "%{$search}%");
         });
+    }
+
+    public function paymentTemplate(): BelongsTo
+    {
+        return $this->belongsTo(PaymentTemplate::class);
+    }
+
+    public function discounts(): HasMany
+    {
+        return $this->hasMany(ClientDiscount::class);
     }
 
     public function getDisplayNameAttribute(): string

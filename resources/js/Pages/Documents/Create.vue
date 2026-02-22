@@ -11,6 +11,7 @@ interface Props {
     clients: any[];
     products: any[];
     series: any[];
+    paymentTemplates: any[];
     parentDocument?: any;
 }
 
@@ -49,6 +50,7 @@ const defaultInvoiceType = props.documentType === 'rectificative' ? 'R1'
 const form = useForm({
     document_type: props.documentType,
     invoice_type: defaultInvoiceType,
+    title: '',
     client_id: props.parentDocument?.client_id ?? null,
     series_id: null as number | null,
     issue_date: new Date().toISOString().split('T')[0],
@@ -60,6 +62,7 @@ const form = useForm({
     footer_text: props.parentDocument?.footer_text ?? '',
     corrected_document_id: null as number | null,
     rectificative_type: props.documentType === 'rectificative' ? 'substitution' : null,
+    due_dates: [] as Array<{ due_date: string; amount: number; percentage: number }>,
     lines: initialLines,
 });
 
@@ -93,6 +96,7 @@ const submit = () => {
             :clients="clients"
             :products="products"
             :series="series"
+            :payment-templates="paymentTemplates"
             @submit="submit"
         />
     </AppLayout>

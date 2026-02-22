@@ -15,6 +15,7 @@ class ProductRequest extends FormRequest
     {
         return [
             'type' => 'required|in:product,service',
+            'product_family_id' => 'nullable|exists:product_families,id',
             'reference' => 'nullable|string|max:50',
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:2000',

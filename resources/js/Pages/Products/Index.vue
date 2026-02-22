@@ -22,19 +22,23 @@ const props = defineProps<{
     filters: {
         search?: string;
         type?: string;
+        family?: string;
         sort?: string;
         dir?: string;
     };
+    families: Array<{ id: number; name: string; parent_id: number | null }>;
 }>();
 
 const search = ref(props.filters.search || '');
 const typeFilter = ref(props.filters.type || '');
+const familyFilter = ref(props.filters.family || '');
 const sortBy = ref(props.filters.sort || '');
 const sortDir = ref<'asc' | 'desc'>((props.filters.dir as 'asc' | 'desc') || 'asc');
 
 const columns: Column[] = [
     { key: 'reference', label: 'Ref.', sortable: true },
     { key: 'name', label: 'Nombre', sortable: true },
+    { key: 'family', label: 'Familia' },
     { key: 'type', label: 'Tipo', sortable: true },
     { key: 'unit_price', label: 'Precio', sortable: true, class: 'text-right' },
     { key: 'vat_rate', label: 'IVA', sortable: true, class: 'text-right' },
@@ -48,6 +52,7 @@ const applyFilters = () => {
     router.get(route('products.index'), {
         search: search.value || undefined,
         type: typeFilter.value || undefined,
+        family: familyFilter.value || undefined,
         sort: sortBy.value || undefined,
         dir: sortDir.value || undefined,
     }, {
@@ -121,6 +126,15 @@ const executeDelete = () => {
                     <option value="product">Productos</option>
                     <option value="service">Servicios</option>
                 </select>
+                <select
+                    v-if="families.length > 0"
+                    :value="familyFilter"
+                    @change="familyFilter = ($event.target as HTMLSelectElement).value; applyFilters()"
+                    class="rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                >
+                    <option value="">Todas las familias</option>
+                    <option v-for="f in families" :key="f.id" :value="f.id">{{ f.parent_id ? '— ' : '' }}{{ f.name }}</option>
+                </select>
             </div>
             <Link
                 :href="route('products.create')"
@@ -143,6 +157,11 @@ const executeDelete = () => {
             @sort="handleSort"
             empty-message="No se encontraron productos."
         >
+            <template #cell-family="{ row }">
+                <span v-if="row.family" class="text-sm text-gray-600">{{ row.family.name }}</span>
+                <span v-else class="text-gray-400">—</span>
+            </template>
+
             <template #cell-type="{ value }">
                 <Badge :color="value === 'product' ? 'blue' : 'green'">
                     {{ value === 'product' ? 'Producto' : 'Servicio' }}

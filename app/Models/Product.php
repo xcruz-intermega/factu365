@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
@@ -11,6 +13,7 @@ class Product extends Model
 
     protected $fillable = [
         'type',
+        'product_family_id',
         'reference',
         'name',
         'description',
@@ -41,6 +44,26 @@ class Product extends Model
               ->orWhere('reference', 'like', "%{$search}%")
               ->orWhere('description', 'like', "%{$search}%");
         });
+    }
+
+    public function family(): BelongsTo
+    {
+        return $this->belongsTo(ProductFamily::class, 'product_family_id');
+    }
+
+    public function components(): HasMany
+    {
+        return $this->hasMany(ProductComponent::class, 'parent_product_id');
+    }
+
+    public function usedIn(): HasMany
+    {
+        return $this->hasMany(ProductComponent::class, 'component_product_id');
+    }
+
+    public function isComposite(): bool
+    {
+        return $this->components()->exists();
     }
 
     public function isExempt(): bool

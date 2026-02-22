@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ProductRequest;
 use App\Models\Product;
+use App\Models\ProductComponent;
+use App\Models\ProductFamily;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -12,8 +14,10 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         $products = Product::query()
+            ->with('family:id,name')
             ->search($request->input('search'))
             ->when($request->input('type'), fn ($q, $type) => $q->where('type', $type))
+            ->when($request->input('family'), fn ($q, $familyId) => $q->where('product_family_id', $familyId))
             ->when(
                 $request->input('sort'),
                 fn ($q) => $q->orderBy($request->input('sort'), $request->input('dir', 'asc')),
@@ -24,13 +28,16 @@ class ProductController extends Controller
 
         return Inertia::render('Products/Index', [
             'products' => $products,
-            'filters' => $request->only(['search', 'type', 'sort', 'dir']),
+            'filters' => $request->only(['search', 'type', 'family', 'sort', 'dir']),
+            'families' => ProductFamily::orderBy('sort_order')->orderBy('name')->get(['id', 'name', 'parent_id']),
         ]);
     }
 
     public function create()
     {
-        return Inertia::render('Products/Create');
+        return Inertia::render('Products/Create', [
+            'families' => ProductFamily::orderBy('sort_order')->orderBy('name')->get(['id', 'name', 'parent_id']),
+        ]);
     }
 
     public function store(ProductRequest $request)
@@ -43,8 +50,12 @@ class ProductController extends Controller
 
     public function edit(Product $product)
     {
+        $product->load(['components.component:id,name,reference,unit_price']);
+
         return Inertia::render('Products/Edit', [
             'product' => $product,
+            'families' => ProductFamily::orderBy('sort_order')->orderBy('name')->get(['id', 'name', 'parent_id']),
+            'allProducts' => Product::where('id', '!=', $product->id)->orderBy('name')->get(['id', 'name', 'reference', 'unit_price']),
         ]);
     }
 
@@ -62,5 +73,36 @@ class ProductController extends Controller
 
         return redirect()->route('products.index')
             ->with('success', 'Producto eliminado correctamente.');
+    }
+
+    public function storeComponent(Request $request, Product $product)
+    {
+        $request->validate([
+            'component_product_id' => 'required|exists:products,id|different:' . $product->id,
+            'quantity' => 'required|numeric|min:0.0001',
+        ]);
+
+        // Prevent duplicates
+        if ($product->components()->where('component_product_id', $request->component_product_id)->exists()) {
+            return back()->withErrors(['component_product_id' => 'Este componente ya está añadido.']);
+        }
+
+        $product->components()->create([
+            'component_product_id' => $request->component_product_id,
+            'quantity' => $request->quantity,
+        ]);
+
+        return back()->with('success', 'Componente añadido.');
+    }
+
+    public function destroyComponent(Product $product, ProductComponent $component)
+    {
+        if ($component->parent_product_id !== $product->id) {
+            abort(404);
+        }
+
+        $component->delete();
+
+        return back()->with('success', 'Componente eliminado.');
     }
 }
