@@ -16,3 +16,8 @@
   --color-indigo-900: #1e3a8a;
   --color-indigo-950: #172554;
 }
+
+/* Ensure form elements always have dark text */
+input, select, textarea {
+  color: var(--color-gray-900, #111827);
+}
