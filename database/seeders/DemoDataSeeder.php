@@ -175,7 +175,7 @@ class DemoDataSeeder extends Seeder
         $this->seedDocuments($customers, $products);
         $this->seedExpenses();
 
-        $this->command->info('Demo data seeded successfully!');
+        $this->command?->info('Demo data seeded successfully!');
     }
 
     private function seedCompanyProfile(): void
@@ -196,7 +196,7 @@ class DemoDataSeeder extends Seeder
             'irpf_rate' => 15.00,
         ]);
 
-        $this->command->info('Company profile created.');
+        $this->command?->info('Company profile created.');
     }
 
     private function seedClients(): array
@@ -245,7 +245,7 @@ class DemoDataSeeder extends Seeder
             ]);
         }
 
-        $this->command->info(count($clients) . ' clients created (70 customers + 30 suppliers).');
+        $this->command?->info(count($clients) . ' clients created (70 customers + 30 suppliers).');
 
         return $clients;
     }
@@ -265,7 +265,7 @@ class DemoDataSeeder extends Seeder
             ]);
         }
 
-        $this->command->info(count($products) . ' products created.');
+        $this->command?->info(count($products) . ' products created.');
 
         return $products;
     }
@@ -302,7 +302,7 @@ class DemoDataSeeder extends Seeder
             );
             $invoiceCount++;
         }
-        $this->command->info("{$invoiceCount} sales invoices created.");
+        $this->command?->info("{$invoiceCount} sales invoices created.");
 
         // --- 30 Quotes ---
         $quoteCount = 0;
@@ -325,7 +325,7 @@ class DemoDataSeeder extends Seeder
             );
             $quoteCount++;
         }
-        $this->command->info("{$quoteCount} quotes created.");
+        $this->command?->info("{$quoteCount} quotes created.");
 
         // --- 20 Delivery Notes ---
         $dnCount = 0;
@@ -347,7 +347,7 @@ class DemoDataSeeder extends Seeder
             );
             $dnCount++;
         }
-        $this->command->info("{$dnCount} delivery notes created.");
+        $this->command?->info("{$dnCount} delivery notes created.");
 
         // --- 50 Purchase Invoices ---
         $purchaseCount = 0;
@@ -370,7 +370,7 @@ class DemoDataSeeder extends Seeder
             );
             $purchaseCount++;
         }
-        $this->command->info("{$purchaseCount} purchase invoices created.");
+        $this->command?->info("{$purchaseCount} purchase invoices created.");
     }
 
     private function createDocumentWithLines(
@@ -529,7 +529,7 @@ class DemoDataSeeder extends Seeder
             ]);
         }
 
-        $this->command->info('100 expenses created.');
+        $this->command?->info('100 expenses created.');
     }
 
     private function generateNif(string $prefix, int $seed): string
