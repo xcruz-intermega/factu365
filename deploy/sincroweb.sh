@@ -76,7 +76,7 @@ echo "  → git pull..."
 sudo -u ${PLESK_USER} git pull origin main
 
 echo "  → composer install..."
-sudo -u ${PLESK_USER} ${PHP_BIN} ${COMPOSER_BIN} install --no-dev --optimize-autoloader --no-interaction 2>&1 | tail -1
+COMPOSER_ALLOW_SUPERUSER=1 ${PHP_BIN} ${COMPOSER_BIN} install --no-dev --optimize-autoloader --no-interaction 2>&1 | tail -1
 
 echo "  → npm build..."
 sudo -u ${PLESK_USER} npm run build 2>&1 | tail -1
