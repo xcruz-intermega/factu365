@@ -91,6 +91,8 @@ Route::prefix('/{tenant}')->middleware([
                 Route::get('/pdf-templates', [SettingsController::class, 'pdfTemplates'])->name('pdf-templates');
                 Route::post('/pdf-templates/{template}/default', [SettingsController::class, 'setDefaultTemplate'])->name('pdf-templates.default');
 
+                Route::post('/demo-data', [SettingsController::class, 'seedDemoData'])->name('demo-data');
+
                 Route::get('/users', [\App\Http\Controllers\UserController::class, 'index'])->name('users');
                 Route::post('/users', [\App\Http\Controllers\UserController::class, 'store'])->name('users.store');
                 Route::put('/users/{user}', [\App\Http\Controllers\UserController::class, 'update'])->name('users.update');

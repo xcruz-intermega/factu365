@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { Head, useForm, Link } from '@inertiajs/vue3';
+import { Head, useForm, Link, router } from '@inertiajs/vue3';
+import { ref } from 'vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
+import ConfirmDialog from '@/Components/ConfirmDialog.vue';
 
 interface Company {
     id?: number;
@@ -53,6 +55,19 @@ const handleLogoChange = (e: Event) => {
 const submit = () => {
     form.post(route('settings.company.update'), {
         forceFormData: true,
+    });
+};
+
+const showDemoConfirm = ref(false);
+const demoProcessing = ref(false);
+
+const seedDemoData = () => {
+    demoProcessing.value = true;
+    router.post(route('settings.demo-data'), {}, {
+        onFinish: () => {
+            demoProcessing.value = false;
+            showDemoConfirm.value = false;
+        },
     });
 };
 </script>
@@ -178,5 +193,31 @@ const submit = () => {
                 </button>
             </div>
         </form>
+
+        <!-- Demo Data -->
+        <div class="mt-6 rounded-lg border border-amber-300 bg-amber-50 p-4 shadow-sm">
+            <h3 class="mb-1 text-sm font-semibold text-amber-800">Datos de prueba</h3>
+            <p class="mb-3 text-sm text-amber-700">
+                Genera datos ficticios para demostración: ~100 clientes, 70 productos,
+                200 documentos (facturas, presupuestos, albaranes) y 100 gastos.
+            </p>
+            <button
+                type="button"
+                @click="showDemoConfirm = true"
+                class="inline-flex items-center rounded-md bg-amber-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-amber-500"
+            >
+                Generar datos de prueba
+            </button>
+        </div>
+
+        <ConfirmDialog
+            :show="showDemoConfirm"
+            title="Generar datos de prueba"
+            message="Se crearán ~1.000 registros ficticios (clientes, productos, facturas y gastos). Esta acción no se puede deshacer fácilmente. ¿Continuar?"
+            confirm-label="Generar"
+            :processing="demoProcessing"
+            @confirm="seedDemoData"
+            @cancel="showDemoConfirm = false"
+        />
     </AppLayout>
 </template>

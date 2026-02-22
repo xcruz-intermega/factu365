@@ -209,6 +209,16 @@ class SettingsController extends Controller
         return back()->with('success', 'Plantilla "' . $template->name . '" establecida como predeterminada.');
     }
 
+    // ─── Demo Data ───
+
+    public function seedDemoData(): \Illuminate\Http\RedirectResponse
+    {
+        $seeder = new \Database\Seeders\DemoDataSeeder();
+        $seeder->run();
+
+        return back()->with('success', 'Datos de prueba generados correctamente.');
+    }
+
     // ─── Helpers ───
 
     private function documentTypeOptions(): array
