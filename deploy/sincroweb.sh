@@ -79,7 +79,7 @@ echo "  → composer install..."
 COMPOSER_ALLOW_SUPERUSER=1 ${PHP_BIN} ${COMPOSER_BIN} install --no-dev --optimize-autoloader --no-interaction 2>&1 | tail -1
 
 echo "  → npm build..."
-sudo -u ${PLESK_USER} npm run build 2>&1 | tail -1
+sudo -u ${PLESK_USER} npm run build 2>&1 | grep -E "^✓|built in" | tail -1 || true
 
 echo "  → migrate..."
 ${PHP_BIN} artisan migrate --force 2>&1 | tail -3
