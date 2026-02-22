@@ -59,7 +59,7 @@ class SettingsController extends Controller
             CompanyProfile::create($validated);
         }
 
-        return back()->with('success', 'Datos de empresa actualizados.');
+        return back()->with('success', __('settings.flash_company_updated'));
     }
 
     // ─── Document Series ───
@@ -94,7 +94,7 @@ class SettingsController extends Controller
 
         DocumentSeries::create($validated);
 
-        return back()->with('success', 'Serie creada correctamente.');
+        return back()->with('success', __('settings.flash_series_created'));
     }
 
     public function updateSeries(Request $request, DocumentSeries $series)
@@ -115,18 +115,18 @@ class SettingsController extends Controller
 
         $series->update($validated);
 
-        return back()->with('success', 'Serie actualizada.');
+        return back()->with('success', __('settings.flash_series_updated'));
     }
 
     public function destroySeries(DocumentSeries $series)
     {
         if ($series->documents()->exists()) {
-            return back()->with('error', 'No se puede eliminar una serie con documentos asociados.');
+            return back()->with('error', __('settings.error_series_has_documents'));
         }
 
         $series->delete();
 
-        return back()->with('success', 'Serie eliminada.');
+        return back()->with('success', __('settings.flash_series_deleted'));
     }
 
     // ─── Certificates ───
@@ -163,10 +163,10 @@ class SettingsController extends Controller
                 $request->input('name'),
             );
         } catch (\Throwable $e) {
-            return back()->with('error', 'Error al procesar el certificado: ' . $e->getMessage());
+            return back()->with('error', __('settings.error_cert_processing', ['error' => $e->getMessage()]));
         }
 
-        return back()->with('success', 'Certificado cargado correctamente.');
+        return back()->with('success', __('settings.flash_cert_uploaded'));
     }
 
     public function toggleCertificate(Certificate $certificate)
@@ -178,7 +178,7 @@ class SettingsController extends Controller
 
         $certificate->update(['is_active' => ! $certificate->is_active]);
 
-        return back()->with('success', $certificate->is_active ? 'Certificado activado.' : 'Certificado desactivado.');
+        return back()->with('success', $certificate->is_active ? __('settings.flash_cert_activated') : __('settings.flash_cert_deactivated'));
     }
 
     public function destroyCertificate(Certificate $certificate)
@@ -189,7 +189,7 @@ class SettingsController extends Controller
 
         $certificate->delete();
 
-        return back()->with('success', 'Certificado eliminado.');
+        return back()->with('success', __('settings.flash_cert_deleted'));
     }
 
     // ─── PDF Templates ───
@@ -206,7 +206,7 @@ class SettingsController extends Controller
         PdfTemplate::where('id', '!=', $template->id)->update(['is_default' => false]);
         $template->update(['is_default' => true]);
 
-        return back()->with('success', 'Plantilla "' . $template->name . '" establecida como predeterminada.');
+        return back()->with('success', __('settings.flash_pdf_default', ['name' => $template->name]));
     }
 
     // ─── Demo Data ───
@@ -216,7 +216,7 @@ class SettingsController extends Controller
         $seeder = new \Database\Seeders\DemoDataSeeder();
         $seeder->run();
 
-        return back()->with('success', 'Datos de prueba generados correctamente.');
+        return back()->with('success', __('settings.flash_demo_generated'));
     }
 
     // ─── Helpers ───
@@ -224,13 +224,13 @@ class SettingsController extends Controller
     private function documentTypeOptions(): array
     {
         return [
-            ['value' => Document::TYPE_INVOICE, 'label' => 'Factura'],
-            ['value' => Document::TYPE_QUOTE, 'label' => 'Presupuesto'],
-            ['value' => Document::TYPE_DELIVERY_NOTE, 'label' => 'Albarán'],
-            ['value' => Document::TYPE_RECTIFICATIVE, 'label' => 'Rectificativa'],
-            ['value' => Document::TYPE_PROFORMA, 'label' => 'Proforma'],
-            ['value' => Document::TYPE_RECEIPT, 'label' => 'Recibo'],
-            ['value' => Document::TYPE_PURCHASE_INVOICE, 'label' => 'Factura recibida'],
+            ['value' => Document::TYPE_INVOICE, 'label' => __('documents.type_invoice')],
+            ['value' => Document::TYPE_QUOTE, 'label' => __('documents.type_quote')],
+            ['value' => Document::TYPE_DELIVERY_NOTE, 'label' => __('documents.type_delivery_note')],
+            ['value' => Document::TYPE_RECTIFICATIVE, 'label' => __('documents.type_rectificative')],
+            ['value' => Document::TYPE_PROFORMA, 'label' => __('documents.type_proforma')],
+            ['value' => Document::TYPE_RECEIPT, 'label' => __('documents.type_receipt')],
+            ['value' => Document::TYPE_PURCHASE_INVOICE, 'label' => __('documents.type_purchase_invoice')],
         ];
     }
 }

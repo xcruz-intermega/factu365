@@ -29,11 +29,11 @@ const submit = () => {
 
 <template>
     <GuestLayout>
-        <Head title="Restablecer contraseña" />
+        <Head :title="$t('auth.reset_title')" />
 
         <form @submit.prevent="submit">
             <div>
-                <InputLabel for="email" value="Email" />
+                <InputLabel for="email" :value="$t('auth.email')" />
 
                 <TextInput
                     id="email"
@@ -49,7 +49,7 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
-                <InputLabel for="password" value="Nueva contraseña" />
+                <InputLabel for="password" :value="$t('auth.new_password')" />
 
                 <TextInput
                     id="password"
@@ -66,7 +66,7 @@ const submit = () => {
             <div class="mt-4">
                 <InputLabel
                     for="password_confirmation"
-                    value="Confirmar contraseña"
+                    :value="$t('auth.confirm_password')"
                 />
 
                 <TextInput
@@ -89,7 +89,7 @@ const submit = () => {
                     :class="{ 'opacity-25': form.processing }"
                     :disabled="form.processing"
                 >
-                    Restablecer contraseña
+                    {{ $t('auth.reset_button') }}
                 </PrimaryButton>
             </div>
         </form>

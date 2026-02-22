@@ -26,13 +26,13 @@ const submit = () => {
 </script>
 
 <template>
-    <Head title="Nuevo producto" />
+    <Head :title="$t('products.new_product')" />
 
     <AppLayout>
         <template #header>
-            <h1 class="text-lg font-semibold text-gray-900">Nuevo producto</h1>
+            <h1 class="text-lg font-semibold text-gray-900">{{ $t('products.new_product') }}</h1>
         </template>
 
-        <ProductForm :form="form" :families="families" submit-label="Crear producto" @submit="submit" />
+        <ProductForm :form="form" :families="families" :submit-label="$t('products.create_product')" @submit="submit" />
     </AppLayout>
 </template>

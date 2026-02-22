@@ -34,13 +34,13 @@ const submit = () => {
 </script>
 
 <template>
-    <Head title="Nuevo cliente" />
+    <Head :title="$t('clients.new_client')" />
 
     <AppLayout>
         <template #header>
-            <h1 class="text-lg font-semibold text-gray-900">Nuevo cliente</h1>
+            <h1 class="text-lg font-semibold text-gray-900">{{ $t('clients.new_client') }}</h1>
         </template>
 
-        <ClientForm :form="form" :payment-templates="paymentTemplates" submit-label="Crear cliente" @submit="submit" />
+        <ClientForm :form="form" :payment-templates="paymentTemplates" :submit-label="$t('clients.create_client')" @submit="submit" />
     </AppLayout>
 </template>

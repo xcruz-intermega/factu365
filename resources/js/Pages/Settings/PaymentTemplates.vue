@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { Head, router, useForm } from '@inertiajs/vue3';
+import { trans } from 'laravel-vue-i18n';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import SettingsNav from './Partials/SettingsNav.vue';
 import ConfirmDialog from '@/Components/ConfirmDialog.vue';
@@ -107,18 +108,18 @@ const totalPercentage = (lines: TemplateLine[]) => {
 </script>
 
 <template>
-    <Head title="Plantillas de vencimiento" />
+    <Head :title="$t('settings.templates_title')" />
 
     <AppLayout>
         <template #header>
-            <h1 class="text-lg font-semibold text-gray-900">Plantillas de vencimiento</h1>
+            <h1 class="text-lg font-semibold text-gray-900">{{ $t('settings.templates_title') }}</h1>
         </template>
 
         <SettingsNav current="payment-templates" />
 
         <div class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
             <div class="mb-4 flex items-center justify-between">
-                <h3 class="text-sm font-semibold text-gray-900">Plantillas</h3>
+                <h3 class="text-sm font-semibold text-gray-900">{{ $t('settings.templates_section') }}</h3>
                 <button
                     @click="showNew = !showNew"
                     class="inline-flex items-center rounded-md bg-indigo-50 px-3 py-1.5 text-sm font-semibold text-indigo-600 hover:bg-indigo-100"
@@ -126,7 +127,7 @@ const totalPercentage = (lines: TemplateLine[]) => {
                     <svg class="-ml-0.5 mr-1 h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                         <path d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
                     </svg>
-                    Nueva plantilla
+                    {{ $t('settings.new_template') }}
                 </button>
             </div>
 
@@ -135,43 +136,43 @@ const totalPercentage = (lines: TemplateLine[]) => {
                 <form @submit.prevent="submitNew" class="space-y-4">
                     <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
                         <div class="sm:col-span-2">
-                            <label class="block text-xs font-medium text-gray-700">Nombre *</label>
+                            <label class="block text-xs font-medium text-gray-700">{{ $t('settings.template_name') }}</label>
                             <input type="text" v-model="newForm.name" class="mt-0.5 block w-full rounded-md border-gray-300 text-sm" />
                         </div>
                         <div class="flex items-end">
                             <label class="flex items-center gap-2 text-sm">
                                 <input type="checkbox" v-model="newForm.is_default" class="rounded border-gray-300 text-indigo-600" />
-                                Por defecto
+                                {{ $t('settings.template_default') }}
                             </label>
                         </div>
                     </div>
 
                     <div>
                         <div class="mb-2 flex items-center justify-between">
-                            <label class="text-xs font-medium text-gray-700">Vencimientos</label>
+                            <label class="text-xs font-medium text-gray-700">{{ $t('settings.template_due_dates') }}</label>
                             <span class="text-xs" :class="totalPercentage(newForm.lines) === 100 ? 'text-green-600' : 'text-red-600'">
-                                Total: {{ totalPercentage(newForm.lines).toFixed(2) }}%
+                                {{ $t('settings.template_total') }} {{ totalPercentage(newForm.lines).toFixed(2) }}%
                             </span>
                         </div>
                         <div v-for="(line, i) in newForm.lines" :key="i" class="mb-2 flex items-center gap-3">
                             <div>
-                                <label class="text-xs text-gray-500">Días</label>
+                                <label class="text-xs text-gray-500">{{ $t('settings.template_days') }}</label>
                                 <input type="number" v-model.number="line.days_from_issue" min="0" class="block w-20 rounded-md border-gray-300 text-sm" />
                             </div>
                             <div>
-                                <label class="text-xs text-gray-500">% del total</label>
+                                <label class="text-xs text-gray-500">{{ $t('settings.template_pct') }}</label>
                                 <input type="number" v-model.number="line.percentage" min="0" max="100" step="0.01" class="block w-24 rounded-md border-gray-300 text-sm" />
                             </div>
                             <button v-if="newForm.lines.length > 1" type="button" @click="removeNewLine(i)" class="mt-4 text-red-500 hover:text-red-700">
                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                             </button>
                         </div>
-                        <button type="button" @click="addNewLine" class="text-sm text-indigo-600 hover:text-indigo-800">+ Añadir vencimiento</button>
+                        <button type="button" @click="addNewLine" class="text-sm text-indigo-600 hover:text-indigo-800">{{ $t('settings.add_due_date') }}</button>
                     </div>
 
                     <div class="flex gap-2">
-                        <button type="submit" :disabled="newForm.processing" class="rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-500 disabled:opacity-50">Crear</button>
-                        <button type="button" @click="showNew = false" class="rounded-md bg-gray-200 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-300">Cancelar</button>
+                        <button type="submit" :disabled="newForm.processing" class="rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-500 disabled:opacity-50">{{ $t('common.create') }}</button>
+                        <button type="button" @click="showNew = false" class="rounded-md bg-gray-200 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-300">{{ $t('common.cancel') }}</button>
                     </div>
                 </form>
             </div>
@@ -183,26 +184,26 @@ const totalPercentage = (lines: TemplateLine[]) => {
                         <form @submit.prevent="submitEdit(tpl.id)" class="space-y-4">
                             <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
                                 <div class="sm:col-span-2">
-                                    <label class="block text-xs font-medium text-gray-700">Nombre *</label>
+                                    <label class="block text-xs font-medium text-gray-700">{{ $t('settings.template_name') }}</label>
                                     <input type="text" v-model="editForm.name" class="mt-0.5 block w-full rounded-md border-gray-300 text-sm" />
                                 </div>
                                 <div class="flex items-end">
                                     <label class="flex items-center gap-2 text-sm">
                                         <input type="checkbox" v-model="editForm.is_default" class="rounded border-gray-300 text-indigo-600" />
-                                        Por defecto
+                                        {{ $t('settings.template_default') }}
                                     </label>
                                 </div>
                             </div>
                             <div>
                                 <div class="mb-2 flex items-center justify-between">
-                                    <label class="text-xs font-medium text-gray-700">Vencimientos</label>
+                                    <label class="text-xs font-medium text-gray-700">{{ $t('settings.template_due_dates') }}</label>
                                     <span class="text-xs" :class="totalPercentage(editForm.lines) === 100 ? 'text-green-600' : 'text-red-600'">
-                                        Total: {{ totalPercentage(editForm.lines).toFixed(2) }}%
+                                        {{ $t('settings.template_total') }} {{ totalPercentage(editForm.lines).toFixed(2) }}%
                                     </span>
                                 </div>
                                 <div v-for="(line, i) in editForm.lines" :key="i" class="mb-2 flex items-center gap-3">
                                     <div>
-                                        <label class="text-xs text-gray-500">Días</label>
+                                        <label class="text-xs text-gray-500">{{ $t('settings.template_days') }}</label>
                                         <input type="number" v-model.number="line.days_from_issue" min="0" class="block w-20 rounded-md border-gray-300 text-sm" />
                                     </div>
                                     <div>
@@ -213,11 +214,11 @@ const totalPercentage = (lines: TemplateLine[]) => {
                                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                                     </button>
                                 </div>
-                                <button type="button" @click="addEditLine" class="text-sm text-indigo-600 hover:text-indigo-800">+ Añadir vencimiento</button>
+                                <button type="button" @click="addEditLine" class="text-sm text-indigo-600 hover:text-indigo-800">{{ $t('settings.add_due_date') }}</button>
                             </div>
                             <div class="flex gap-2">
-                                <button type="submit" :disabled="editForm.processing" class="rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-500 disabled:opacity-50">Guardar</button>
-                                <button type="button" @click="editingId = null" class="rounded-md bg-gray-200 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-300">Cancelar</button>
+                                <button type="submit" :disabled="editForm.processing" class="rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-500 disabled:opacity-50">{{ $t('common.save') }}</button>
+                                <button type="button" @click="editingId = null" class="rounded-md bg-gray-200 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-300">{{ $t('common.cancel') }}</button>
                             </div>
                         </form>
                     </template>
@@ -225,32 +226,32 @@ const totalPercentage = (lines: TemplateLine[]) => {
                         <div class="flex items-center justify-between">
                             <div>
                                 <span class="font-medium text-gray-900">{{ tpl.name }}</span>
-                                <span v-if="tpl.is_default" class="ml-2 rounded-full bg-indigo-100 px-2 py-0.5 text-xs font-medium text-indigo-700">Por defecto</span>
+                                <span v-if="tpl.is_default" class="ml-2 rounded-full bg-indigo-100 px-2 py-0.5 text-xs font-medium text-indigo-700">{{ $t('settings.template_default') }}</span>
                             </div>
                             <div class="flex items-center gap-2">
-                                <button @click="startEdit(tpl)" class="text-sm text-indigo-600 hover:text-indigo-900">Editar</button>
-                                <button @click="confirmDelete(tpl)" class="text-sm text-red-600 hover:text-red-900">Eliminar</button>
+                                <button @click="startEdit(tpl)" class="text-sm text-indigo-600 hover:text-indigo-900">{{ $t('common.edit') }}</button>
+                                <button @click="confirmDelete(tpl)" class="text-sm text-red-600 hover:text-red-900">{{ $t('common.delete') }}</button>
                             </div>
                         </div>
                         <div class="mt-2 flex flex-wrap gap-3">
                             <span v-for="(line, i) in tpl.lines" :key="i" class="rounded-md bg-gray-100 px-2 py-1 text-xs text-gray-600">
-                                {{ Number(line.percentage) }}% a {{ line.days_from_issue }} días
+                                {{ Number(line.percentage) }}% {{ $t('settings.template_at') }} {{ line.days_from_issue }} {{ $t('settings.template_days_unit') }}
                             </span>
                         </div>
                     </template>
                 </div>
 
                 <div v-if="templates.length === 0" class="py-8 text-center text-sm text-gray-500">
-                    No hay plantillas creadas.
+                    {{ $t('settings.no_templates') }}
                 </div>
             </div>
         </div>
 
         <ConfirmDialog
             :show="deleteDialog"
-            title="Eliminar plantilla"
-            :message="`¿Estás seguro de que quieres eliminar '${deleteTarget?.name}'?`"
-            confirm-label="Eliminar"
+            :title="$t('settings.delete_template_title')"
+            :message="trans('settings.delete_template_message', { name: deleteTarget?.name || '' })"
+            :confirm-label="$t('common.delete')"
             :processing="deleting"
             @confirm="executeDelete"
             @cancel="deleteDialog = false"

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+import { trans } from 'laravel-vue-i18n';
 import { router } from '@inertiajs/vue3';
 
 export interface Column {
@@ -31,8 +32,10 @@ const props = withDefaults(defineProps<{
 }>(), {
     sortBy: '',
     sortDir: 'asc',
-    emptyMessage: 'No se encontraron registros.',
+    emptyMessage: '',
 });
+
+const resolvedEmptyMessage = computed(() => props.emptyMessage || trans('common.no_records'));
 
 const emit = defineEmits<{
     sort: [key: string, dir: 'asc' | 'desc'];
@@ -76,14 +79,14 @@ const sortIcon = (column: Column) => {
                             </span>
                         </th>
                         <th scope="col" class="relative px-6 py-3">
-                            <span class="sr-only">Acciones</span>
+                            <span class="sr-only">{{ $t('common.actions') }}</span>
                         </th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200 bg-white">
                     <tr v-if="rows.length === 0">
                         <td :colspan="columns.length + 1" class="px-6 py-12 text-center text-sm text-gray-500">
-                            {{ emptyMessage }}
+                            {{ resolvedEmptyMessage }}
                         </td>
                     </tr>
                     <tr v-for="(row, index) in rows" :key="row.id || index" class="hover:bg-gray-50">
@@ -109,13 +112,13 @@ const sortIcon = (column: Column) => {
         <div v-if="pagination && pagination.last_page > 1" class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
             <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
                 <p class="text-sm text-gray-700">
-                    Mostrando
+                    {{ $t('common.showing') }}
                     <span class="font-medium">{{ pagination.from }}</span>
-                    a
+                    {{ $t('common.to') }}
                     <span class="font-medium">{{ pagination.to }}</span>
-                    de
+                    {{ $t('common.of') }}
                     <span class="font-medium">{{ pagination.total }}</span>
-                    resultados
+                    {{ $t('common.results') }}
                 </p>
                 <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm">
                     <button

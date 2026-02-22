@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, watch } from 'vue';
+import { trans } from 'laravel-vue-i18n';
 import type { InertiaForm } from '@inertiajs/vue3';
 import LineEditor from './LineEditor.vue';
 import TotalsSummary from './TotalsSummary.vue';
@@ -148,17 +149,17 @@ const removeDueDate = (index: number) => {
 const invoiceTypes = computed(() => {
     if (props.documentType === 'rectificative') {
         return [
-            { value: 'R1', label: 'R1 - Rectificativa Art. 80.1, 80.2 y 80.6' },
-            { value: 'R2', label: 'R2 - Rectificativa Art. 80.3' },
-            { value: 'R3', label: 'R3 - Rectificativa Art. 80.4' },
-            { value: 'R4', label: 'R4 - Rectificativa otros' },
-            { value: 'R5', label: 'R5 - Rectificativa facturas simplificadas' },
+            { value: 'R1', label: trans('common.invoice_type_r1') },
+            { value: 'R2', label: trans('common.invoice_type_r2') },
+            { value: 'R3', label: trans('common.invoice_type_r3') },
+            { value: 'R4', label: trans('common.invoice_type_r4') },
+            { value: 'R5', label: trans('common.invoice_type_r5') },
         ];
     }
     return [
-        { value: 'F1', label: 'F1 - Factura completa' },
-        { value: 'F2', label: 'F2 - Factura simplificada' },
-        { value: 'F3', label: 'F3 - Factura emitida en sustitución' },
+        { value: 'F1', label: trans('common.invoice_type_f1') },
+        { value: 'F2', label: trans('common.invoice_type_f2') },
+        { value: 'F3', label: trans('common.invoice_type_f3') },
     ];
 });
 
@@ -187,16 +188,16 @@ const todayStr = new Date().toISOString().split('T')[0];
     <form @submit.prevent="emit('submit')" class="space-y-6">
         <!-- Header section -->
         <div class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-            <h3 class="mb-3 text-sm font-semibold text-gray-900">Datos generales</h3>
+            <h3 class="mb-3 text-sm font-semibold text-gray-900">{{ $t('documents.general_data') }}</h3>
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 <!-- Client -->
                 <div class="sm:col-span-2">
-                    <label class="block text-sm font-medium text-gray-700">Cliente</label>
+                    <label class="block text-sm font-medium text-gray-700">{{ $t('documents.client') }}</label>
                     <div class="mt-1">
                         <SearchSelect
                             v-model="form.client_id"
                             :options="clientOptions"
-                            placeholder="Buscar cliente..."
+                            :placeholder="$t('documents.search_client')"
                             :has-error="!!form.errors.client_id"
                         />
                     </div>
@@ -205,19 +206,19 @@ const todayStr = new Date().toISOString().split('T')[0];
 
                 <!-- Title (only for quotes) -->
                 <div v-if="isQuote" class="sm:col-span-2 lg:col-span-4">
-                    <label class="block text-sm font-medium text-gray-700">Título del presupuesto</label>
+                    <label class="block text-sm font-medium text-gray-700">{{ $t('documents.quote_title') }}</label>
                     <input
                         type="text"
                         v-model="form.title"
                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                        placeholder="Ej: Presupuesto para Jardinería 400h"
+                        :placeholder="$t('documents.quote_title_placeholder')"
                     />
                     <p v-if="form.errors.title" class="mt-1 text-sm text-red-600">{{ form.errors.title }}</p>
                 </div>
 
                 <!-- Invoice type (only for invoices/rectificativas) -->
                 <div v-if="isInvoiceType">
-                    <label class="block text-sm font-medium text-gray-700">Tipo factura</label>
+                    <label class="block text-sm font-medium text-gray-700">{{ $t('documents.invoice_type') }}</label>
                     <select
                         v-model="form.invoice_type"
                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
@@ -228,19 +229,19 @@ const todayStr = new Date().toISOString().split('T')[0];
 
                 <!-- Series (hidden for non-fiscal, they auto-assign) -->
                 <div v-if="series.length > 1 && !isNonFiscal">
-                    <label class="block text-sm font-medium text-gray-700">Serie</label>
+                    <label class="block text-sm font-medium text-gray-700">{{ $t('documents.series') }}</label>
                     <select
                         v-model="form.series_id"
                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                     >
-                        <option :value="null">Por defecto</option>
+                        <option :value="null">{{ $t('common.default') }}</option>
                         <option v-for="s in series" :key="s.id" :value="s.id">{{ s.prefix }} ({{ s.fiscal_year }})</option>
                     </select>
                 </div>
 
                 <!-- Issue date -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">Fecha emisión *</label>
+                    <label class="block text-sm font-medium text-gray-700">{{ $t('documents.issue_date_label') }}</label>
                     <input
                         type="date"
                         v-model="form.issue_date"
@@ -252,7 +253,7 @@ const todayStr = new Date().toISOString().split('T')[0];
 
                 <!-- Due date (simple, hidden if using due_dates) -->
                 <div v-if="!form.due_dates || form.due_dates.length === 0">
-                    <label class="block text-sm font-medium text-gray-700">Fecha vencimiento</label>
+                    <label class="block text-sm font-medium text-gray-700">{{ $t('documents.due_date') }}</label>
                     <input
                         type="date"
                         v-model="form.due_date"
@@ -264,7 +265,7 @@ const todayStr = new Date().toISOString().split('T')[0];
 
                 <!-- Operation date -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">Fecha operación</label>
+                    <label class="block text-sm font-medium text-gray-700">{{ $t('documents.operation_date') }}</label>
                     <input
                         type="date"
                         v-model="form.operation_date"
@@ -274,13 +275,13 @@ const todayStr = new Date().toISOString().split('T')[0];
 
                 <!-- Rectificative type (only for rectificatives) -->
                 <div v-if="documentType === 'rectificative'">
-                    <label class="block text-sm font-medium text-gray-700">Método rectificación</label>
+                    <label class="block text-sm font-medium text-gray-700">{{ $t('documents.rectification_method') }}</label>
                     <select
                         v-model="form.rectificative_type"
                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                     >
-                        <option value="substitution">Por sustitución</option>
-                        <option value="differences">Por diferencias</option>
+                        <option value="substitution">{{ $t('documents.rectification_substitution') }}</option>
+                        <option value="differences">{{ $t('documents.rectification_differences') }}</option>
                     </select>
                 </div>
             </div>
@@ -298,25 +299,25 @@ const todayStr = new Date().toISOString().split('T')[0];
         <!-- Due dates section -->
         <div v-if="paymentTemplates && paymentTemplates.length > 0" class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
             <div class="mb-3 flex items-center justify-between">
-                <h3 class="text-sm font-semibold text-gray-900">Vencimientos</h3>
+                <h3 class="text-sm font-semibold text-gray-900">{{ $t('documents.due_dates') }}</h3>
                 <div class="flex items-center gap-3">
                     <select
                         @change="applyPaymentTemplate(Number(($event.target as HTMLSelectElement).value) || null)"
                         class="rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                     >
-                        <option :value="null">Seleccionar plantilla...</option>
+                        <option :value="null">{{ $t('documents.select_template') }}</option>
                         <option v-for="tpl in paymentTemplates" :key="tpl.id" :value="tpl.id">{{ tpl.name }}</option>
                     </select>
-                    <button type="button" @click="addDueDate" class="text-sm text-indigo-600 hover:text-indigo-800">+ Añadir</button>
+                    <button type="button" @click="addDueDate" class="text-sm text-indigo-600 hover:text-indigo-800">{{ $t('documents.add_due_date') }}</button>
                 </div>
             </div>
             <div v-if="form.due_dates && form.due_dates.length > 0">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-3 py-2 text-left text-xs font-medium uppercase text-gray-500">Fecha</th>
-                            <th class="px-3 py-2 text-right text-xs font-medium uppercase text-gray-500">%</th>
-                            <th class="px-3 py-2 text-right text-xs font-medium uppercase text-gray-500">Importe</th>
+                            <th class="px-3 py-2 text-left text-xs font-medium uppercase text-gray-500">{{ $t('documents.col_date') }}</th>
+                            <th class="px-3 py-2 text-right text-xs font-medium uppercase text-gray-500">{{ $t('documents.col_percent') }}</th>
+                            <th class="px-3 py-2 text-right text-xs font-medium uppercase text-gray-500">{{ $t('documents.col_amount') }}</th>
                             <th class="px-3 py-2 w-10"></th>
                         </tr>
                     </thead>
@@ -340,7 +341,7 @@ const todayStr = new Date().toISOString().split('T')[0];
                     </tbody>
                 </table>
             </div>
-            <p v-else class="text-sm text-gray-500">Sin vencimientos configurados. Se usará la fecha de vencimiento simple.</p>
+            <p v-else class="text-sm text-gray-500">{{ $t('documents.no_due_dates') }}</p>
         </div>
 
         <!-- Bottom section: Notes + Totals side by side -->
@@ -348,24 +349,24 @@ const todayStr = new Date().toISOString().split('T')[0];
             <!-- Notes -->
             <div class="space-y-4">
                 <div class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-                    <h3 class="mb-3 text-sm font-semibold text-gray-900">Notas y pie</h3>
+                    <h3 class="mb-3 text-sm font-semibold text-gray-900">{{ $t('documents.notes_footer') }}</h3>
                     <div class="space-y-3">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700">Notas internas</label>
+                            <label class="block text-sm font-medium text-gray-700">{{ $t('documents.internal_notes') }}</label>
                             <textarea
                                 v-model="form.notes"
                                 rows="2"
                                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                                placeholder="Notas internas (no se muestran al cliente)"
+                                :placeholder="$t('documents.internal_notes_placeholder')"
                             />
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700">Pie de documento</label>
+                            <label class="block text-sm font-medium text-gray-700">{{ $t('documents.document_footer') }}</label>
                             <textarea
                                 v-model="form.footer_text"
                                 rows="2"
                                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                                placeholder="Texto visible en el pie del documento"
+                                :placeholder="$t('documents.footer_placeholder')"
                             />
                         </div>
                     </div>
@@ -392,7 +393,7 @@ const todayStr = new Date().toISOString().split('T')[0];
                 :disabled="form.processing"
                 class="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 disabled:opacity-50"
             >
-                {{ form.processing ? 'Guardando...' : (isEdit ? 'Guardar cambios' : (isNonFiscal ? `Crear ${documentTypeLabel.toLowerCase()}` : 'Crear borrador')) }}
+                {{ form.processing ? $t('common.saving') : (isEdit ? $t('common.save_changes') : (isNonFiscal ? $t('documents.create_document', { type: documentTypeLabel.toLowerCase() }) : $t('documents.create_draft'))) }}
             </button>
         </div>
     </form>

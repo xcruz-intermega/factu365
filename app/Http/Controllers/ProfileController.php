@@ -14,6 +14,20 @@ use Inertia\Response;
 class ProfileController extends Controller
 {
     /**
+     * Update the user's locale preference.
+     */
+    public function updateLocale(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'locale' => ['required', 'string', 'in:es,en,ca'],
+        ]);
+
+        $request->user()->update(['locale' => $request->locale]);
+
+        return Redirect::back();
+    }
+
+    /**
      * Display the user's profile form.
      */
     public function edit(Request $request): Response

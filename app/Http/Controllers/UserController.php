@@ -23,9 +23,9 @@ class UserController extends Controller
                 'created_at' => $u->created_at->format('d/m/Y'),
             ]),
             'roles' => [
-                ['value' => 'viewer', 'label' => 'Visualizador'],
-                ['value' => 'accountant', 'label' => 'Contable'],
-                ['value' => 'admin', 'label' => 'Administrador'],
+                ['value' => 'viewer', 'label' => __('settings.role_viewer')],
+                ['value' => 'accountant', 'label' => __('settings.role_accountant')],
+                ['value' => 'admin', 'label' => __('settings.role_admin')],
             ],
         ]);
     }
@@ -40,20 +40,20 @@ class UserController extends Controller
         ]);
 
         if ($validated['role'] === 'admin' && ! $request->user()->isOwner()) {
-            abort(403, 'Solo el propietario puede crear administradores.');
+            abort(403, __('settings.error_only_owner_admin'));
         }
 
         $validated['password'] = Hash::make($validated['password']);
 
         User::create($validated);
 
-        return back()->with('success', 'Usuario creado correctamente.');
+        return back()->with('success', __('settings.flash_user_created'));
     }
 
     public function update(Request $request, User $user)
     {
         if ($user->isOwner() && $user->id !== $request->user()->id) {
-            abort(403, 'No se puede modificar al propietario.');
+            abort(403, __('settings.error_cannot_modify_owner'));
         }
 
         $validated = $request->validate([
@@ -64,7 +64,7 @@ class UserController extends Controller
         ]);
 
         if (in_array($validated['role'], ['admin', 'owner']) && ! $request->user()->isOwner()) {
-            abort(403, 'Solo el propietario puede asignar este rol.');
+            abort(403, __('settings.error_only_owner_role'));
         }
 
         // Can't change own role
@@ -80,21 +80,21 @@ class UserController extends Controller
 
         $user->update($validated);
 
-        return back()->with('success', 'Usuario actualizado.');
+        return back()->with('success', __('settings.flash_user_updated'));
     }
 
     public function destroy(Request $request, User $user)
     {
         if ($user->id === $request->user()->id) {
-            return back()->with('error', 'No puedes eliminar tu propia cuenta.');
+            return back()->with('error', __('settings.error_cannot_delete_self'));
         }
 
         if ($user->isOwner()) {
-            return back()->with('error', 'No se puede eliminar al propietario.');
+            return back()->with('error', __('settings.error_cannot_delete_owner'));
         }
 
         $user->delete();
 
-        return back()->with('success', 'Usuario eliminado.');
+        return back()->with('success', __('settings.flash_user_deleted'));
     }
 }

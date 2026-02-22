@@ -269,13 +269,13 @@ class Document extends Model
     public static function documentTypeLabel(string $type): string
     {
         return match ($type) {
-            self::TYPE_INVOICE => 'Factura',
-            self::TYPE_QUOTE => 'Presupuesto',
-            self::TYPE_DELIVERY_NOTE => 'Albarán',
-            self::TYPE_PROFORMA => 'Proforma',
-            self::TYPE_RECEIPT => 'Recibo',
-            self::TYPE_RECTIFICATIVE => 'Rectificativa',
-            self::TYPE_PURCHASE_INVOICE => 'Factura recibida',
+            self::TYPE_INVOICE => __('documents.type_invoice'),
+            self::TYPE_QUOTE => __('documents.type_quote'),
+            self::TYPE_DELIVERY_NOTE => __('documents.type_delivery_note'),
+            self::TYPE_PROFORMA => __('documents.type_proforma'),
+            self::TYPE_RECEIPT => __('documents.type_receipt'),
+            self::TYPE_RECTIFICATIVE => __('documents.type_rectificative'),
+            self::TYPE_PURCHASE_INVOICE => __('documents.type_purchase_invoice'),
             default => $type,
         };
     }
@@ -283,18 +283,18 @@ class Document extends Model
     public static function statusLabel(string $status): string
     {
         return match ($status) {
-            self::STATUS_DRAFT => 'Borrador',
-            self::STATUS_FINALIZED => 'Finalizada',
-            self::STATUS_SENT => 'Enviada',
-            self::STATUS_PAID => 'Pagada',
-            self::STATUS_PARTIAL => 'Pago parcial',
-            self::STATUS_OVERDUE => 'Vencida',
-            self::STATUS_CANCELLED => 'Anulada',
-            self::STATUS_REGISTERED => 'Registrada',
-            self::STATUS_CREATED => 'Creado',
-            self::STATUS_ACCEPTED => 'Aceptado',
-            self::STATUS_REJECTED => 'Rechazado',
-            self::STATUS_CONVERTED => 'Convertido',
+            self::STATUS_DRAFT => __('common.status_draft'),
+            self::STATUS_FINALIZED => __('common.status_finalized'),
+            self::STATUS_SENT => __('common.status_sent'),
+            self::STATUS_PAID => __('common.status_paid'),
+            self::STATUS_PARTIAL => __('common.status_partial'),
+            self::STATUS_OVERDUE => __('common.status_overdue'),
+            self::STATUS_CANCELLED => __('common.status_cancelled'),
+            self::STATUS_REGISTERED => __('common.status_registered'),
+            self::STATUS_CREATED => __('common.status_created'),
+            self::STATUS_ACCEPTED => __('common.status_accepted'),
+            self::STATUS_REJECTED => __('common.status_rejected'),
+            self::STATUS_CONVERTED => __('common.status_converted'),
             default => $status,
         };
     }

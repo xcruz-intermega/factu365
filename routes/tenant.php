@@ -14,11 +14,13 @@ use App\Http\Controllers\PaymentTemplateController;
 use App\Http\Controllers\ProductFamilyController;
 use App\Http\Controllers\SettingsController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Middleware\SetLocale;
 use Stancl\Tenancy\Middleware\InitializeTenancyByPath;
 
 Route::prefix('/{tenant}')->middleware([
     'web',
     InitializeTenancyByPath::class,
+    SetLocale::class,
 ])->group(function () {
     Route::get('/', function () {
         return redirect()->route('dashboard');
@@ -28,6 +30,9 @@ Route::prefix('/{tenant}')->middleware([
         ->middleware(['auth', 'verified'])->name('dashboard');
 
     Route::middleware('auth')->group(function () {
+        // Locale
+        Route::patch('/locale', [ProfileController::class, 'updateLocale'])->name('locale.update');
+
         // Profile (all roles)
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

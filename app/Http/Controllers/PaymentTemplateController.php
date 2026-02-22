@@ -46,7 +46,7 @@ class PaymentTemplateController extends Controller
             }
         });
 
-        return back()->with('success', 'Plantilla de vencimiento creada.');
+        return back()->with('success', __('settings.flash_template_created'));
     }
 
     public function update(Request $request, PaymentTemplate $template)
@@ -82,7 +82,7 @@ class PaymentTemplateController extends Controller
             }
         });
 
-        return back()->with('success', 'Plantilla actualizada.');
+        return back()->with('success', __('settings.flash_template_updated'));
     }
 
     public function destroy(PaymentTemplate $template)
@@ -90,7 +90,7 @@ class PaymentTemplateController extends Controller
         $template->lines()->delete();
         $template->delete();
 
-        return back()->with('success', 'Plantilla eliminada.');
+        return back()->with('success', __('settings.flash_template_deleted'));
     }
 
     /**

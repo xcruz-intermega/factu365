@@ -1,0 +1,27 @@
+<?php
+
+return [
+    'title' => 'Tauler',
+    'invoiced_this_month' => 'Facturat aquest mes',
+    'pending_collection' => 'Pendent de cobrament',
+    'expenses_this_month' => 'Despeses aquest mes',
+    'month_result' => 'Resultat mes',
+    'overdue_alert_single' => 'Tens :count factura vençuda',
+    'overdue_alert_plural' => 'Tens :count factures vençudes',
+    'view_invoices' => 'Veure factures',
+    'monthly_evolution' => 'Evolució mensual (últims 12 mesos)',
+    'income' => 'Ingressos',
+    'chart_expenses' => 'Despeses',
+    'verifactu' => 'VERI*FACTU',
+    'vf_accepted' => 'Acceptades',
+    'vf_pending' => 'Pendents',
+    'vf_rejected' => 'Rebutjades',
+    'vf_error' => 'Amb error',
+    'vf_total_records' => 'Total registres:',
+    'latest_invoices' => 'Últimes factures',
+    'view_all' => 'Veure totes',
+    'view_all_m' => 'Veure tots',
+    'no_invoices_yet' => 'Sense factures encara.',
+    'latest_expenses' => 'Últimes despeses',
+    'no_expenses_yet' => 'Sense despeses encara.',
+];

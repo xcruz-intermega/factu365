@@ -24,11 +24,11 @@ const submit = () => {
 
 <template>
     <GuestLayout>
-        <Head title="Registro" />
+        <Head :title="$t('auth.register')" />
 
         <form @submit.prevent="submit">
             <div>
-                <InputLabel for="name" value="Nombre" />
+                <InputLabel for="name" :value="$t('auth.name')" />
 
                 <TextInput
                     id="name"
@@ -44,7 +44,7 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
-                <InputLabel for="email" value="Email" />
+                <InputLabel for="email" :value="$t('auth.email')" />
 
                 <TextInput
                     id="email"
@@ -59,7 +59,7 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
-                <InputLabel for="password" value="Contraseña" />
+                <InputLabel for="password" :value="$t('auth.password')" />
 
                 <TextInput
                     id="password"
@@ -76,7 +76,7 @@ const submit = () => {
             <div class="mt-4">
                 <InputLabel
                     for="password_confirmation"
-                    value="Confirmar contraseña"
+                    :value="$t('auth.confirm_password')"
                 />
 
                 <TextInput
@@ -99,7 +99,7 @@ const submit = () => {
                     :href="route('login')"
                     class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                 >
-                    ¿Ya tienes cuenta?
+                    {{ $t('auth.already_registered') }}
                 </Link>
 
                 <PrimaryButton
@@ -107,7 +107,7 @@ const submit = () => {
                     :class="{ 'opacity-25': form.processing }"
                     :disabled="form.processing"
                 >
-                    Registrarse
+                    {{ $t('auth.register_button') }}
                 </PrimaryButton>
             </div>
         </form>

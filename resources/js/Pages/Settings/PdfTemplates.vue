@@ -22,11 +22,11 @@ const setDefault = (template: Template) => {
 </script>
 
 <template>
-    <Head title="Plantillas PDF" />
+    <Head :title="$t('settings.pdf_title')" />
 
     <AppLayout>
         <template #header>
-            <h1 class="text-lg font-semibold text-gray-900">Plantillas PDF</h1>
+            <h1 class="text-lg font-semibold text-gray-900">{{ $t('settings.pdf_title') }}</h1>
         </template>
 
         <SettingsNav current="pdf-templates" />
@@ -50,7 +50,7 @@ const setDefault = (template: Template) => {
                             <div class="h-2 w-8 rounded" :style="{ backgroundColor: tpl.settings?.accent_color || tpl.settings?.primary_color || '#4f46e5' }"></div>
                         </div>
                     </div>
-                    <Badge v-if="tpl.is_default" color="indigo" class="absolute right-3 top-3">Predeterminada</Badge>
+                    <Badge v-if="tpl.is_default" color="indigo" class="absolute right-3 top-3">{{ $t('settings.pdf_default') }}</Badge>
                 </div>
 
                 <!-- Info -->
@@ -67,15 +67,15 @@ const setDefault = (template: Template) => {
                             @click="setDefault(tpl)"
                             class="text-sm font-medium text-indigo-600 hover:text-indigo-500"
                         >
-                            Establecer como predeterminada
+                            {{ $t('settings.pdf_set_default') }}
                         </button>
-                        <span v-else class="text-xs text-green-600 font-medium">Plantilla activa</span>
+                        <span v-else class="text-xs text-green-600 font-medium">{{ $t('settings.pdf_active') }}</span>
                     </div>
                 </div>
             </div>
 
             <div v-if="templates.length === 0" class="col-span-full rounded-lg border-2 border-dashed border-gray-300 p-8 text-center">
-                <p class="text-sm text-gray-400">No hay plantillas configuradas.</p>
+                <p class="text-sm text-gray-400">{{ $t('settings.no_pdf_templates') }}</p>
             </div>
         </div>
     </AppLayout>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref, watch, onMounted, onUnmounted, nextTick } from 'vue';
+import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue';
 import { router } from '@inertiajs/vue3';
+import { trans } from 'laravel-vue-i18n';
 
 interface SearchResult {
     type: string;
@@ -25,12 +26,12 @@ const typeIcons: Record<string, string> = {
     expense: 'M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z',
 };
 
-const typeLabels: Record<string, string> = {
-    client: 'Cliente',
-    product: 'Producto',
-    document: 'Documento',
-    expense: 'Gasto',
-};
+const typeLabels = computed<Record<string, string>>(() => ({
+    client: trans('search.type_client'),
+    product: trans('search.type_product'),
+    document: trans('search.type_document'),
+    expense: trans('search.type_expense'),
+}));
 
 const typeColors: Record<string, string> = {
     client: 'text-blue-500',
@@ -122,7 +123,7 @@ defineExpose({ openSearch });
         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
         </svg>
-        <span class="hidden sm:inline">Buscar...</span>
+        <span class="hidden sm:inline">{{ $t('search.button') }}</span>
         <kbd class="ml-2 hidden rounded border border-gray-200 bg-gray-50 px-1.5 text-xs font-medium text-gray-400 sm:inline">
             <span class="text-xs">⌘</span>K
         </kbd>
@@ -151,7 +152,7 @@ defineExpose({ openSearch });
                             v-model="query"
                             type="text"
                             class="w-full border-0 bg-transparent px-3 py-4 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-0"
-                            placeholder="Buscar clientes, productos, facturas, gastos..."
+                            :placeholder="$t('search.placeholder')"
                             @keydown="handleKeydown"
                         />
                         <span v-if="loading" class="h-5 w-5 animate-spin rounded-full border-2 border-gray-300 border-t-indigo-600"></span>
@@ -182,18 +183,18 @@ defineExpose({ openSearch });
 
                     <!-- Empty state -->
                     <div v-else-if="query.length >= 2 && !loading" class="px-4 py-8 text-center">
-                        <p class="text-sm text-gray-500">No se encontraron resultados para "{{ query }}"</p>
+                        <p class="text-sm text-gray-500">{{ $t('search.no_results', { query: query }) }}</p>
                     </div>
 
                     <!-- Footer hint -->
                     <div v-if="query.length < 2 && !loading" class="px-4 py-8 text-center">
-                        <p class="text-sm text-gray-400">Escribe al menos 2 caracteres para buscar</p>
+                        <p class="text-sm text-gray-400">{{ $t('search.hint') }}</p>
                     </div>
 
                     <div class="flex items-center justify-end gap-3 border-t border-gray-100 px-4 py-2.5 text-xs text-gray-400">
-                        <span class="flex items-center gap-1"><kbd class="rounded border border-gray-200 bg-gray-50 px-1">↑↓</kbd> navegar</span>
-                        <span class="flex items-center gap-1"><kbd class="rounded border border-gray-200 bg-gray-50 px-1">↵</kbd> abrir</span>
-                        <span class="flex items-center gap-1"><kbd class="rounded border border-gray-200 bg-gray-50 px-1">esc</kbd> cerrar</span>
+                        <span class="flex items-center gap-1"><kbd class="rounded border border-gray-200 bg-gray-50 px-1">↑↓</kbd> {{ $t('search.navigate') }}</span>
+                        <span class="flex items-center gap-1"><kbd class="rounded border border-gray-200 bg-gray-50 px-1">↵</kbd> {{ $t('search.open') }}</span>
+                        <span class="flex items-center gap-1"><kbd class="rounded border border-gray-200 bg-gray-50 px-1">esc</kbd> {{ $t('search.close') }}</span>
                     </div>
                 </div>
             </div>

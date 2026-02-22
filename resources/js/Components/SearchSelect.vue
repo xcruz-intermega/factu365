@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch, nextTick, onMounted, onBeforeUnmount } from 'vue';
+import { trans } from 'laravel-vue-i18n';
 
 export interface SearchSelectOption {
     value: number | string | null;
@@ -13,9 +14,11 @@ const props = withDefaults(defineProps<{
     placeholder?: string;
     hasError?: boolean;
 }>(), {
-    placeholder: 'Seleccionar...',
+    placeholder: '',
     hasError: false,
 });
+
+const resolvedPlaceholder = computed(() => props.placeholder || trans('common.select'));
 
 const emit = defineEmits<{
     'update:modelValue': [value: number | string | null];
@@ -151,7 +154,7 @@ onBeforeUnmount(() => {
                 ref="inputRef"
                 type="text"
                 :value="displayValue"
-                :placeholder="!selectedOption ? placeholder : ''"
+                :placeholder="!selectedOption ? resolvedPlaceholder : ''"
                 @focus="onInputFocus"
                 @input="onInput"
                 @keydown="onKeydown"
@@ -169,7 +172,7 @@ onBeforeUnmount(() => {
                     type="button"
                     @mousedown.prevent="clear"
                     class="rounded p-0.5 text-gray-400 hover:text-gray-600"
-                    title="Limpiar selección"
+                    :title="$t('common.clear_selection')"
                 >
                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -199,7 +202,7 @@ onBeforeUnmount(() => {
                 v-if="filteredOptions.length === 0"
                 class="px-3 py-2 text-sm text-gray-500"
             >
-                Sin resultados
+                {{ $t('common.no_results') }}
             </div>
             <div
                 v-for="(option, idx) in filteredOptions"

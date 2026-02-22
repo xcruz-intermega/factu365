@@ -46,7 +46,7 @@ const submit = () => {
 </script>
 
 <template>
-    <Head title="Nuevo gasto" />
+    <Head :title="$t('expenses.new_expense')" />
 
     <AppLayout>
         <template #header>
@@ -59,7 +59,7 @@ const submit = () => {
                         <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
                     </svg>
                 </Link>
-                <h1 class="text-lg font-semibold text-gray-900">Nuevo gasto</h1>
+                <h1 class="text-lg font-semibold text-gray-900">{{ $t('expenses.new_expense') }}</h1>
             </div>
         </template>
 

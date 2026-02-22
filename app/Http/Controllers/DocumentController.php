@@ -171,7 +171,7 @@ class DocumentController extends Controller
         });
 
         return redirect()->route('documents.edit', [$type, $document])
-            ->with('success', Document::documentTypeLabel($type) . ' creado correctamente.');
+            ->with('success', __('documents.flash_created', ['type' => Document::documentTypeLabel($type)]));
     }
 
     public function edit(string $type, Document $document)
@@ -203,7 +203,7 @@ class DocumentController extends Controller
         $this->ensureDocumentMatchesType($document, $type);
 
         if (! $document->canBeEdited()) {
-            return back()->with('error', 'Este documento no puede ser editado.');
+            return back()->with('error', __('documents.error_cannot_edit'));
         }
 
         $validated = $request->validated();
@@ -283,7 +283,7 @@ class DocumentController extends Controller
         });
 
         return redirect()->route('documents.edit', [$type, $document])
-            ->with('success', Document::documentTypeLabel($type) . ' actualizado correctamente.');
+            ->with('success', __('documents.flash_updated', ['type' => Document::documentTypeLabel($type)]));
     }
 
     public function finalize(string $type, Document $document)
@@ -292,11 +292,11 @@ class DocumentController extends Controller
         $this->ensureDocumentMatchesType($document, $type);
 
         if ($document->isNonFiscalType()) {
-            return back()->with('error', 'Los presupuestos y albaranes no requieren finalización.');
+            return back()->with('error', __('documents.error_no_finalize_needed'));
         }
 
         if (! $document->canBeFinalized()) {
-            return back()->with('error', 'Este documento no puede ser finalizado. Verifique que tiene cliente y líneas.');
+            return back()->with('error', __('documents.error_cannot_finalize'));
         }
 
         DB::transaction(function () use ($document, $type) {
@@ -319,7 +319,7 @@ class DocumentController extends Controller
         InvoiceFinalized::dispatch($document->fresh());
 
         return redirect()->route('documents.edit', [$type, $document])
-            ->with('success', Document::documentTypeLabel($type) . ' finalizado con número ' . $document->number . '.');
+            ->with('success', __('documents.flash_finalized', ['type' => Document::documentTypeLabel($type), 'number' => $document->number]));
     }
 
     public function destroy(string $type, Document $document)
@@ -328,14 +328,14 @@ class DocumentController extends Controller
         $this->ensureDocumentMatchesType($document, $type);
 
         if (! $document->canBeDeleted()) {
-            return back()->with('error', 'Este documento no puede ser eliminado.');
+            return back()->with('error', __('documents.error_cannot_delete'));
         }
 
         $document->lines()->delete();
         $document->delete();
 
         return redirect()->route('documents.index', $type)
-            ->with('success', Document::documentTypeLabel($type) . ' eliminado correctamente.');
+            ->with('success', __('documents.flash_deleted', ['type' => Document::documentTypeLabel($type)]));
     }
 
     public function convert(Request $request, string $type, Document $document)
@@ -344,13 +344,13 @@ class DocumentController extends Controller
         $this->ensureDocumentMatchesType($document, $type);
 
         if (! $document->canBeConverted()) {
-            return back()->with('error', 'Este documento no puede ser convertido.');
+            return back()->with('error', __('documents.error_cannot_convert'));
         }
 
         // Accept target_type from request, default to next in chain
         $newType = $request->input('target_type') ?? Document::nextConversionType($type);
         if (! $newType || ! in_array($newType, $document->conversionTargets())) {
-            return back()->with('error', 'Tipo de conversión no válido.');
+            return back()->with('error', __('documents.error_invalid_conversion'));
         }
 
         $document->load('lines');
@@ -411,13 +411,13 @@ class DocumentController extends Controller
         });
 
         return redirect()->route('documents.edit', [$newType, $newDocument])
-            ->with('success', 'Documento convertido a ' . Document::documentTypeLabel($newType) . '.');
+            ->with('success', __('documents.flash_converted', ['type' => Document::documentTypeLabel($newType)]));
     }
 
     public function createRectificative(Document $document)
     {
         if (! $document->isInvoice() || ! $document->isFinalized()) {
-            return back()->with('error', 'Solo se pueden rectificar facturas finalizadas.');
+            return back()->with('error', __('documents.error_only_finalized'));
         }
 
         $document->load('lines');
@@ -460,7 +460,7 @@ class DocumentController extends Controller
         });
 
         return redirect()->route('documents.edit', [Document::TYPE_RECTIFICATIVE, $newDocument])
-            ->with('success', 'Factura rectificativa creada como borrador.');
+            ->with('success', __('documents.flash_rectificative_created'));
     }
 
     public function updateStatus(Request $request, string $type, Document $document)
@@ -469,7 +469,7 @@ class DocumentController extends Controller
         $this->ensureDocumentMatchesType($document, $type);
 
         if ($document->isDraft()) {
-            return back()->with('error', 'No se puede cambiar el estado de un borrador.');
+            return back()->with('error', __('documents.error_draft_status'));
         }
 
         $validated = $request->validate([
@@ -480,12 +480,12 @@ class DocumentController extends Controller
         $allowedKeys = array_column($allowedStatuses, 'value');
 
         if (! in_array($validated['status'], $allowedKeys)) {
-            return back()->with('error', 'Estado no válido.');
+            return back()->with('error', __('documents.error_invalid_status'));
         }
 
         $document->update(['status' => $validated['status']]);
 
-        return back()->with('success', 'Estado actualizado a ' . Document::statusLabel($validated['status']) . '.');
+        return back()->with('success', __('documents.flash_status_updated', ['status' => Document::statusLabel($validated['status'])]));
     }
 
     public function downloadPdf(Request $request, string $type, Document $document)
@@ -518,7 +518,7 @@ class DocumentController extends Controller
         $this->ensureDocumentMatchesType($document, $type);
 
         if ($document->isDraft()) {
-            return back()->with('error', 'No se puede enviar un documento en borrador.');
+            return back()->with('error', __('documents.error_draft_email'));
         }
 
         $validated = $request->validate([
@@ -536,7 +536,7 @@ class DocumentController extends Controller
         $filename = str_replace(' ', '_', $typeLabel) . '_' . str_replace(['/', '\\'], '-', $document->number ?? $document->id) . '.pdf';
 
         $emailSubject = $validated['subject'] ?? "{$typeLabel} {$document->number}";
-        $emailBody = $validated['message'] ?? "Adjunto encontrará el documento {$typeLabel} {$document->number}.";
+        $emailBody = $validated['message'] ?? __('documents.flash_email_body', ['type' => $typeLabel, 'number' => $document->number]);
 
         Mail::raw($emailBody, function ($mail) use ($validated, $emailSubject, $pdfContent, $filename) {
             $mail->to($validated['email'])
@@ -549,7 +549,7 @@ class DocumentController extends Controller
             $document->update(['status' => Document::STATUS_SENT]);
         }
 
-        return back()->with('success', 'Documento enviado por email a ' . $validated['email'] . '.');
+        return back()->with('success', __('documents.flash_email_sent', ['email' => $validated['email']]));
     }
 
     public function markDueDatePaid(string $type, Document $document, DocumentDueDate $dueDate)
@@ -581,7 +581,7 @@ class DocumentController extends Controller
             }
         }
 
-        return back()->with('success', $dueDate->isPaid() ? 'Vencimiento marcado como pagado.' : 'Vencimiento desmarcado.');
+        return back()->with('success', $dueDate->isPaid() ? __('documents.flash_due_date_paid') : __('documents.flash_due_date_unpaid'));
     }
 
     // -- Private helpers --
@@ -623,40 +623,40 @@ class DocumentController extends Controller
     {
         if ($type === Document::TYPE_PURCHASE_INVOICE) {
             return [
-                ['value' => Document::STATUS_DRAFT, 'label' => 'Borrador'],
-                ['value' => Document::STATUS_REGISTERED, 'label' => 'Registrada'],
-                ['value' => Document::STATUS_PAID, 'label' => 'Pagada'],
+                ['value' => Document::STATUS_DRAFT, 'label' => __('common.status_draft')],
+                ['value' => Document::STATUS_REGISTERED, 'label' => __('common.status_registered')],
+                ['value' => Document::STATUS_PAID, 'label' => __('common.status_paid')],
             ];
         }
 
         if ($type === Document::TYPE_QUOTE) {
             return [
-                ['value' => Document::STATUS_CREATED, 'label' => 'Creado'],
-                ['value' => Document::STATUS_SENT, 'label' => 'Enviado'],
-                ['value' => Document::STATUS_ACCEPTED, 'label' => 'Aceptado'],
-                ['value' => Document::STATUS_REJECTED, 'label' => 'Rechazado'],
-                ['value' => Document::STATUS_CONVERTED, 'label' => 'Convertido'],
-                ['value' => Document::STATUS_CANCELLED, 'label' => 'Anulado'],
+                ['value' => Document::STATUS_CREATED, 'label' => __('common.status_created')],
+                ['value' => Document::STATUS_SENT, 'label' => __('common.status_sent')],
+                ['value' => Document::STATUS_ACCEPTED, 'label' => __('common.status_accepted')],
+                ['value' => Document::STATUS_REJECTED, 'label' => __('common.status_rejected')],
+                ['value' => Document::STATUS_CONVERTED, 'label' => __('common.status_converted')],
+                ['value' => Document::STATUS_CANCELLED, 'label' => __('common.status_cancelled')],
             ];
         }
 
         if ($type === Document::TYPE_DELIVERY_NOTE) {
             return [
-                ['value' => Document::STATUS_CREATED, 'label' => 'Creado'],
-                ['value' => Document::STATUS_SENT, 'label' => 'Enviado'],
-                ['value' => Document::STATUS_CONVERTED, 'label' => 'Convertido'],
-                ['value' => Document::STATUS_CANCELLED, 'label' => 'Anulado'],
+                ['value' => Document::STATUS_CREATED, 'label' => __('common.status_created')],
+                ['value' => Document::STATUS_SENT, 'label' => __('common.status_sent')],
+                ['value' => Document::STATUS_CONVERTED, 'label' => __('common.status_converted')],
+                ['value' => Document::STATUS_CANCELLED, 'label' => __('common.status_cancelled')],
             ];
         }
 
         return [
-            ['value' => Document::STATUS_DRAFT, 'label' => 'Borrador'],
-            ['value' => Document::STATUS_FINALIZED, 'label' => 'Finalizada'],
-            ['value' => Document::STATUS_SENT, 'label' => 'Enviada'],
-            ['value' => Document::STATUS_PAID, 'label' => 'Pagada'],
-            ['value' => Document::STATUS_PARTIAL, 'label' => 'Pago parcial'],
-            ['value' => Document::STATUS_OVERDUE, 'label' => 'Vencida'],
-            ['value' => Document::STATUS_CANCELLED, 'label' => 'Anulada'],
+            ['value' => Document::STATUS_DRAFT, 'label' => __('common.status_draft')],
+            ['value' => Document::STATUS_FINALIZED, 'label' => __('common.status_finalized')],
+            ['value' => Document::STATUS_SENT, 'label' => __('common.status_sent')],
+            ['value' => Document::STATUS_PAID, 'label' => __('common.status_paid')],
+            ['value' => Document::STATUS_PARTIAL, 'label' => __('common.status_partial')],
+            ['value' => Document::STATUS_OVERDUE, 'label' => __('common.status_overdue')],
+            ['value' => Document::STATUS_CANCELLED, 'label' => __('common.status_cancelled')],
         ];
     }
 }

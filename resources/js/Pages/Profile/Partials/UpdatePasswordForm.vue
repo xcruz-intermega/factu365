@@ -39,17 +39,17 @@ const updatePassword = () => {
     <section>
         <header>
             <h2 class="text-lg font-medium text-gray-900">
-                Cambiar contraseña
+                {{ $t('profile.password_title') }}
             </h2>
 
             <p class="mt-1 text-sm text-gray-600">
-                Asegúrate de usar una contraseña larga y aleatoria para mantener tu cuenta segura.
+                {{ $t('profile.password_description') }}
             </p>
         </header>
 
         <form @submit.prevent="updatePassword" class="mt-6 space-y-6">
             <div>
-                <InputLabel for="current_password" value="Contraseña actual" />
+                <InputLabel for="current_password" :value="$t('profile.current_password')" />
 
                 <TextInput
                     id="current_password"
@@ -67,7 +67,7 @@ const updatePassword = () => {
             </div>
 
             <div>
-                <InputLabel for="password" value="Nueva contraseña" />
+                <InputLabel for="password" :value="$t('profile.new_password')" />
 
                 <TextInput
                     id="password"
@@ -84,7 +84,7 @@ const updatePassword = () => {
             <div>
                 <InputLabel
                     for="password_confirmation"
-                    value="Confirmar contraseña"
+                    :value="$t('profile.confirm_password')"
                 />
 
                 <TextInput
@@ -102,7 +102,7 @@ const updatePassword = () => {
             </div>
 
             <div class="flex items-center gap-4">
-                <PrimaryButton :disabled="form.processing">Guardar</PrimaryButton>
+                <PrimaryButton :disabled="form.processing">{{ $t('common.save') }}</PrimaryButton>
 
                 <Transition
                     enter-active-class="transition ease-in-out"
@@ -114,7 +114,7 @@ const updatePassword = () => {
                         v-if="form.recentlySuccessful"
                         class="text-sm text-gray-600"
                     >
-                        Guardado.
+                        {{ $t('common.saved') }}
                     </p>
                 </Transition>
             </div>

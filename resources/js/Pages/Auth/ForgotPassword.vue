@@ -21,10 +21,10 @@ const submit = () => {
 
 <template>
     <GuestLayout>
-        <Head title="Recuperar contraseña" />
+        <Head :title="$t('auth.forgot_title')" />
 
         <div class="mb-4 text-sm text-gray-600">
-            ¿Olvidaste tu contraseña? No te preocupes. Indícanos tu dirección de email y te enviaremos un enlace para restablecerla.
+            {{ $t('auth.forgot_text') }}
         </div>
 
         <div
@@ -36,7 +36,7 @@ const submit = () => {
 
         <form @submit.prevent="submit">
             <div>
-                <InputLabel for="email" value="Email" />
+                <InputLabel for="email" :value="$t('auth.email')" />
 
                 <TextInput
                     id="email"
@@ -56,7 +56,7 @@ const submit = () => {
                     :class="{ 'opacity-25': form.processing }"
                     :disabled="form.processing"
                 >
-                    Enviar enlace de recuperación
+                    {{ $t('auth.send_reset_link') }}
                 </PrimaryButton>
             </div>
         </form>

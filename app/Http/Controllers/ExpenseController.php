@@ -72,7 +72,7 @@ class ExpenseController extends Controller
         ]);
 
         return redirect()->route('expenses.index')
-            ->with('success', 'Gasto registrado correctamente.');
+            ->with('success', __('expenses.flash_created'));
     }
 
     public function edit(Expense $expense)
@@ -117,7 +117,7 @@ class ExpenseController extends Controller
         ]);
 
         return redirect()->route('expenses.index')
-            ->with('success', 'Gasto actualizado correctamente.');
+            ->with('success', __('expenses.flash_updated'));
     }
 
     public function destroy(Expense $expense)
@@ -129,7 +129,7 @@ class ExpenseController extends Controller
         $expense->delete();
 
         return redirect()->route('expenses.index')
-            ->with('success', 'Gasto eliminado correctamente.');
+            ->with('success', __('expenses.flash_deleted'));
     }
 
     public function markPaid(Request $request, Expense $expense)
@@ -145,6 +145,6 @@ class ExpenseController extends Controller
             'payment_method' => $validated['payment_method'] ?? null,
         ]);
 
-        return back()->with('success', 'Gasto marcado como pagado.');
+        return back()->with('success', __('expenses.flash_paid'));
     }
 }

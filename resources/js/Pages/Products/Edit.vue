@@ -56,11 +56,11 @@ const submit = () => {
 </script>
 
 <template>
-    <Head :title="`Editar ${product.name}`" />
+    <Head :title="$t('products.edit_product', { name: product.name })" />
 
     <AppLayout>
         <template #header>
-            <h1 class="text-lg font-semibold text-gray-900">Editar: {{ product.name }}</h1>
+            <h1 class="text-lg font-semibold text-gray-900">{{ $t('products.edit_product', { name: product.name }) }}</h1>
         </template>
 
         <ProductForm
@@ -69,7 +69,7 @@ const submit = () => {
             :product-id="product.id"
             :components="product.components"
             :all-products="allProducts"
-            submit-label="Guardar cambios"
+            :submit-label="$t('common.save_changes')"
             @submit="submit"
         />
     </AppLayout>

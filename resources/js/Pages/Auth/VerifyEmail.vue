@@ -21,17 +21,17 @@ const verificationLinkSent = computed(
 
 <template>
     <GuestLayout>
-        <Head title="Verificación de email" />
+        <Head :title="$t('auth.verify_title')" />
 
         <div class="mb-4 text-sm text-gray-600">
-            ¡Gracias por registrarte! Antes de empezar, ¿podrías verificar tu dirección de email haciendo clic en el enlace que te acabamos de enviar? Si no recibiste el email, te enviaremos otro con gusto.
+            {{ $t('auth.verify_text') }}
         </div>
 
         <div
             class="mb-4 text-sm font-medium text-green-600"
             v-if="verificationLinkSent"
         >
-            Se ha enviado un nuevo enlace de verificación a la dirección de email que proporcionaste durante el registro.
+            {{ $t('auth.verify_sent') }}
         </div>
 
         <form @submit.prevent="submit">
@@ -40,7 +40,7 @@ const verificationLinkSent = computed(
                     :class="{ 'opacity-25': form.processing }"
                     :disabled="form.processing"
                 >
-                    Reenviar email de verificación
+                    {{ $t('auth.resend_verification') }}
                 </PrimaryButton>
 
                 <Link
@@ -48,7 +48,7 @@ const verificationLinkSent = computed(
                     method="post"
                     as="button"
                     class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                    >Cerrar sesión</Link
+                    >{{ $t('common.logout') }}</Link
                 >
             </div>
         </form>

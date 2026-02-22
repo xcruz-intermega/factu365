@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+import { trans } from 'laravel-vue-i18n';
 import { calculateLine, getSurchargeRate, type LineInput, type CalculatedLine } from '@/composables/useTaxCalculator';
 import { resolveClientDiscount, type ClientDiscountData } from '@/composables/useClientDiscountResolver';
 import SearchSelect from '@/Components/SearchSelect.vue';
@@ -210,7 +211,7 @@ const lineError = (index: number, field: string): string | undefined => {
 <template>
     <div class="space-y-4">
         <div class="flex items-center justify-between">
-            <h3 class="text-sm font-semibold text-gray-900">Líneas del documento</h3>
+            <h3 class="text-sm font-semibold text-gray-900">{{ $t('documents.document_lines') }}</h3>
             <button
                 type="button"
                 @click="addLine"
@@ -219,13 +220,13 @@ const lineError = (index: number, field: string): string | undefined => {
                 <svg class="-ml-0.5 mr-1 h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                     <path d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
                 </svg>
-                Añadir línea
+                {{ $t('documents.add_line') }}
             </button>
         </div>
 
         <!-- Lines -->
         <div v-if="lines.length === 0" class="rounded-lg border-2 border-dashed border-gray-300 p-8 text-center">
-            <p class="text-sm text-gray-500">No hay líneas. Haz clic en "Añadir línea" para empezar.</p>
+            <p class="text-sm text-gray-500">{{ $t('documents.no_lines') }}</p>
         </div>
 
         <div v-for="(line, index) in lines" :key="index" class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
@@ -236,7 +237,7 @@ const lineError = (index: number, field: string): string | undefined => {
                         {{ index + 1 }}
                     </span>
                     <span v-if="isComposite(line)" class="inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-medium text-amber-800">
-                        {{ componentCount(line) }} comp.
+                        {{ $t('documents.components_count', { count: String(componentCount(line)) }) }}
                     </span>
                 </div>
 
@@ -245,25 +246,25 @@ const lineError = (index: number, field: string): string | undefined => {
                     <!-- Row 1: Product selector + Concept -->
                     <div class="grid grid-cols-1 gap-3 sm:grid-cols-12">
                         <div class="sm:col-span-4">
-                            <label class="block text-xs font-medium text-gray-600">Producto</label>
+                            <label class="block text-xs font-medium text-gray-600">{{ $t('documents.product') }}</label>
                             <div class="mt-0.5">
                                 <SearchSelect
                                     :model-value="line.product_id ?? null"
                                     @update:model-value="applyProduct(index, $event as number | null)"
                                     :options="productOptions"
-                                    placeholder="Buscar producto..."
+                                    :placeholder="$t('documents.search_product')"
                                 />
                             </div>
                         </div>
                         <div class="sm:col-span-8">
-                            <label class="block text-xs font-medium text-gray-600">Concepto *</label>
+                            <label class="block text-xs font-medium text-gray-600">{{ $t('documents.concept_required') }}</label>
                             <input
                                 type="text"
                                 :value="line.concept"
                                 @input="updateLine(index, 'concept', ($event.target as HTMLInputElement).value)"
                                 class="mt-0.5 block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                 :class="{ 'border-red-500': lineError(index, 'concept') }"
-                                placeholder="Concepto de la línea"
+                                :placeholder="$t('documents.concept_placeholder')"
                             />
                             <p v-if="lineError(index, 'concept')" class="mt-1 text-xs text-red-600">{{ lineError(index, 'concept') }}</p>
                         </div>
@@ -279,15 +280,15 @@ const lineError = (index: number, field: string): string | undefined => {
                             <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
                             </svg>
-                            Expandir componentes ({{ componentCount(line) }})
+                            {{ $t('documents.expand_components', { count: String(componentCount(line)) }) }}
                         </button>
-                        <span class="ml-2 text-xs text-gray-400">Reemplaza esta línea por sus componentes individuales</span>
+                        <span class="ml-2 text-xs text-gray-400">{{ $t('documents.expand_components_help') }}</span>
                     </div>
 
                     <!-- Row 2: Quantity, Unit Price, Unit, Discount -->
                     <div class="grid grid-cols-2 gap-3 sm:grid-cols-12">
                         <div class="sm:col-span-2">
-                            <label class="block text-xs font-medium text-gray-600">Cantidad *</label>
+                            <label class="block text-xs font-medium text-gray-600">{{ $t('documents.quantity_required') }}</label>
                             <input
                                 type="number"
                                 :value="line.quantity"
@@ -299,7 +300,7 @@ const lineError = (index: number, field: string): string | undefined => {
                             />
                         </div>
                         <div class="sm:col-span-3">
-                            <label class="block text-xs font-medium text-gray-600">Precio unitario *</label>
+                            <label class="block text-xs font-medium text-gray-600">{{ $t('documents.unit_price_required') }}</label>
                             <input
                                 type="number"
                                 :value="line.unit_price"
@@ -311,20 +312,20 @@ const lineError = (index: number, field: string): string | undefined => {
                             />
                         </div>
                         <div class="sm:col-span-2">
-                            <label class="block text-xs font-medium text-gray-600">Unidad</label>
+                            <label class="block text-xs font-medium text-gray-600">{{ $t('documents.unit') }}</label>
                             <input
                                 type="text"
                                 :value="line.unit"
                                 @input="updateLine(index, 'unit', ($event.target as HTMLInputElement).value)"
                                 class="mt-0.5 block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                                placeholder="ud."
+                                :placeholder="$t('documents.unit_short')"
                             />
                         </div>
                         <div class="sm:col-span-2">
                             <label class="flex items-center gap-1 text-xs font-medium text-gray-600">
-                                Dto. %
-                                <span v-if="hasClientDiscount(line)" class="inline-flex items-center rounded-full bg-green-100 px-1.5 py-0.5 text-[9px] font-medium text-green-700" title="Descuento automático del cliente">
-                                    Dto. cliente
+                                {{ $t('documents.discount_pct') }}
+                                <span v-if="hasClientDiscount(line)" class="inline-flex items-center rounded-full bg-green-100 px-1.5 py-0.5 text-[9px] font-medium text-green-700" :title="$t('documents.client_discount')">
+                                    {{ $t('documents.client_discount') }}
                                 </span>
                             </label>
                             <input
@@ -339,7 +340,7 @@ const lineError = (index: number, field: string): string | undefined => {
                         </div>
                         <div class="sm:col-span-3 flex items-end">
                             <div class="text-right w-full">
-                                <span class="text-xs text-gray-500">Subtotal</span>
+                                <span class="text-xs text-gray-500">{{ $t('common.subtotal') }}</span>
                                 <p class="text-sm font-semibold text-gray-900">{{ formatCurrency(calculatedLines[index]?.line_total ?? 0) }}</p>
                             </div>
                         </div>
@@ -348,37 +349,37 @@ const lineError = (index: number, field: string): string | undefined => {
                     <!-- Row 3: VAT, IRPF, Surcharge -->
                     <div class="grid grid-cols-2 gap-3 sm:grid-cols-12">
                         <div class="sm:col-span-2">
-                            <label class="block text-xs font-medium text-gray-600">IVA %</label>
+                            <label class="block text-xs font-medium text-gray-600">{{ $t('documents.vat_pct') }}</label>
                             <select
                                 :value="line.vat_rate"
                                 @change="onVatRateChange(index, Number(($event.target as HTMLSelectElement).value))"
                                 class="mt-0.5 block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                             >
-                                <option :value="21">21%</option>
-                                <option :value="10">10%</option>
-                                <option :value="4">4%</option>
-                                <option :value="0">0% (Exento)</option>
+                                <option :value="21">{{ $t('common.vat_21') }}</option>
+                                <option :value="10">{{ $t('common.vat_10') }}</option>
+                                <option :value="4">{{ $t('common.vat_4') }}</option>
+                                <option :value="0">{{ $t('common.vat_0_exempt') }}</option>
                             </select>
                         </div>
                         <div v-if="line.vat_rate === 0" class="sm:col-span-3">
-                            <label class="block text-xs font-medium text-gray-600">Exención *</label>
+                            <label class="block text-xs font-medium text-gray-600">{{ $t('documents.exemption_required') }}</label>
                             <select
                                 :value="line.exemption_code"
                                 @change="updateLine(index, 'exemption_code', ($event.target as HTMLSelectElement).value)"
                                 class="mt-0.5 block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                 :class="{ 'border-red-500': lineError(index, 'exemption_code') }"
                             >
-                                <option value="">Seleccionar</option>
-                                <option value="E1">E1 - Exenta Art. 20</option>
-                                <option value="E2">E2 - Exenta Art. 21</option>
-                                <option value="E3">E3 - Exenta Art. 22</option>
-                                <option value="E4">E4 - Exenta Art. 23 y 24</option>
-                                <option value="E5">E5 - Exenta Art. 25</option>
-                                <option value="E6">E6 - Exenta otros</option>
+                                <option value="">{{ $t('common.exemption_select') }}</option>
+                                <option value="E1">{{ $t('common.exemption_e1') }}</option>
+                                <option value="E2">{{ $t('common.exemption_e2') }}</option>
+                                <option value="E3">{{ $t('common.exemption_e3') }}</option>
+                                <option value="E4">{{ $t('common.exemption_e4') }}</option>
+                                <option value="E5">{{ $t('common.exemption_e5') }}</option>
+                                <option value="E6">{{ $t('common.exemption_e6') }}</option>
                             </select>
                         </div>
                         <div class="sm:col-span-2">
-                            <label class="block text-xs font-medium text-gray-600">IRPF %</label>
+                            <label class="block text-xs font-medium text-gray-600">{{ $t('documents.irpf_pct') }}</label>
                             <input
                                 type="number"
                                 :value="line.irpf_rate"
@@ -390,7 +391,7 @@ const lineError = (index: number, field: string): string | undefined => {
                             />
                         </div>
                         <div class="sm:col-span-2">
-                            <label class="block text-xs font-medium text-gray-600">R.E.</label>
+                            <label class="block text-xs font-medium text-gray-600">{{ $t('documents.surcharge_label') }}</label>
                             <button
                                 type="button"
                                 @click="toggleSurcharge(index)"
@@ -399,19 +400,19 @@ const lineError = (index: number, field: string): string | undefined => {
                                     ? 'border-indigo-500 bg-indigo-50 text-indigo-700 font-semibold'
                                     : 'border-gray-300 bg-white text-gray-500 hover:bg-gray-50'"
                             >
-                                {{ line.surcharge_rate > 0 ? `${line.surcharge_rate}%` : 'No' }}
+                                {{ line.surcharge_rate > 0 ? `${line.surcharge_rate}%` : $t('common.no') }}
                             </button>
                         </div>
                         <div class="sm:col-span-3 flex items-end">
                             <div class="text-right w-full space-y-0.5">
                                 <p class="text-xs text-gray-500">
-                                    IVA: {{ formatCurrency(calculatedLines[index]?.vat_amount ?? 0) }}
+                                    {{ $t('common.vat') }}: {{ formatCurrency(calculatedLines[index]?.vat_amount ?? 0) }}
                                 </p>
                                 <p v-if="line.irpf_rate > 0" class="text-xs text-red-500">
-                                    IRPF: -{{ formatCurrency(calculatedLines[index]?.irpf_amount ?? 0) }}
+                                    {{ $t('common.irpf') }}: -{{ formatCurrency(calculatedLines[index]?.irpf_amount ?? 0) }}
                                 </p>
                                 <p v-if="line.surcharge_rate > 0" class="text-xs text-gray-500">
-                                    R.E.: {{ formatCurrency(calculatedLines[index]?.surcharge_amount ?? 0) }}
+                                    {{ $t('common.surcharge') }}: {{ formatCurrency(calculatedLines[index]?.surcharge_amount ?? 0) }}
                                 </p>
                             </div>
                         </div>
@@ -423,7 +424,7 @@ const lineError = (index: number, field: string): string | undefined => {
                     type="button"
                     @click="removeLine(index)"
                     class="mt-1 rounded p-1 text-gray-400 hover:bg-red-50 hover:text-red-600"
-                    title="Eliminar línea"
+                    :title="$t('documents.remove_line')"
                 >
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -442,7 +443,7 @@ const lineError = (index: number, field: string): string | undefined => {
                 <svg class="-ml-0.5 mr-1 h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                     <path d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
                 </svg>
-                Añadir otra línea
+                {{ $t('documents.add_another_line') }}
             </button>
         </div>
     </div>

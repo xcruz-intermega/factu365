@@ -1,0 +1,27 @@
+<?php
+
+return [
+    'title' => 'Dashboard',
+    'invoiced_this_month' => 'Facturado este mes',
+    'pending_collection' => 'Pendiente de cobro',
+    'expenses_this_month' => 'Gastos este mes',
+    'month_result' => 'Resultado mes',
+    'overdue_alert_single' => 'Tienes :count factura vencida',
+    'overdue_alert_plural' => 'Tienes :count facturas vencidas',
+    'view_invoices' => 'Ver facturas',
+    'monthly_evolution' => 'Evolución mensual (últimos 12 meses)',
+    'income' => 'Ingresos',
+    'chart_expenses' => 'Gastos',
+    'verifactu' => 'VERI*FACTU',
+    'vf_accepted' => 'Aceptadas',
+    'vf_pending' => 'Pendientes',
+    'vf_rejected' => 'Rechazadas',
+    'vf_error' => 'Con error',
+    'vf_total_records' => 'Total registros:',
+    'latest_invoices' => 'Últimas facturas',
+    'view_all' => 'Ver todas',
+    'view_all_m' => 'Ver todos',
+    'no_invoices_yet' => 'Sin facturas aún.',
+    'latest_expenses' => 'Últimos gastos',
+    'no_expenses_yet' => 'Sin gastos aún.',
+];

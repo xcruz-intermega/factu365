@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { Head, Link, router } from '@inertiajs/vue3';
+import { trans } from 'laravel-vue-i18n';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import DataTable from '@/Components/DataTable.vue';
 import SearchInput from '@/Components/SearchInput.vue';
@@ -36,12 +37,12 @@ const sortBy = ref(props.filters.sort || '');
 const sortDir = ref<'asc' | 'desc'>((props.filters.dir as 'asc' | 'desc') || 'asc');
 
 const columns: Column[] = [
-    { key: 'reference', label: 'Ref.', sortable: true },
-    { key: 'name', label: 'Nombre', sortable: true },
-    { key: 'family', label: 'Familia' },
-    { key: 'type', label: 'Tipo', sortable: true },
-    { key: 'unit_price', label: 'Precio', sortable: true, class: 'text-right' },
-    { key: 'vat_rate', label: 'IVA', sortable: true, class: 'text-right' },
+    { key: 'reference', label: trans('products.col_ref'), sortable: true },
+    { key: 'name', label: trans('products.col_name'), sortable: true },
+    { key: 'family', label: trans('products.col_family') },
+    { key: 'type', label: trans('products.col_type'), sortable: true },
+    { key: 'unit_price', label: trans('products.col_price'), sortable: true, class: 'text-right' },
+    { key: 'vat_rate', label: trans('products.col_vat'), sortable: true, class: 'text-right' },
 ];
 
 const formatCurrency = (val: number | string) => {
@@ -100,11 +101,11 @@ const executeDelete = () => {
 </script>
 
 <template>
-    <Head title="Productos" />
+    <Head :title="$t('products.title')" />
 
     <AppLayout>
         <template #header>
-            <h1 class="text-lg font-semibold text-gray-900">Productos y servicios</h1>
+            <h1 class="text-lg font-semibold text-gray-900">{{ $t('products.title_full') }}</h1>
         </template>
 
         <!-- Toolbar -->
@@ -114,7 +115,7 @@ const executeDelete = () => {
                     <SearchInput
                         :model-value="search"
                         @update:model-value="handleSearch"
-                        placeholder="Buscar por nombre o referencia..."
+                        :placeholder="$t('products.search_placeholder')"
                     />
                 </div>
                 <select
@@ -122,9 +123,9 @@ const executeDelete = () => {
                     @change="handleTypeFilter"
                     class="rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                 >
-                    <option value="">Todos los tipos</option>
-                    <option value="product">Productos</option>
-                    <option value="service">Servicios</option>
+                    <option value="">{{ $t('products.all_types') }}</option>
+                    <option value="product">{{ $t('products.type_products') }}</option>
+                    <option value="service">{{ $t('products.type_services') }}</option>
                 </select>
                 <select
                     v-if="families.length > 0"
@@ -132,7 +133,7 @@ const executeDelete = () => {
                     @change="familyFilter = ($event.target as HTMLSelectElement).value; applyFilters()"
                     class="rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                 >
-                    <option value="">Todas las familias</option>
+                    <option value="">{{ $t('products.all_families') }}</option>
                     <option v-for="f in families" :key="f.id" :value="f.id">{{ f.parent_id ? '— ' : '' }}{{ f.name }}</option>
                 </select>
             </div>
@@ -143,7 +144,7 @@ const executeDelete = () => {
                 <svg class="-ml-0.5 mr-1.5 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
                 </svg>
-                Nuevo producto
+                {{ $t('products.new_product') }}
             </Link>
         </div>
 
@@ -155,7 +156,7 @@ const executeDelete = () => {
             :sort-by="sortBy"
             :sort-dir="sortDir"
             @sort="handleSort"
-            empty-message="No se encontraron productos."
+            :empty-message="$t('products.no_products')"
         >
             <template #cell-family="{ row }">
                 <span v-if="row.family" class="text-sm text-gray-600">{{ row.family.name }}</span>
@@ -164,7 +165,7 @@ const executeDelete = () => {
 
             <template #cell-type="{ value }">
                 <Badge :color="value === 'product' ? 'blue' : 'green'">
-                    {{ value === 'product' ? 'Producto' : 'Servicio' }}
+                    {{ value === 'product' ? $t('products.type_product') : $t('products.type_service') }}
                 </Badge>
             </template>
 
@@ -182,13 +183,13 @@ const executeDelete = () => {
                         :href="route('products.edit', row.id)"
                         class="text-indigo-600 hover:text-indigo-900"
                     >
-                        Editar
+                        {{ $t('common.edit') }}
                     </Link>
                     <button
                         @click="confirmDelete(row)"
                         class="text-red-600 hover:text-red-900"
                     >
-                        Eliminar
+                        {{ $t('common.delete') }}
                     </button>
                 </div>
             </template>
@@ -197,9 +198,9 @@ const executeDelete = () => {
         <!-- Delete Confirmation -->
         <ConfirmDialog
             :show="deleteDialog"
-            title="Eliminar producto"
-            :message="`¿Estás seguro de que quieres eliminar '${deleteTarget?.name}'? Esta acción se puede deshacer.`"
-            confirm-label="Eliminar"
+            :title="trans('products.delete_title')"
+            :message="trans('products.delete_message', { name: deleteTarget?.name })"
+            :confirm-label="trans('common.delete')"
             :processing="deleting"
             @confirm="executeDelete"
             @cancel="deleteDialog = false"

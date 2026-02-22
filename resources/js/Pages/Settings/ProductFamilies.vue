@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { Head, Link, router, useForm } from '@inertiajs/vue3';
+import { trans } from 'laravel-vue-i18n';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import SettingsNav from './Partials/SettingsNav.vue';
 import ConfirmDialog from '@/Components/ConfirmDialog.vue';
@@ -106,18 +107,18 @@ const flattenFamilies = (families: Family[], depth = 0): Array<Family & { depth:
 </script>
 
 <template>
-    <Head title="Familias de producto" />
+    <Head :title="$t('settings.families_title')" />
 
     <AppLayout>
         <template #header>
-            <h1 class="text-lg font-semibold text-gray-900">Familias de producto</h1>
+            <h1 class="text-lg font-semibold text-gray-900">{{ $t('settings.families_title') }}</h1>
         </template>
 
         <SettingsNav current="product-families" />
 
         <div class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
             <div class="mb-4 flex items-center justify-between">
-                <h3 class="text-sm font-semibold text-gray-900">Familias</h3>
+                <h3 class="text-sm font-semibold text-gray-900">{{ $t('settings.families_section') }}</h3>
                 <button
                     @click="showNew = !showNew"
                     class="inline-flex items-center rounded-md bg-indigo-50 px-3 py-1.5 text-sm font-semibold text-indigo-600 hover:bg-indigo-100"
@@ -125,7 +126,7 @@ const flattenFamilies = (families: Family[], depth = 0): Array<Family & { depth:
                     <svg class="-ml-0.5 mr-1 h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                         <path d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
                     </svg>
-                    Nueva familia
+                    {{ $t('settings.new_family') }}
                 </button>
             </div>
 
@@ -133,7 +134,7 @@ const flattenFamilies = (families: Family[], depth = 0): Array<Family & { depth:
             <div v-if="showNew" class="mb-4 rounded-md border border-indigo-200 bg-indigo-50 p-4">
                 <form @submit.prevent="submitNew" class="grid grid-cols-1 gap-3 sm:grid-cols-5">
                     <div class="sm:col-span-2">
-                        <label class="block text-xs font-medium text-gray-700">Nombre *</label>
+                        <label class="block text-xs font-medium text-gray-700">{{ $t('settings.family_name') }}</label>
                         <input
                             type="text"
                             v-model="newForm.name"
@@ -142,7 +143,7 @@ const flattenFamilies = (families: Family[], depth = 0): Array<Family & { depth:
                         />
                     </div>
                     <div>
-                        <label class="block text-xs font-medium text-gray-700">Código</label>
+                        <label class="block text-xs font-medium text-gray-700">{{ $t('settings.family_code') }}</label>
                         <input
                             type="text"
                             v-model="newForm.code"
@@ -150,12 +151,12 @@ const flattenFamilies = (families: Family[], depth = 0): Array<Family & { depth:
                         />
                     </div>
                     <div>
-                        <label class="block text-xs font-medium text-gray-700">Padre</label>
+                        <label class="block text-xs font-medium text-gray-700">{{ $t('settings.family_parent') }}</label>
                         <select
                             v-model="newForm.parent_id"
                             class="mt-0.5 block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                         >
-                            <option :value="null">Ninguno (raíz)</option>
+                            <option :value="null">{{ $t('settings.family_no_parent') }}</option>
                             <option v-for="f in allFamilies" :key="f.id" :value="f.id">
                                 {{ f.parent_id ? '— ' : '' }}{{ f.name }}
                             </option>
@@ -167,14 +168,14 @@ const flattenFamilies = (families: Family[], depth = 0): Array<Family & { depth:
                             :disabled="newForm.processing"
                             class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-500 disabled:opacity-50"
                         >
-                            Crear
+                            {{ $t('common.create') }}
                         </button>
                         <button
                             type="button"
                             @click="showNew = false; newForm.reset()"
                             class="rounded-md bg-gray-200 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-300"
                         >
-                            Cancelar
+                            {{ $t('common.cancel') }}
                         </button>
                     </div>
                 </form>
@@ -184,10 +185,10 @@ const flattenFamilies = (families: Family[], depth = 0): Array<Family & { depth:
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">Nombre</th>
-                        <th class="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">Código</th>
-                        <th class="px-4 py-2 text-right text-xs font-medium uppercase text-gray-500">Orden</th>
-                        <th class="px-4 py-2 text-right text-xs font-medium uppercase text-gray-500">Acciones</th>
+                        <th class="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">{{ $t('settings.col_family_name') }}</th>
+                        <th class="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">{{ $t('settings.col_family_code') }}</th>
+                        <th class="px-4 py-2 text-right text-xs font-medium uppercase text-gray-500">{{ $t('settings.col_family_order') }}</th>
+                        <th class="px-4 py-2 text-right text-xs font-medium uppercase text-gray-500">{{ $t('common.actions') }}</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
@@ -216,8 +217,8 @@ const flattenFamilies = (families: Family[], depth = 0): Array<Family & { depth:
                                 />
                             </td>
                             <td class="px-4 py-2 text-right">
-                                <button @click="submitEdit(family.id)" class="text-sm text-indigo-600 hover:text-indigo-900 mr-2">Guardar</button>
-                                <button @click="cancelEdit" class="text-sm text-gray-600 hover:text-gray-900">Cancelar</button>
+                                <button @click="submitEdit(family.id)" class="text-sm text-indigo-600 hover:text-indigo-900 mr-2">{{ $t('common.save') }}</button>
+                                <button @click="cancelEdit" class="text-sm text-gray-600 hover:text-gray-900">{{ $t('common.cancel') }}</button>
                             </td>
                         </template>
                         <template v-else>
@@ -230,14 +231,14 @@ const flattenFamilies = (families: Family[], depth = 0): Array<Family & { depth:
                             <td class="px-4 py-2 text-sm text-gray-500">{{ family.code || '—' }}</td>
                             <td class="px-4 py-2 text-right text-sm text-gray-500">{{ family.sort_order }}</td>
                             <td class="px-4 py-2 text-right">
-                                <button @click="startEdit(family)" class="text-sm text-indigo-600 hover:text-indigo-900 mr-2">Editar</button>
-                                <button @click="confirmDelete(family)" class="text-sm text-red-600 hover:text-red-900">Eliminar</button>
+                                <button @click="startEdit(family)" class="text-sm text-indigo-600 hover:text-indigo-900 mr-2">{{ $t('common.edit') }}</button>
+                                <button @click="confirmDelete(family)" class="text-sm text-red-600 hover:text-red-900">{{ $t('common.delete') }}</button>
                             </td>
                         </template>
                     </tr>
                     <tr v-if="families.length === 0">
                         <td colspan="4" class="px-4 py-8 text-center text-sm text-gray-500">
-                            No hay familias creadas. Haz clic en "Nueva familia" para empezar.
+                            {{ $t('settings.no_families') }}
                         </td>
                     </tr>
                 </tbody>
@@ -246,9 +247,9 @@ const flattenFamilies = (families: Family[], depth = 0): Array<Family & { depth:
 
         <ConfirmDialog
             :show="deleteDialog"
-            title="Eliminar familia"
-            :message="`¿Estás seguro de que quieres eliminar '${deleteTarget?.name}'?`"
-            confirm-label="Eliminar"
+            :title="$t('settings.delete_family_title')"
+            :message="trans('settings.delete_family_message', { name: deleteTarget?.name || '' })"
+            :confirm-label="$t('common.delete')"
             :processing="deleting"
             @confirm="executeDelete"
             @cancel="deleteDialog = false"

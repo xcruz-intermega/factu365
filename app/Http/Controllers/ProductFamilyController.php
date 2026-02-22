@@ -33,7 +33,7 @@ class ProductFamilyController extends Controller
 
         ProductFamily::create($validated);
 
-        return back()->with('success', 'Familia creada correctamente.');
+        return back()->with('success', __('settings.flash_family_created'));
     }
 
     public function update(Request $request, ProductFamily $family)
@@ -47,26 +47,26 @@ class ProductFamilyController extends Controller
 
         // Prevent self-reference
         if (isset($validated['parent_id']) && $validated['parent_id'] == $family->id) {
-            return back()->with('error', 'Una familia no puede ser padre de sí misma.');
+            return back()->with('error', __('settings.error_family_self_parent'));
         }
 
         $family->update($validated);
 
-        return back()->with('success', 'Familia actualizada.');
+        return back()->with('success', __('settings.flash_family_updated'));
     }
 
     public function destroy(ProductFamily $family)
     {
         if ($family->products()->exists()) {
-            return back()->with('error', 'No se puede eliminar una familia con productos asociados.');
+            return back()->with('error', __('settings.error_family_has_products'));
         }
 
         if ($family->children()->exists()) {
-            return back()->with('error', 'No se puede eliminar una familia con subfamilias.');
+            return back()->with('error', __('settings.error_family_has_children'));
         }
 
         $family->delete();
 
-        return back()->with('success', 'Familia eliminada.');
+        return back()->with('success', __('settings.flash_family_deleted'));
     }
 }

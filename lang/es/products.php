@@ -1,0 +1,89 @@
+<?php
+
+return [
+    // Index
+    'title' => 'Productos',
+    'title_full' => 'Productos y servicios',
+    'new_product' => 'Nuevo producto',
+    'search_placeholder' => 'Buscar por nombre o referencia...',
+    'all_types' => 'Todos los tipos',
+    'type_products' => 'Productos',
+    'type_services' => 'Servicios',
+    'all_families' => 'Todas las familias',
+    'no_products' => 'No se encontraron productos.',
+    'delete_title' => 'Eliminar producto',
+    'delete_message' => '¿Estás seguro de que quieres eliminar \':name\'? Esta acción se puede deshacer.',
+    'type_product' => 'Producto',
+    'type_service' => 'Servicio',
+
+    // Columns
+    'col_ref' => 'Ref.',
+    'col_name' => 'Nombre',
+    'col_family' => 'Familia',
+    'col_type' => 'Tipo',
+    'col_price' => 'Precio',
+    'col_vat' => 'IVA',
+
+    // Create / Edit
+    'create_product' => 'Crear producto',
+    'edit_product' => 'Editar :name',
+
+    // Form sections
+    'section_data' => 'Datos del producto',
+    'section_pricing' => 'Precio e impuestos',
+    'section_components' => 'Escandallo (componentes)',
+
+    // Form fields
+    'type_label' => 'Tipo *',
+    'reference' => 'Referencia',
+    'reference_placeholder' => 'REF-001',
+    'unit_measure' => 'Unidad de medida',
+    'family' => 'Familia',
+    'no_family' => 'Sin familia',
+    'name' => 'Nombre *',
+    'description' => 'Descripción',
+    'unit_price' => 'Precio unitario (sin IVA) *',
+    'vat_type' => 'Tipo de IVA *',
+    'exemption_cause' => 'Causa de exención *',
+    'apply_irpf' => 'Aplicar retención IRPF',
+
+    // Exemption codes (product-level, longer labels)
+    'exemption_e1' => 'E1 - Exenta por el artículo 20',
+    'exemption_e2' => 'E2 - Exenta por el artículo 21',
+    'exemption_e3' => 'E3 - Exenta por el artículo 22',
+    'exemption_e4' => 'E4 - Exenta por el artículo 23 y 24',
+    'exemption_e5' => 'E5 - Exenta por el artículo 25',
+    'exemption_e6' => 'E6 - Exenta por otros',
+
+    // Units
+    'unit_unidad' => 'Unidad',
+    'unit_hora' => 'Hora',
+    'unit_dia' => 'Día',
+    'unit_mes' => 'Mes',
+    'unit_kg' => 'Kilogramo',
+    'unit_metro' => 'Metro',
+    'unit_m2' => 'Metro²',
+    'unit_litro' => 'Litro',
+    'unit_pack' => 'Pack',
+
+    // Components / Escandallo
+    'total_cost' => 'Coste total: ',
+    'col_component' => 'Componente',
+    'col_reference' => 'Referencia',
+    'col_quantity' => 'Cantidad',
+    'col_unit_price' => 'Precio ud.',
+    'col_cost' => 'Coste',
+    'remove_component' => 'Eliminar componente',
+    'no_components' => 'Sin componentes. Producto simple.',
+    'add_component' => 'Añadir componente',
+    'search_product' => 'Buscar producto...',
+    'quantity' => 'Cantidad',
+
+    // Flash messages
+    'flash_created' => 'Producto creado correctamente.',
+    'flash_updated' => 'Producto actualizado correctamente.',
+    'flash_deleted' => 'Producto eliminado correctamente.',
+    'flash_component_added' => 'Componente añadido.',
+    'flash_component_deleted' => 'Componente eliminado.',
+    'error_component_exists' => 'Este componente ya está añadido.',
+];

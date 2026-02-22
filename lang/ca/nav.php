@@ -1,0 +1,25 @@
+<?php
+
+return [
+    'dashboard' => 'Tauler',
+    'sales' => 'Vendes',
+    'invoices' => 'Factures',
+    'quotes' => 'Pressupostos',
+    'delivery_notes' => 'Albarans',
+    'rectificatives' => 'Rectificatives',
+    'purchases' => 'Compres',
+    'purchase_invoices' => 'Fact. rebudes',
+    'expenses' => 'Despeses',
+    'reports' => 'Informes',
+    'sales_by_client' => 'Vendes x client',
+    'sales_by_product' => 'Vendes x producte',
+    'sales_by_period' => 'Vendes x període',
+    'modelo_303' => 'Model 303',
+    'modelo_130' => 'Model 130',
+    'modelo_390' => 'Model 390',
+    'management' => 'Gestió',
+    'clients' => 'Clients',
+    'products' => 'Productes',
+    'settings' => 'Configuració',
+    'company' => 'Empresa',
+];

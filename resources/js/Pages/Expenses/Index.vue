@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { Head, Link, router } from '@inertiajs/vue3';
+import { trans } from 'laravel-vue-i18n';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import DataTable from '@/Components/DataTable.vue';
 import SearchInput from '@/Components/SearchInput.vue';
@@ -46,12 +47,12 @@ const sortBy = ref(props.filters.sort || '');
 const sortDir = ref<'asc' | 'desc'>((props.filters.dir as 'asc' | 'desc') || 'desc');
 
 const columns: Column[] = [
-    { key: 'expense_date', label: 'Fecha', sortable: true },
-    { key: 'concept', label: 'Concepto' },
-    { key: 'supplier', label: 'Proveedor' },
-    { key: 'category', label: 'Categoría' },
-    { key: 'total', label: 'Total', sortable: true, class: 'text-right' },
-    { key: 'payment_status', label: 'Estado', sortable: true },
+    { key: 'expense_date', label: trans('expenses.col_date'), sortable: true },
+    { key: 'concept', label: trans('expenses.col_concept') },
+    { key: 'supplier', label: trans('expenses.col_supplier') },
+    { key: 'category', label: trans('expenses.col_category') },
+    { key: 'total', label: trans('expenses.col_total'), sortable: true, class: 'text-right' },
+    { key: 'payment_status', label: trans('expenses.col_status'), sortable: true },
 ];
 
 const statusColors: Record<string, 'gray' | 'green' | 'yellow'> = {
@@ -60,8 +61,8 @@ const statusColors: Record<string, 'gray' | 'green' | 'yellow'> = {
 };
 
 const statusLabels: Record<string, string> = {
-    pending: 'Pendiente',
-    paid: 'Pagado',
+    pending: trans('expenses.status_pending'),
+    paid: trans('expenses.status_paid'),
 };
 
 const formatCurrency = (val: number | string) => {
@@ -174,11 +175,11 @@ const executeMarkPaid = () => {
 </script>
 
 <template>
-    <Head title="Gastos" />
+    <Head :title="$t('expenses.title')" />
 
     <AppLayout>
         <template #header>
-            <h1 class="text-lg font-semibold text-gray-900">Gastos</h1>
+            <h1 class="text-lg font-semibold text-gray-900">{{ $t('expenses.title') }}</h1>
         </template>
 
         <!-- Toolbar -->
@@ -188,7 +189,7 @@ const executeMarkPaid = () => {
                     <SearchInput
                         :model-value="search"
                         @update:model-value="handleSearch"
-                        placeholder="Buscar concepto o proveedor..."
+                        :placeholder="$t('expenses.search_placeholder')"
                     />
                 </div>
                 <select
@@ -196,7 +197,7 @@ const executeMarkPaid = () => {
                     @change="handleCategoryFilter"
                     class="rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                 >
-                    <option value="">Todas las categorías</option>
+                    <option value="">{{ $t('expenses.all_categories') }}</option>
                     <option v-for="c in categories" :key="c.id" :value="c.id">
                         {{ c.code ? `[${c.code}] ` : '' }}{{ c.name }}
                     </option>
@@ -206,23 +207,23 @@ const executeMarkPaid = () => {
                     @change="handleStatusFilter"
                     class="rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                 >
-                    <option value="">Todos los estados</option>
-                    <option value="pending">Pendiente</option>
-                    <option value="paid">Pagado</option>
+                    <option value="">{{ $t('expenses.all_statuses') }}</option>
+                    <option value="pending">{{ $t('expenses.status_pending') }}</option>
+                    <option value="paid">{{ $t('expenses.status_paid') }}</option>
                 </select>
                 <input
                     type="date"
                     :value="dateFrom"
                     @change="handleDateFrom"
                     class="rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                    title="Desde"
+                    :title="$t('common.from')"
                 />
                 <input
                     type="date"
                     :value="dateTo"
                     @change="handleDateTo"
                     class="rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                    title="Hasta"
+                    :title="$t('common.to_date')"
                 />
             </div>
             <Link
@@ -232,7 +233,7 @@ const executeMarkPaid = () => {
                 <svg class="-ml-0.5 mr-1.5 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
                 </svg>
-                Nuevo gasto
+                {{ $t('expenses.new_expense') }}
             </Link>
         </div>
 
@@ -244,7 +245,7 @@ const executeMarkPaid = () => {
             :sort-by="sortBy"
             :sort-dir="sortDir"
             @sort="handleSort"
-            empty-message="No se encontraron gastos."
+            :empty-message="$t('expenses.no_expenses')"
         >
             <template #cell-expense_date="{ value }">
                 {{ formatDate(value) }}
@@ -294,20 +295,20 @@ const executeMarkPaid = () => {
                         :href="route('expenses.edit', row.id)"
                         class="text-indigo-600 hover:text-indigo-900"
                     >
-                        Editar
+                        {{ $t('common.edit') }}
                     </Link>
                     <button
                         v-if="row.payment_status === 'pending'"
                         @click="openMarkPaid(row)"
                         class="text-green-600 hover:text-green-900"
                     >
-                        Pagar
+                        {{ $t('expenses.pay') }}
                     </button>
                     <button
                         @click="confirmDelete(row)"
                         class="text-red-600 hover:text-red-900"
                     >
-                        Eliminar
+                        {{ $t('common.delete') }}
                     </button>
                 </div>
             </template>
@@ -316,9 +317,9 @@ const executeMarkPaid = () => {
         <!-- Delete Confirmation -->
         <ConfirmDialog
             :show="deleteDialog"
-            title="Eliminar gasto"
-            :message="`¿Estás seguro de que quieres eliminar el gasto '${deleteTarget?.concept}'? Esta acción no se puede deshacer.`"
-            confirm-label="Eliminar"
+            :title="$t('expenses.delete_title')"
+            :message="$t('expenses.delete_message', { concept: deleteTarget?.concept })"
+            :confirm-label="$t('common.delete')"
             :processing="deleting"
             @confirm="executeDelete"
             @cancel="deleteDialog = false"
@@ -327,16 +328,16 @@ const executeMarkPaid = () => {
         <!-- Mark as Paid Dialog -->
         <ConfirmDialog
             :show="markPaidDialog"
-            title="Marcar como pagado"
-            confirm-label="Confirmar pago"
+            :title="$t('expenses.mark_as_paid_title')"
+            :confirm-label="$t('expenses.mark_as_paid_confirm')"
             :processing="markingPaid"
             @confirm="executeMarkPaid"
             @cancel="markPaidDialog = false"
         >
             <div class="space-y-3">
-                <p class="text-sm text-gray-600">Marca el gasto "{{ markPaidTarget?.concept }}" como pagado.</p>
+                <p class="text-sm text-gray-600">{{ $t('expenses.mark_as_paid_message', { concept: markPaidTarget?.concept }) }}</p>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">Fecha de pago *</label>
+                    <label class="block text-sm font-medium text-gray-700">{{ $t('expenses.payment_date_label') }}</label>
                     <input
                         type="date"
                         v-model="markPaidDate"
@@ -344,16 +345,16 @@ const executeMarkPaid = () => {
                     />
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">Método de pago</label>
+                    <label class="block text-sm font-medium text-gray-700">{{ $t('expenses.payment_method_label') }}</label>
                     <select
                         v-model="markPaidMethod"
                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                     >
-                        <option value="">-- Seleccionar --</option>
-                        <option value="transfer">Transferencia</option>
-                        <option value="card">Tarjeta</option>
-                        <option value="cash">Efectivo</option>
-                        <option value="direct_debit">Domiciliación</option>
+                        <option value="">{{ $t('common.select_payment') }}</option>
+                        <option value="transfer">{{ $t('common.payment_transfer') }}</option>
+                        <option value="card">{{ $t('common.payment_card') }}</option>
+                        <option value="cash">{{ $t('common.payment_cash') }}</option>
+                        <option value="direct_debit">{{ $t('common.payment_direct_debit') }}</option>
                     </select>
                 </div>
             </div>

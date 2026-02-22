@@ -1,0 +1,27 @@
+<?php
+
+return [
+    'title' => 'Dashboard',
+    'invoiced_this_month' => 'Invoiced this month',
+    'pending_collection' => 'Pending collection',
+    'expenses_this_month' => 'Expenses this month',
+    'month_result' => 'Monthly result',
+    'overdue_alert_single' => 'You have :count overdue invoice',
+    'overdue_alert_plural' => 'You have :count overdue invoices',
+    'view_invoices' => 'View invoices',
+    'monthly_evolution' => 'Monthly evolution (last 12 months)',
+    'income' => 'Income',
+    'chart_expenses' => 'Expenses',
+    'verifactu' => 'VERI*FACTU',
+    'vf_accepted' => 'Accepted',
+    'vf_pending' => 'Pending',
+    'vf_rejected' => 'Rejected',
+    'vf_error' => 'With error',
+    'vf_total_records' => 'Total records:',
+    'latest_invoices' => 'Latest invoices',
+    'view_all' => 'View all',
+    'view_all_m' => 'View all',
+    'no_invoices_yet' => 'No invoices yet.',
+    'latest_expenses' => 'Latest expenses',
+    'no_expenses_yet' => 'No expenses yet.',
+];

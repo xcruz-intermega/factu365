@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { Head, Link, router } from '@inertiajs/vue3';
+import { trans } from 'laravel-vue-i18n';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import DataTable from '@/Components/DataTable.vue';
 import SearchInput from '@/Components/SearchInput.vue';
@@ -33,17 +34,17 @@ const sortBy = ref(props.filters.sort || '');
 const sortDir = ref<'asc' | 'desc'>((props.filters.dir as 'asc' | 'desc') || 'asc');
 
 const columns: Column[] = [
-    { key: 'legal_name', label: 'Razón social', sortable: true },
-    { key: 'nif', label: 'NIF/CIF', sortable: true },
-    { key: 'type', label: 'Tipo', sortable: true },
-    { key: 'email', label: 'Email' },
-    { key: 'phone', label: 'Teléfono' },
+    { key: 'legal_name', label: trans('clients.col_legal_name'), sortable: true },
+    { key: 'nif', label: trans('clients.col_tax_id'), sortable: true },
+    { key: 'type', label: trans('clients.col_type'), sortable: true },
+    { key: 'email', label: trans('clients.col_email') },
+    { key: 'phone', label: trans('clients.col_phone') },
 ];
 
 const typeLabels: Record<string, string> = {
-    customer: 'Cliente',
-    supplier: 'Proveedor',
-    both: 'Ambos',
+    customer: trans('clients.type_client'),
+    supplier: trans('clients.type_supplier'),
+    both: trans('clients.type_both'),
 };
 
 const typeColors: Record<string, 'blue' | 'green' | 'purple'> = {
@@ -104,11 +105,11 @@ const executeDelete = () => {
 </script>
 
 <template>
-    <Head title="Clientes" />
+    <Head :title="$t('clients.title')" />
 
     <AppLayout>
         <template #header>
-            <h1 class="text-lg font-semibold text-gray-900">Clientes</h1>
+            <h1 class="text-lg font-semibold text-gray-900">{{ $t('clients.title') }}</h1>
         </template>
 
         <!-- Toolbar -->
@@ -118,7 +119,7 @@ const executeDelete = () => {
                     <SearchInput
                         :model-value="search"
                         @update:model-value="handleSearch"
-                        placeholder="Buscar por nombre, NIF o email..."
+                        :placeholder="$t('clients.search_placeholder')"
                     />
                 </div>
                 <select
@@ -126,10 +127,10 @@ const executeDelete = () => {
                     @change="handleTypeFilter"
                     class="rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                 >
-                    <option value="">Todos los tipos</option>
-                    <option value="customer">Clientes</option>
-                    <option value="supplier">Proveedores</option>
-                    <option value="both">Ambos</option>
+                    <option value="">{{ $t('clients.all_types') }}</option>
+                    <option value="customer">{{ $t('clients.filter_clients') }}</option>
+                    <option value="supplier">{{ $t('clients.filter_suppliers') }}</option>
+                    <option value="both">{{ $t('clients.filter_both') }}</option>
                 </select>
             </div>
             <Link
@@ -139,7 +140,7 @@ const executeDelete = () => {
                 <svg class="-ml-0.5 mr-1.5 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
                 </svg>
-                Nuevo cliente
+                {{ $t('clients.new_client') }}
             </Link>
         </div>
 
@@ -151,7 +152,7 @@ const executeDelete = () => {
             :sort-by="sortBy"
             :sort-dir="sortDir"
             @sort="handleSort"
-            empty-message="No se encontraron clientes."
+            :empty-message="$t('clients.no_clients')"
         >
             <template #cell-type="{ value }">
                 <Badge :color="typeColors[value] || 'gray'">
@@ -165,13 +166,13 @@ const executeDelete = () => {
                         :href="route('clients.edit', row.id)"
                         class="text-indigo-600 hover:text-indigo-900"
                     >
-                        Editar
+                        {{ $t('common.edit') }}
                     </Link>
                     <button
                         @click="confirmDelete(row)"
                         class="text-red-600 hover:text-red-900"
                     >
-                        Eliminar
+                        {{ $t('common.delete') }}
                     </button>
                 </div>
             </template>
@@ -180,9 +181,9 @@ const executeDelete = () => {
         <!-- Delete Confirmation -->
         <ConfirmDialog
             :show="deleteDialog"
-            title="Eliminar cliente"
-            :message="`¿Estás seguro de que quieres eliminar a ${deleteTarget?.legal_name}? Esta acción se puede deshacer.`"
-            confirm-label="Eliminar"
+            :title="trans('clients.delete_title')"
+            :message="trans('clients.delete_message', { name: deleteTarget?.legal_name })"
+            :confirm-label="trans('common.delete')"
             :processing="deleting"
             @confirm="executeDelete"
             @cancel="deleteDialog = false"

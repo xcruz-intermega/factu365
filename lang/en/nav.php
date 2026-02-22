@@ -1,0 +1,25 @@
+<?php
+
+return [
+    'dashboard' => 'Dashboard',
+    'sales' => 'Sales',
+    'invoices' => 'Invoices',
+    'quotes' => 'Quotes',
+    'delivery_notes' => 'Delivery notes',
+    'rectificatives' => 'Credit notes',
+    'purchases' => 'Purchases',
+    'purchase_invoices' => 'Purchase invoices',
+    'expenses' => 'Expenses',
+    'reports' => 'Reports',
+    'sales_by_client' => 'Sales by client',
+    'sales_by_product' => 'Sales by product',
+    'sales_by_period' => 'Sales by period',
+    'modelo_303' => 'Modelo 303',
+    'modelo_130' => 'Modelo 130',
+    'modelo_390' => 'Modelo 390',
+    'management' => 'Management',
+    'clients' => 'Clients',
+    'products' => 'Products',
+    'settings' => 'Settings',
+    'company' => 'Company',
+];

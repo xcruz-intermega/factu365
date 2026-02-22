@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
+import { trans } from 'laravel-vue-i18n';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
@@ -122,24 +123,24 @@ const removeComponent = (componentId: number) => {
 };
 
 const exemptionCodes = [
-    { value: 'E1', label: 'E1 - Exenta por el artículo 20' },
-    { value: 'E2', label: 'E2 - Exenta por el artículo 21' },
-    { value: 'E3', label: 'E3 - Exenta por el artículo 22' },
-    { value: 'E4', label: 'E4 - Exenta por el artículo 23 y 24' },
-    { value: 'E5', label: 'E5 - Exenta por el artículo 25' },
-    { value: 'E6', label: 'E6 - Exenta por otros' },
+    { value: 'E1', label: trans('products.exemption_e1') },
+    { value: 'E2', label: trans('products.exemption_e2') },
+    { value: 'E3', label: trans('products.exemption_e3') },
+    { value: 'E4', label: trans('products.exemption_e4') },
+    { value: 'E5', label: trans('products.exemption_e5') },
+    { value: 'E6', label: trans('products.exemption_e6') },
 ];
 
 const units = [
-    { value: 'unit', label: 'Unidad' },
-    { value: 'hour', label: 'Hora' },
-    { value: 'day', label: 'Día' },
-    { value: 'month', label: 'Mes' },
-    { value: 'kg', label: 'Kilogramo' },
-    { value: 'm', label: 'Metro' },
-    { value: 'm2', label: 'Metro²' },
-    { value: 'l', label: 'Litro' },
-    { value: 'pack', label: 'Pack' },
+    { value: 'unit', label: trans('products.unit_unidad') },
+    { value: 'hour', label: trans('products.unit_hora') },
+    { value: 'day', label: trans('products.unit_dia') },
+    { value: 'month', label: trans('products.unit_mes') },
+    { value: 'kg', label: trans('products.unit_kg') },
+    { value: 'm', label: trans('products.unit_metro') },
+    { value: 'm2', label: trans('products.unit_m2') },
+    { value: 'l', label: trans('products.unit_litro') },
+    { value: 'pack', label: trans('products.unit_pack') },
 ];
 </script>
 
@@ -147,35 +148,35 @@ const units = [
     <form @submit.prevent="emit('submit')" class="space-y-8">
         <!-- Datos básicos -->
         <div class="rounded-lg bg-white p-6 shadow">
-            <h3 class="mb-4 text-base font-semibold text-gray-900">Datos del producto</h3>
+            <h3 class="mb-4 text-base font-semibold text-gray-900">{{ $t('products.section_data') }}</h3>
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 <div>
-                    <InputLabel for="type" value="Tipo *" />
+                    <InputLabel for="type" :value="$t('products.type_label')" />
                     <select
                         id="type"
                         v-model="form.type"
                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                     >
-                        <option value="product">Producto</option>
-                        <option value="service">Servicio</option>
+                        <option value="product">{{ $t('products.type_product') }}</option>
+                        <option value="service">{{ $t('products.type_service') }}</option>
                     </select>
                     <InputError class="mt-2" :message="form.errors.type" />
                 </div>
 
                 <div>
-                    <InputLabel for="reference" value="Referencia" />
+                    <InputLabel for="reference" :value="$t('products.reference')" />
                     <TextInput
                         id="reference"
                         type="text"
                         class="mt-1 block w-full"
                         v-model="form.reference"
-                        placeholder="REF-001"
+                        :placeholder="$t('products.reference_placeholder')"
                     />
                     <InputError class="mt-2" :message="form.errors.reference" />
                 </div>
 
                 <div>
-                    <InputLabel for="unit" value="Unidad de medida" />
+                    <InputLabel for="unit" :value="$t('products.unit_measure')" />
                     <select
                         id="unit"
                         v-model="form.unit"
@@ -187,13 +188,13 @@ const units = [
                 </div>
 
                 <div v-if="families && families.length > 0">
-                    <InputLabel for="product_family_id" value="Familia" />
+                    <InputLabel for="product_family_id" :value="$t('products.family')" />
                     <select
                         id="product_family_id"
                         v-model="form.product_family_id"
                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                     >
-                        <option :value="null">Sin familia</option>
+                        <option :value="null">{{ $t('products.no_family') }}</option>
                         <option v-for="f in families" :key="f.id" :value="f.id">
                             {{ f.parent_id ? '— ' : '' }}{{ f.name }}
                         </option>
@@ -202,7 +203,7 @@ const units = [
                 </div>
 
                 <div class="sm:col-span-2 lg:col-span-3">
-                    <InputLabel for="name" value="Nombre *" />
+                    <InputLabel for="name" :value="$t('products.name')" />
                     <TextInput
                         id="name"
                         type="text"
@@ -214,7 +215,7 @@ const units = [
                 </div>
 
                 <div class="sm:col-span-2 lg:col-span-3">
-                    <InputLabel for="description" value="Descripción" />
+                    <InputLabel for="description" :value="$t('products.description')" />
                     <textarea
                         id="description"
                         v-model="form.description"
@@ -228,10 +229,10 @@ const units = [
 
         <!-- Precio e impuestos -->
         <div class="rounded-lg bg-white p-6 shadow">
-            <h3 class="mb-4 text-base font-semibold text-gray-900">Precio e impuestos</h3>
+            <h3 class="mb-4 text-base font-semibold text-gray-900">{{ $t('products.section_pricing') }}</h3>
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 <div>
-                    <InputLabel for="unit_price" value="Precio unitario (sin IVA) *" />
+                    <InputLabel for="unit_price" :value="$t('products.unit_price')" />
                     <div class="relative mt-1">
                         <TextInput
                             id="unit_price"
@@ -250,28 +251,28 @@ const units = [
                 </div>
 
                 <div>
-                    <InputLabel for="vat_rate" value="Tipo de IVA *" />
+                    <InputLabel for="vat_rate" :value="$t('products.vat_type')" />
                     <select
                         id="vat_rate"
                         v-model="form.vat_rate"
                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                     >
-                        <option :value="21">21% - General</option>
-                        <option :value="10">10% - Reducido</option>
-                        <option :value="4">4% - Superreducido</option>
-                        <option :value="0">0% - Exento</option>
+                        <option :value="21">{{ $t('common.vat_21_general') }}</option>
+                        <option :value="10">{{ $t('common.vat_10_reduced') }}</option>
+                        <option :value="4">{{ $t('common.vat_4_super_reduced') }}</option>
+                        <option :value="0">{{ $t('common.vat_0_exempt_label') }}</option>
                     </select>
                     <InputError class="mt-2" :message="form.errors.vat_rate" />
                 </div>
 
                 <div v-if="showExemption">
-                    <InputLabel for="exemption_code" value="Causa de exención *" />
+                    <InputLabel for="exemption_code" :value="$t('products.exemption_cause')" />
                     <select
                         id="exemption_code"
                         v-model="form.exemption_code"
                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                     >
-                        <option value="">Seleccionar...</option>
+                        <option value="">{{ $t('common.select') }}</option>
                         <option v-for="e in exemptionCodes" :key="e.value" :value="e.value">{{ e.label }}</option>
                     </select>
                     <InputError class="mt-2" :message="form.errors.exemption_code" />
@@ -280,7 +281,7 @@ const units = [
                 <div class="flex items-center pt-6">
                     <label class="flex items-center">
                         <Checkbox v-model:checked="form.irpf_applicable" />
-                        <span class="ms-2 text-sm text-gray-600">Aplicar retención IRPF</span>
+                        <span class="ms-2 text-sm text-gray-600">{{ $t('products.apply_irpf') }}</span>
                     </label>
                     <InputError class="mt-2" :message="form.errors.irpf_applicable" />
                 </div>
@@ -290,9 +291,9 @@ const units = [
         <!-- Escandallo (only in edit mode when productId is available) -->
         <div v-if="productId" class="rounded-lg bg-white p-6 shadow">
             <div class="mb-4 flex items-center justify-between">
-                <h3 class="text-base font-semibold text-gray-900">Escandallo (componentes)</h3>
+                <h3 class="text-base font-semibold text-gray-900">{{ $t('products.section_components') }}</h3>
                 <span v-if="components && components.length > 0" class="text-sm text-gray-500">
-                    Coste total: <span class="font-semibold text-gray-900">{{ formatCurrency(totalComponentCost) }}</span>
+                    {{ $t('products.total_cost') }}<span class="font-semibold text-gray-900">{{ formatCurrency(totalComponentCost) }}</span>
                 </span>
             </div>
 
@@ -301,11 +302,11 @@ const units = [
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-3 py-2 text-left text-xs font-medium uppercase text-gray-500">Componente</th>
-                            <th class="px-3 py-2 text-left text-xs font-medium uppercase text-gray-500">Referencia</th>
-                            <th class="px-3 py-2 text-right text-xs font-medium uppercase text-gray-500">Cantidad</th>
-                            <th class="px-3 py-2 text-right text-xs font-medium uppercase text-gray-500">Precio ud.</th>
-                            <th class="px-3 py-2 text-right text-xs font-medium uppercase text-gray-500">Coste</th>
+                            <th class="px-3 py-2 text-left text-xs font-medium uppercase text-gray-500">{{ $t('products.col_component') }}</th>
+                            <th class="px-3 py-2 text-left text-xs font-medium uppercase text-gray-500">{{ $t('products.col_reference') }}</th>
+                            <th class="px-3 py-2 text-right text-xs font-medium uppercase text-gray-500">{{ $t('products.col_quantity') }}</th>
+                            <th class="px-3 py-2 text-right text-xs font-medium uppercase text-gray-500">{{ $t('products.col_unit_price') }}</th>
+                            <th class="px-3 py-2 text-right text-xs font-medium uppercase text-gray-500">{{ $t('products.col_cost') }}</th>
                             <th class="px-3 py-2 w-10"></th>
                         </tr>
                     </thead>
@@ -321,7 +322,7 @@ const units = [
                                     type="button"
                                     @click="removeComponent(comp.id)"
                                     class="rounded p-1 text-gray-400 hover:bg-red-50 hover:text-red-600"
-                                    title="Eliminar componente"
+                                    :title="$t('products.remove_component')"
                                 >
                                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -333,23 +334,23 @@ const units = [
                 </table>
             </div>
             <div v-else class="mb-4 rounded-lg border-2 border-dashed border-gray-300 p-4 text-center">
-                <p class="text-sm text-gray-500">Sin componentes. Producto simple.</p>
+                <p class="text-sm text-gray-500">{{ $t('products.no_components') }}</p>
             </div>
 
             <!-- Add component form -->
             <div class="flex items-end gap-3">
                 <div class="flex-1">
-                    <label class="block text-xs font-medium text-gray-600">Añadir componente</label>
+                    <label class="block text-xs font-medium text-gray-600">{{ $t('products.add_component') }}</label>
                     <div class="mt-0.5">
                         <SearchSelect
                             v-model="newComponentId"
                             :options="componentOptions"
-                            placeholder="Buscar producto..."
+                            :placeholder="$t('products.search_product')"
                         />
                     </div>
                 </div>
                 <div class="w-28">
-                    <label class="block text-xs font-medium text-gray-600">Cantidad</label>
+                    <label class="block text-xs font-medium text-gray-600">{{ $t('products.quantity') }}</label>
                     <input
                         type="number"
                         v-model.number="newComponentQty"
@@ -364,7 +365,7 @@ const units = [
                     :disabled="!newComponentId || addingComponent"
                     class="inline-flex items-center rounded-md bg-indigo-50 px-3 py-2 text-sm font-semibold text-indigo-600 hover:bg-indigo-100 disabled:opacity-50"
                 >
-                    Añadir
+                    {{ $t('common.add') }}
                 </button>
             </div>
         </div>
@@ -372,7 +373,7 @@ const units = [
         <!-- Actions -->
         <div class="flex items-center justify-end gap-4">
             <Link :href="route('products.index')">
-                <SecondaryButton type="button">Cancelar</SecondaryButton>
+                <SecondaryButton type="button">{{ $t('common.cancel') }}</SecondaryButton>
             </Link>
             <PrimaryButton :disabled="form.processing">
                 {{ submitLabel }}

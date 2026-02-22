@@ -1,18 +1,19 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
+import { trans } from 'laravel-vue-i18n';
 
 defineProps<{
     current: string;
 }>();
 
 const tabs = [
-    { key: 'company', label: 'Empresa', route: 'settings.company' },
-    { key: 'series', label: 'Series', route: 'settings.series' },
-    { key: 'product-families', label: 'Familias', route: 'settings.product-families' },
-    { key: 'payment-templates', label: 'Vencimientos', route: 'settings.payment-templates' },
-    { key: 'certificates', label: 'Certificados', route: 'settings.certificates' },
-    { key: 'pdf-templates', label: 'Plantillas PDF', route: 'settings.pdf-templates' },
-    { key: 'users', label: 'Usuarios', route: 'settings.users' },
+    { key: 'company', label: trans('settings.tab_company'), route: 'settings.company' },
+    { key: 'series', label: trans('settings.tab_series'), route: 'settings.series' },
+    { key: 'product-families', label: trans('settings.tab_families'), route: 'settings.product-families' },
+    { key: 'payment-templates', label: trans('settings.tab_payment_templates'), route: 'settings.payment-templates' },
+    { key: 'certificates', label: trans('settings.tab_certificates'), route: 'settings.certificates' },
+    { key: 'pdf-templates', label: trans('settings.tab_pdf_templates'), route: 'settings.pdf-templates' },
+    { key: 'users', label: trans('settings.tab_users'), route: 'settings.users' },
 ];
 </script>
 

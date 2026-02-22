@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { Head, Link, router } from '@inertiajs/vue3';
+import { trans } from 'laravel-vue-i18n';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import DataTable from '@/Components/DataTable.vue';
 import SearchInput from '@/Components/SearchInput.vue';
@@ -36,11 +37,11 @@ const sortBy = ref(props.filters.sort || '');
 const sortDir = ref<'asc' | 'desc'>((props.filters.dir as 'asc' | 'desc') || 'desc');
 
 const columns: Column[] = [
-    { key: 'number', label: 'Número', sortable: true },
-    { key: 'client', label: 'Cliente' },
-    { key: 'issue_date', label: 'Fecha', sortable: true },
-    { key: 'total', label: 'Total', sortable: true, class: 'text-right' },
-    { key: 'status', label: 'Estado', sortable: true },
+    { key: 'number', label: trans('documents.col_number'), sortable: true },
+    { key: 'client', label: trans('documents.col_client') },
+    { key: 'issue_date', label: trans('documents.col_date'), sortable: true },
+    { key: 'total', label: trans('documents.col_total'), sortable: true, class: 'text-right' },
+    { key: 'status', label: trans('documents.col_status'), sortable: true },
 ];
 
 const statusColors: Record<string, 'gray' | 'green' | 'blue' | 'yellow' | 'red' | 'indigo' | 'purple'> = {
@@ -59,18 +60,18 @@ const statusColors: Record<string, 'gray' | 'green' | 'blue' | 'yellow' | 'red' 
 };
 
 const statusLabels: Record<string, string> = {
-    draft: 'Borrador',
-    finalized: 'Finalizada',
-    sent: 'Enviada',
-    paid: 'Pagada',
-    partial: 'Pago parcial',
-    overdue: 'Vencida',
-    cancelled: 'Anulada',
-    registered: 'Registrada',
-    created: 'Creado',
-    accepted: 'Aceptado',
-    rejected: 'Rechazado',
-    converted: 'Convertido',
+    draft: trans('common.status_draft'),
+    finalized: trans('common.status_finalized'),
+    sent: trans('common.status_sent'),
+    paid: trans('common.status_paid'),
+    partial: trans('common.status_partial'),
+    overdue: trans('common.status_overdue'),
+    cancelled: trans('common.status_cancelled'),
+    registered: trans('common.status_registered'),
+    created: trans('common.status_created'),
+    accepted: trans('common.status_accepted'),
+    rejected: trans('common.status_rejected'),
+    converted: trans('common.status_converted'),
 };
 
 const formatCurrency = (val: number | string) => {
@@ -150,7 +151,7 @@ const executeDelete = () => {
                     <SearchInput
                         :model-value="search"
                         @update:model-value="handleSearch"
-                        placeholder="Buscar por número o cliente..."
+                        :placeholder="$t('documents.search_placeholder')"
                     />
                 </div>
                 <select
@@ -158,7 +159,7 @@ const executeDelete = () => {
                     @change="handleStatusFilter"
                     class="rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                 >
-                    <option value="">Todos los estados</option>
+                    <option value="">{{ $t('documents.all_statuses') }}</option>
                     <option v-for="s in statuses" :key="s.value" :value="s.value">{{ s.label }}</option>
                 </select>
             </div>
@@ -169,7 +170,7 @@ const executeDelete = () => {
                 <svg class="-ml-0.5 mr-1.5 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
                 </svg>
-                Nuevo {{ documentTypeLabel.toLowerCase() }}
+                {{ $t('documents.new_document', { type: documentTypeLabel.toLowerCase() }) }}
             </Link>
         </div>
 
@@ -181,14 +182,13 @@ const executeDelete = () => {
             :sort-by="sortBy"
             :sort-dir="sortDir"
             @sort="handleSort"
-            :empty-message="`No se encontraron ${documentTypeLabel.toLowerCase()}s.`"
         >
             <template #cell-number="{ row }">
                 <Link
                     :href="route('documents.edit', { type: documentType, document: row.id })"
                     class="font-medium text-indigo-600 hover:text-indigo-900"
                 >
-                    {{ row.number || 'Borrador' }}
+                    {{ row.number || $t('common.status_draft') }}
                 </Link>
             </template>
 
@@ -197,7 +197,7 @@ const executeDelete = () => {
                     {{ row.client.trade_name || row.client.legal_name }}
                     <span class="text-gray-400 text-xs ml-1">{{ row.client.nif }}</span>
                 </span>
-                <span v-else class="text-gray-400 italic">Sin cliente</span>
+                <span v-else class="text-gray-400 italic">{{ $t('common.no_client') }}</span>
             </template>
 
             <template #cell-issue_date="{ value }">
@@ -220,14 +220,14 @@ const executeDelete = () => {
                         :href="route('documents.edit', { type: documentType, document: row.id })"
                         class="text-indigo-600 hover:text-indigo-900"
                     >
-                        Editar
+                        {{ $t('common.edit') }}
                     </Link>
                     <button
                         v-if="['draft', 'created'].includes(row.status)"
                         @click="confirmDelete(row)"
                         class="text-red-600 hover:text-red-900"
                     >
-                        Eliminar
+                        {{ $t('common.delete') }}
                     </button>
                 </div>
             </template>
@@ -236,9 +236,9 @@ const executeDelete = () => {
         <!-- Delete Confirmation -->
         <ConfirmDialog
             :show="deleteDialog"
-            title="Eliminar documento"
-            :message="`¿Estás seguro de que quieres eliminar este documento? Esta acción no se puede deshacer.`"
-            confirm-label="Eliminar"
+            :title="trans('documents.delete_title')"
+            :message="trans('documents.delete_message')"
+            :confirm-label="trans('common.delete')"
             :processing="deleting"
             @confirm="executeDelete"
             @cancel="deleteDialog = false"

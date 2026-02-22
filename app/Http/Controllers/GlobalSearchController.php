@@ -58,11 +58,11 @@ class GlobalSearchController extends Controller
             ->get(['id', 'document_type', 'direction', 'number', 'status'])
             ->each(function ($d) use (&$results) {
                 $typeLabels = [
-                    'invoice' => 'Factura',
-                    'quote' => 'Presupuesto',
-                    'delivery_note' => 'Albarán',
-                    'rectificative' => 'Rectificativa',
-                    'purchase_invoice' => 'Fact. recibida',
+                    'invoice' => __('documents.type_invoice'),
+                    'quote' => __('documents.type_quote'),
+                    'delivery_note' => __('documents.type_delivery_note'),
+                    'rectificative' => __('documents.type_rectificative'),
+                    'purchase_invoice' => __('documents.type_purchase_invoice'),
                 ];
                 $results[] = [
                     'type' => 'document',
@@ -81,7 +81,7 @@ class GlobalSearchController extends Controller
             ->each(function ($e) use (&$results) {
                 $results[] = [
                     'type' => 'expense',
-                    'label' => $e->concept ?: 'Gasto #' . $e->id,
+                    'label' => $e->concept ?: __('search.type_expense') . ' #' . $e->id,
                     'detail' => number_format((float) $e->total, 2, ',', '.') . ' €',
                     'url' => route('expenses.edit', $e->id),
                 ];

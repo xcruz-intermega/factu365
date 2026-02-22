@@ -7,6 +7,7 @@ import { createApp, DefineComponent, h } from 'vue';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
 import PrimeVue from 'primevue/config';
 import Aura from '@primevue/themes/aura';
+import { i18nVue } from 'laravel-vue-i18n';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Factu01';
 
@@ -24,6 +25,12 @@ createInertiaApp({
             .use(PrimeVue, {
                 theme: {
                     preset: Aura,
+                },
+            })
+            .use(i18nVue, {
+                resolve: async (lang: string) => {
+                    const langs = import.meta.glob('../../lang/*.json');
+                    return await langs[`../../lang/${lang}.json`]();
                 },
             })
             .mount(el);

@@ -1,0 +1,25 @@
+<?php
+
+return [
+    'dashboard' => 'Dashboard',
+    'sales' => 'Ventas',
+    'invoices' => 'Facturas',
+    'quotes' => 'Presupuestos',
+    'delivery_notes' => 'Albaranes',
+    'rectificatives' => 'Rectificativas',
+    'purchases' => 'Compras',
+    'purchase_invoices' => 'Fact. recibidas',
+    'expenses' => 'Gastos',
+    'reports' => 'Informes',
+    'sales_by_client' => 'Ventas x cliente',
+    'sales_by_product' => 'Ventas x producto',
+    'sales_by_period' => 'Ventas x periodo',
+    'modelo_303' => 'Modelo 303',
+    'modelo_130' => 'Modelo 130',
+    'modelo_390' => 'Modelo 390',
+    'management' => 'Gestión',
+    'clients' => 'Clientes',
+    'products' => 'Productos',
+    'settings' => 'Configuración',
+    'company' => 'Empresa',
+];

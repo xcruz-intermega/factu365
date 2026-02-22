@@ -43,7 +43,7 @@ class ClientController extends Controller
         Client::create($request->validated());
 
         return redirect()->route('clients.index')
-            ->with('success', 'Cliente creado correctamente.');
+            ->with('success', __('clients.flash_created'));
     }
 
     public function edit(Client $client)
@@ -62,7 +62,7 @@ class ClientController extends Controller
         $client->update($request->validated());
 
         return redirect()->route('clients.index')
-            ->with('success', 'Cliente actualizado correctamente.');
+            ->with('success', __('clients.flash_updated'));
     }
 
     public function destroy(Client $client)
@@ -70,7 +70,7 @@ class ClientController extends Controller
         $client->delete();
 
         return redirect()->route('clients.index')
-            ->with('success', 'Cliente eliminado correctamente.');
+            ->with('success', __('clients.flash_deleted'));
     }
 
     public function storeDiscount(Request $request, Client $client)
@@ -88,7 +88,7 @@ class ClientController extends Controller
 
         $client->discounts()->create($validated);
 
-        return back()->with('success', 'Descuento añadido.');
+        return back()->with('success', __('clients.flash_discount_added'));
     }
 
     public function updateDiscount(Request $request, Client $client, ClientDiscount $discount)
@@ -110,7 +110,7 @@ class ClientController extends Controller
 
         $discount->update($validated);
 
-        return back()->with('success', 'Descuento actualizado.');
+        return back()->with('success', __('clients.flash_discount_updated'));
     }
 
     public function destroyDiscount(Client $client, ClientDiscount $discount)
@@ -121,6 +121,6 @@ class ClientController extends Controller
 
         $discount->delete();
 
-        return back()->with('success', 'Descuento eliminado.');
+        return back()->with('success', __('clients.flash_discount_deleted'));
     }
 }

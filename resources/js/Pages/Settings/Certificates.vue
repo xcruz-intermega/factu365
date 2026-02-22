@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { Head, useForm, Link, router } from '@inertiajs/vue3';
+import { trans } from 'laravel-vue-i18n';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import SettingsNav from './Partials/SettingsNav.vue';
 import Badge from '@/Components/Badge.vue';
@@ -72,18 +73,18 @@ const executeDelete = () => {
 </script>
 
 <template>
-    <Head title="Certificados digitales" />
+    <Head :title="$t('settings.certificates_title')" />
 
     <AppLayout>
         <template #header>
-            <h1 class="text-lg font-semibold text-gray-900">Certificados digitales</h1>
+            <h1 class="text-lg font-semibold text-gray-900">{{ $t('settings.certificates_title') }}</h1>
         </template>
 
         <SettingsNav current="certificates" />
 
         <div class="mb-4 flex justify-end">
             <button @click="showUpload = !showUpload" class="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500">
-                {{ showUpload ? 'Cancelar' : 'Subir certificado' }}
+                {{ showUpload ? $t('common.cancel') : $t('settings.upload_certificate') }}
             </button>
         </div>
 
@@ -91,20 +92,20 @@ const executeDelete = () => {
         <div v-if="showUpload" class="mb-6 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
             <form @submit.prevent="submitUpload" class="grid grid-cols-1 gap-4 sm:grid-cols-3">
                 <div>
-                    <label class="block text-xs font-medium text-gray-500">Nombre</label>
-                    <input type="text" v-model="form.name" class="mt-1 block w-full rounded-md border-gray-300 text-sm" placeholder="Mi certificado" />
+                    <label class="block text-xs font-medium text-gray-500">{{ $t('settings.cert_name') }}</label>
+                    <input type="text" v-model="form.name" class="mt-1 block w-full rounded-md border-gray-300 text-sm" :placeholder="$t('settings.cert_name_placeholder')" />
                     <p v-if="form.errors.name" class="mt-1 text-xs text-red-600">{{ form.errors.name }}</p>
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-gray-500">Archivo .p12 / .pfx</label>
+                    <label class="block text-xs font-medium text-gray-500">{{ $t('settings.cert_file') }}</label>
                     <input type="file" @change="handleFileChange" accept=".p12,.pfx" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:rounded-md file:border-0 file:bg-indigo-50 file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-indigo-700" />
                     <p v-if="form.errors.certificate" class="mt-1 text-xs text-red-600">{{ form.errors.certificate }}</p>
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-gray-500">Contraseña</label>
+                    <label class="block text-xs font-medium text-gray-500">{{ $t('settings.cert_password') }}</label>
                     <div class="flex gap-2">
                         <input type="password" v-model="form.password" class="mt-1 block w-full rounded-md border-gray-300 text-sm" />
-                        <button type="submit" :disabled="form.processing" class="mt-1 rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 disabled:opacity-50">Subir</button>
+                        <button type="submit" :disabled="form.processing" class="mt-1 rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 disabled:opacity-50">{{ $t('common.upload') }}</button>
                     </div>
                     <p v-if="form.errors.password" class="mt-1 text-xs text-red-600">{{ form.errors.password }}</p>
                 </div>
@@ -118,36 +119,36 @@ const executeDelete = () => {
                     <div>
                         <div class="flex items-center gap-2">
                             <h4 class="text-sm font-semibold text-gray-900">{{ cert.name }}</h4>
-                            <Badge v-if="cert.is_valid" color="green">Válido</Badge>
-                            <Badge v-else-if="cert.is_expired" color="red">Expirado</Badge>
-                            <Badge v-else-if="cert.is_active" color="yellow">Activo</Badge>
-                            <Badge v-else color="gray">Inactivo</Badge>
+                            <Badge v-if="cert.is_valid" color="green">{{ $t('settings.cert_valid') }}</Badge>
+                            <Badge v-else-if="cert.is_expired" color="red">{{ $t('settings.cert_expired') }}</Badge>
+                            <Badge v-else-if="cert.is_active" color="yellow">{{ $t('settings.cert_active') }}</Badge>
+                            <Badge v-else color="gray">{{ $t('settings.cert_inactive') }}</Badge>
                         </div>
-                        <p v-if="cert.subject_cn" class="mt-1 text-xs text-gray-500">CN: {{ cert.subject_cn }}</p>
+                        <p v-if="cert.subject_cn" class="mt-1 text-xs text-gray-500">{{ $t('settings.cert_cn') }} {{ cert.subject_cn }}</p>
                         <p class="text-xs text-gray-400">
-                            <span v-if="cert.valid_from">Válido desde {{ cert.valid_from }}</span>
-                            <span v-if="cert.valid_until"> hasta {{ cert.valid_until }}</span>
+                            <span v-if="cert.valid_from">{{ $t('settings.cert_valid_from') }} {{ cert.valid_from }}</span>
+                            <span v-if="cert.valid_until"> {{ $t('settings.cert_valid_until') }} {{ cert.valid_until }}</span>
                         </p>
                     </div>
                     <div class="flex items-center gap-3">
                         <button @click="toggleActive(cert)" class="text-sm" :class="cert.is_active ? 'text-amber-600 hover:text-amber-800' : 'text-green-600 hover:text-green-800'">
-                            {{ cert.is_active ? 'Desactivar' : 'Activar' }}
+                            {{ cert.is_active ? $t('common.deactivate') : $t('common.activate') }}
                         </button>
-                        <button @click="confirmDelete(cert)" class="text-sm text-red-600 hover:text-red-900">Eliminar</button>
+                        <button @click="confirmDelete(cert)" class="text-sm text-red-600 hover:text-red-900">{{ $t('common.delete') }}</button>
                     </div>
                 </div>
             </div>
 
             <div v-if="certificates.length === 0" class="rounded-lg border-2 border-dashed border-gray-300 p-8 text-center">
-                <p class="text-sm text-gray-400">No hay certificados cargados. Sube tu certificado digital .p12 para firmar facturas.</p>
+                <p class="text-sm text-gray-400">{{ $t('settings.no_certificates') }}</p>
             </div>
         </div>
 
         <ConfirmDialog
             :show="deleteDialog"
-            title="Eliminar certificado"
-            :message="`¿Estás seguro de que quieres eliminar '${deleteTarget?.name}'?`"
-            confirm-label="Eliminar"
+            :title="$t('settings.delete_cert_title')"
+            :message="trans('settings.delete_cert_message', { name: deleteTarget?.name || '' })"
+            :confirm-label="$t('common.delete')"
             :processing="deleting"
             @confirm="executeDelete"
             @cancel="deleteDialog = false"

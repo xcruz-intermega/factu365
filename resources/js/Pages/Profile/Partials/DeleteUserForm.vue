@@ -44,32 +44,32 @@ const closeModal = () => {
     <section class="space-y-6">
         <header>
             <h2 class="text-lg font-medium text-gray-900">
-                Eliminar cuenta
+                {{ $t('profile.delete_title') }}
             </h2>
 
             <p class="mt-1 text-sm text-gray-600">
-                Una vez eliminada tu cuenta, todos sus recursos y datos se borrarán permanentemente. Antes de eliminar tu cuenta, descarga cualquier dato o información que desees conservar.
+                {{ $t('profile.delete_description') }}
             </p>
         </header>
 
-        <DangerButton @click="confirmUserDeletion">Eliminar cuenta</DangerButton>
+        <DangerButton @click="confirmUserDeletion">{{ $t('profile.delete_button') }}</DangerButton>
 
         <Modal :show="confirmingUserDeletion" @close="closeModal">
             <div class="p-6">
                 <h2
                     class="text-lg font-medium text-gray-900"
                 >
-                    ¿Estás seguro de que quieres eliminar tu cuenta?
+                    {{ $t('profile.delete_confirm_title') }}
                 </h2>
 
                 <p class="mt-1 text-sm text-gray-600">
-                    Una vez eliminada tu cuenta, todos sus recursos y datos se borrarán permanentemente. Introduce tu contraseña para confirmar que deseas eliminar tu cuenta.
+                    {{ $t('profile.delete_confirm_text') }}
                 </p>
 
                 <div class="mt-6">
                     <InputLabel
                         for="password"
-                        value="Contraseña"
+                        :value="$t('auth.password')"
                         class="sr-only"
                     />
 
@@ -79,7 +79,7 @@ const closeModal = () => {
                         v-model="form.password"
                         type="password"
                         class="mt-1 block w-3/4"
-                        placeholder="Contraseña"
+                        :placeholder="$t('profile.delete_password_placeholder')"
                         @keyup.enter="deleteUser"
                     />
 
@@ -88,7 +88,7 @@ const closeModal = () => {
 
                 <div class="mt-6 flex justify-end">
                     <SecondaryButton @click="closeModal">
-                        Cancelar
+                        {{ $t('common.cancel') }}
                     </SecondaryButton>
 
                     <DangerButton
@@ -97,7 +97,7 @@ const closeModal = () => {
                         :disabled="form.processing"
                         @click="deleteUser"
                     >
-                        Eliminar cuenta
+                        {{ $t('profile.delete_button') }}
                     </DangerButton>
                 </div>
             </div>

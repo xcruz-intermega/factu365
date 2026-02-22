@@ -45,7 +45,7 @@ class ProductController extends Controller
         Product::create($request->validated());
 
         return redirect()->route('products.index')
-            ->with('success', 'Producto creado correctamente.');
+            ->with('success', __('products.flash_created'));
     }
 
     public function edit(Product $product)
@@ -64,7 +64,7 @@ class ProductController extends Controller
         $product->update($request->validated());
 
         return redirect()->route('products.index')
-            ->with('success', 'Producto actualizado correctamente.');
+            ->with('success', __('products.flash_updated'));
     }
 
     public function destroy(Product $product)
@@ -72,7 +72,7 @@ class ProductController extends Controller
         $product->delete();
 
         return redirect()->route('products.index')
-            ->with('success', 'Producto eliminado correctamente.');
+            ->with('success', __('products.flash_deleted'));
     }
 
     public function storeComponent(Request $request, Product $product)
@@ -84,7 +84,7 @@ class ProductController extends Controller
 
         // Prevent duplicates
         if ($product->components()->where('component_product_id', $request->component_product_id)->exists()) {
-            return back()->withErrors(['component_product_id' => 'Este componente ya está añadido.']);
+            return back()->withErrors(['component_product_id' => __('products.error_component_exists')]);
         }
 
         $product->components()->create([
@@ -92,7 +92,7 @@ class ProductController extends Controller
             'quantity' => $request->quantity,
         ]);
 
-        return back()->with('success', 'Componente añadido.');
+        return back()->with('success', __('products.flash_component_added'));
     }
 
     public function destroyComponent(Product $product, ProductComponent $component)
@@ -103,6 +103,6 @@ class ProductController extends Controller
 
         $component->delete();
 
-        return back()->with('success', 'Componente eliminado.');
+        return back()->with('success', __('products.flash_component_deleted'));
     }
 }

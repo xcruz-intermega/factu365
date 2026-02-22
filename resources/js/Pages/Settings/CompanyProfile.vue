@@ -73,11 +73,11 @@ const seedDemoData = () => {
 </script>
 
 <template>
-    <Head title="Datos de empresa" />
+    <Head :title="$t('settings.company_title')" />
 
     <AppLayout>
         <template #header>
-            <h1 class="text-lg font-semibold text-gray-900">Datos de empresa</h1>
+            <h1 class="text-lg font-semibold text-gray-900">{{ $t('settings.company_title') }}</h1>
         </template>
 
         <SettingsNav current="company" />
@@ -85,19 +85,19 @@ const seedDemoData = () => {
         <form @submit.prevent="submit" class="space-y-6">
             <!-- Identity -->
             <div class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-                <h3 class="mb-3 text-sm font-semibold text-gray-900">Identidad fiscal</h3>
+                <h3 class="mb-3 text-sm font-semibold text-gray-900">{{ $t('settings.section_identity') }}</h3>
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Razón social *</label>
+                        <label class="block text-sm font-medium text-gray-700">{{ $t('settings.legal_name') }}</label>
                         <input type="text" v-model="form.legal_name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" :class="{ 'border-red-500': form.errors.legal_name }" />
                         <p v-if="form.errors.legal_name" class="mt-1 text-sm text-red-600">{{ form.errors.legal_name }}</p>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Nombre comercial</label>
+                        <label class="block text-sm font-medium text-gray-700">{{ $t('settings.trade_name') }}</label>
                         <input type="text" v-model="form.trade_name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">NIF/CIF *</label>
+                        <label class="block text-sm font-medium text-gray-700">{{ $t('settings.tax_id') }}</label>
                         <input type="text" v-model="form.nif" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" :class="{ 'border-red-500': form.errors.nif }" />
                         <p v-if="form.errors.nif" class="mt-1 text-sm text-red-600">{{ form.errors.nif }}</p>
                     </div>
@@ -106,26 +106,26 @@ const seedDemoData = () => {
 
             <!-- Address -->
             <div class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-                <h3 class="mb-3 text-sm font-semibold text-gray-900">Dirección</h3>
+                <h3 class="mb-3 text-sm font-semibold text-gray-900">{{ $t('settings.section_address') }}</h3>
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                     <div class="sm:col-span-2 lg:col-span-4">
-                        <label class="block text-sm font-medium text-gray-700">Dirección</label>
+                        <label class="block text-sm font-medium text-gray-700">{{ $t('settings.address') }}</label>
                         <input type="text" v-model="form.address_street" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Código postal</label>
+                        <label class="block text-sm font-medium text-gray-700">{{ $t('settings.postal_code') }}</label>
                         <input type="text" v-model="form.address_postal_code" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Ciudad</label>
+                        <label class="block text-sm font-medium text-gray-700">{{ $t('settings.city') }}</label>
                         <input type="text" v-model="form.address_city" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Provincia</label>
+                        <label class="block text-sm font-medium text-gray-700">{{ $t('settings.province') }}</label>
                         <input type="text" v-model="form.address_province" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">País</label>
+                        <label class="block text-sm font-medium text-gray-700">{{ $t('settings.country') }}</label>
                         <input type="text" v-model="form.address_country" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" maxlength="2" />
                     </div>
                 </div>
@@ -133,18 +133,18 @@ const seedDemoData = () => {
 
             <!-- Contact -->
             <div class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-                <h3 class="mb-3 text-sm font-semibold text-gray-900">Contacto</h3>
+                <h3 class="mb-3 text-sm font-semibold text-gray-900">{{ $t('settings.section_contact') }}</h3>
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Teléfono</label>
+                        <label class="block text-sm font-medium text-gray-700">{{ $t('settings.phone') }}</label>
                         <input type="text" v-model="form.phone" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Email</label>
+                        <label class="block text-sm font-medium text-gray-700">{{ $t('settings.email') }}</label>
                         <input type="email" v-model="form.email" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Web</label>
+                        <label class="block text-sm font-medium text-gray-700">{{ $t('settings.web') }}</label>
                         <input type="text" v-model="form.website" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
                     </div>
                 </div>
@@ -153,28 +153,28 @@ const seedDemoData = () => {
             <!-- Fiscal + Logo -->
             <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
                 <div class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-                    <h3 class="mb-3 text-sm font-semibold text-gray-900">Fiscal</h3>
+                    <h3 class="mb-3 text-sm font-semibold text-gray-900">{{ $t('settings.section_fiscal') }}</h3>
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700">Régimen fiscal</label>
+                            <label class="block text-sm font-medium text-gray-700">{{ $t('settings.tax_regime') }}</label>
                             <select v-model="form.tax_regime" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                <option value="general">General</option>
-                                <option value="simplified">Simplificado</option>
-                                <option value="surcharge">Recargo de equivalencia</option>
+                                <option value="general">{{ $t('settings.regime_general') }}</option>
+                                <option value="simplified">{{ $t('settings.regime_simplified') }}</option>
+                                <option value="surcharge">{{ $t('settings.regime_surcharge') }}</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700">Retención IRPF predeterminada (%)</label>
+                            <label class="block text-sm font-medium text-gray-700">{{ $t('settings.default_irpf') }}</label>
                             <input type="number" v-model="form.irpf_rate" step="0.5" min="0" max="100" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
                         </div>
                     </div>
                 </div>
                 <div class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-                    <h3 class="mb-3 text-sm font-semibold text-gray-900">Logo</h3>
+                    <h3 class="mb-3 text-sm font-semibold text-gray-900">{{ $t('settings.section_logo') }}</h3>
                     <div class="space-y-3">
                         <input type="file" @change="handleLogoChange" accept=".jpg,.jpeg,.png,.svg,.webp" class="block w-full text-sm text-gray-500 file:mr-4 file:rounded-md file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-indigo-700 hover:file:bg-indigo-100" />
                         <p v-if="form.errors.logo" class="text-sm text-red-600">{{ form.errors.logo }}</p>
-                        <p v-if="company?.logo_path" class="text-xs text-gray-500">Logo actual guardado. Sube uno nuevo para reemplazarlo.</p>
+                        <p v-if="company?.logo_path" class="text-xs text-gray-500">{{ $t('settings.logo_exists') }}</p>
                     </div>
                 </div>
             </div>
@@ -182,17 +182,16 @@ const seedDemoData = () => {
             <!-- Submit -->
             <div class="flex justify-end">
                 <button type="submit" :disabled="form.processing" class="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 disabled:opacity-50">
-                    {{ form.processing ? 'Guardando...' : 'Guardar cambios' }}
+                    {{ form.processing ? $t('common.saving') : $t('common.save_changes') }}
                 </button>
             </div>
         </form>
 
         <!-- Demo Data -->
         <div class="mt-6 rounded-lg border border-amber-300 bg-amber-50 p-4 shadow-sm">
-            <h3 class="mb-1 text-sm font-semibold text-amber-800">Datos de prueba</h3>
+            <h3 class="mb-1 text-sm font-semibold text-amber-800">{{ $t('settings.section_demo') }}</h3>
             <p class="mb-3 text-sm text-amber-700">
-                Genera datos ficticios para demostración: ~100 clientes, 70 productos,
-                200 documentos (facturas, presupuestos, albaranes) y 100 gastos.
+                {{ $t('settings.demo_description') }}
             </p>
 
             <div v-if="!showDemoConfirm">
@@ -201,12 +200,12 @@ const seedDemoData = () => {
                     @click="showDemoConfirm = true"
                     class="inline-flex items-center rounded-md bg-amber-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-amber-500"
                 >
-                    Generar datos de prueba
+                    {{ $t('settings.generate_demo') }}
                 </button>
             </div>
             <div v-else class="rounded-md border border-amber-400 bg-amber-100 p-3">
                 <p class="mb-3 text-sm font-medium text-amber-900">
-                    Se crearán ~1.000 registros ficticios. Esta acción no se puede deshacer fácilmente. ¿Continuar?
+                    {{ $t('settings.demo_confirm') }}
                 </p>
                 <div class="flex gap-2">
                     <button
@@ -215,7 +214,7 @@ const seedDemoData = () => {
                         :disabled="demoProcessing"
                         class="inline-flex items-center rounded-md bg-amber-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-amber-500 disabled:opacity-50"
                     >
-                        {{ demoProcessing ? 'Generando...' : 'Confirmar' }}
+                        {{ demoProcessing ? $t('settings.generating') : $t('common.confirm') }}
                     </button>
                     <button
                         type="button"
@@ -223,7 +222,7 @@ const seedDemoData = () => {
                         :disabled="demoProcessing"
                         class="inline-flex items-center rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:opacity-50"
                     >
-                        Cancelar
+                        {{ $t('common.cancel') }}
                     </button>
                 </div>
             </div>

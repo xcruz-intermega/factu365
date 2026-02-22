@@ -60,6 +60,8 @@ class HandleInertiaRequests extends Middleware
                     return 0;
                 }
             },
+            'locale' => app()->getLocale(),
+            'available_locales' => ['es', 'en', 'ca'],
             'tenant' => $tenant ? ['slug' => $tenant->slug] : null,
         ];
     }

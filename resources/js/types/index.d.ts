@@ -4,6 +4,7 @@ export interface User {
     email: string;
     email_verified_at?: string;
     role: string;
+    locale: string;
 }
 
 export interface AuthCan {
@@ -19,4 +20,6 @@ export type PageProps<
         user: User;
         can: AuthCan;
     };
+    locale: string;
+    available_locales: string[];
 };

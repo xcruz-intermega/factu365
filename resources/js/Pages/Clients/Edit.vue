@@ -71,11 +71,11 @@ const submit = () => {
 </script>
 
 <template>
-    <Head :title="`Editar ${client.legal_name}`" />
+    <Head :title="$t('clients.edit_client', { name: client.legal_name })" />
 
     <AppLayout>
         <template #header>
-            <h1 class="text-lg font-semibold text-gray-900">Editar: {{ client.legal_name }}</h1>
+            <h1 class="text-lg font-semibold text-gray-900">{{ $t('clients.edit_client', { name: client.legal_name }) }}</h1>
         </template>
 
         <ClientForm
@@ -84,7 +84,7 @@ const submit = () => {
             :client-id="client.id"
             :discounts="client.discounts"
             :product-families="productFamilies"
-            submit-label="Guardar cambios"
+            :submit-label="$t('common.save_changes')"
             @submit="submit"
         />
     </AppLayout>
