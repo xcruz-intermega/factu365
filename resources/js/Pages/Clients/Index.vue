@@ -182,7 +182,7 @@ const executeDelete = () => {
         <ConfirmDialog
             :show="deleteDialog"
             :title="trans('clients.delete_title')"
-            :message="trans('clients.delete_message', { name: deleteTarget?.legal_name })"
+            :message="trans('clients.delete_message', { name: deleteTarget?.legal_name || '' })"
             :confirm-label="trans('common.delete')"
             :processing="deleting"
             @confirm="executeDelete"

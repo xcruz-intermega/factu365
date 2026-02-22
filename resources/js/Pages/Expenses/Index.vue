@@ -318,7 +318,7 @@ const executeMarkPaid = () => {
         <ConfirmDialog
             :show="deleteDialog"
             :title="$t('expenses.delete_title')"
-            :message="$t('expenses.delete_message', { concept: deleteTarget?.concept })"
+            :message="$t('expenses.delete_message', { concept: deleteTarget?.concept || '' })"
             :confirm-label="$t('common.delete')"
             :processing="deleting"
             @confirm="executeDelete"
@@ -335,7 +335,7 @@ const executeMarkPaid = () => {
             @cancel="markPaidDialog = false"
         >
             <div class="space-y-3">
-                <p class="text-sm text-gray-600">{{ $t('expenses.mark_as_paid_message', { concept: markPaidTarget?.concept }) }}</p>
+                <p class="text-sm text-gray-600">{{ $t('expenses.mark_as_paid_message', { concept: markPaidTarget?.concept || '' }) }}</p>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">{{ $t('expenses.payment_date_label') }}</label>
                     <input

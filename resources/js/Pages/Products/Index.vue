@@ -199,7 +199,7 @@ const executeDelete = () => {
         <ConfirmDialog
             :show="deleteDialog"
             :title="trans('products.delete_title')"
-            :message="trans('products.delete_message', { name: deleteTarget?.name })"
+            :message="trans('products.delete_message', { name: deleteTarget?.name || '' })"
             :confirm-label="trans('common.delete')"
             :processing="deleting"
             @confirm="executeDelete"
