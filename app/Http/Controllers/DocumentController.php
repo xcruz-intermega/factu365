@@ -42,7 +42,7 @@ class DocumentController extends Controller
             ->when(
                 $request->input('sort'),
                 fn ($q) => $q->orderBy($request->input('sort'), $request->input('dir', 'desc')),
-                fn ($q) => $q->orderBy('issue_date', 'desc')->orderBy('id', 'desc')
+                fn ($q) => $q->orderBy('number', 'desc')->orderBy('id', 'desc')
             )
             ->paginate(15)
             ->withQueryString();

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive } from 'vue';
+import { ref, reactive, computed } from 'vue';
 import { trans } from 'laravel-vue-i18n';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
@@ -88,12 +88,12 @@ const editDiscount = reactive({
     notes: null as string | null,
 });
 
-const discountTypeLabels: Record<string, string> = {
+const discountTypeLabels = computed<Record<string, string>>(() => ({
     general: trans('clients.discount_type_short_general'),
     agreement: trans('clients.discount_type_short_agreement'),
     type: trans('clients.discount_type_short_by_type'),
     family: trans('clients.discount_type_short_by_family'),
-};
+}));
 
 const resetNewDiscount = () => {
     newDiscount.discount_type = 'general';

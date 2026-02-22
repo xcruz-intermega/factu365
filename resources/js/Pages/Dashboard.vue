@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { trans } from 'laravel-vue-i18n';
 import AppLayout from '@/Layouts/AppLayout.vue';
@@ -80,7 +81,7 @@ const formatDate = (val: string) => {
     return d.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
 };
 
-const statusLabels: Record<string, string> = {
+const statusLabels = computed<Record<string, string>>(() => ({
     draft: trans('common.status_draft'),
     finalized: trans('common.status_finalized'),
     sent: trans('common.status_sent'),
@@ -89,10 +90,10 @@ const statusLabels: Record<string, string> = {
     overdue: trans('common.status_overdue'),
     cancelled: trans('common.status_cancelled'),
     pending: trans('common.status_pending'),
-};
+}));
 
 // Chart data
-const chartData = {
+const chartData = computed(() => ({
     labels: props.monthlyEvolution.map(m => m.label),
     datasets: [
         {
@@ -108,7 +109,7 @@ const chartData = {
             borderRadius: 4,
         },
     ],
-};
+}));
 
 const chartOptions = {
     responsive: true,
@@ -135,7 +136,7 @@ const chartOptions = {
     },
 };
 
-const kpiCards = [
+const kpiCards = computed(() => [
     {
         label: trans('dashboard.invoiced_this_month'),
         value: props.stats.invoiced_this_month,
@@ -172,7 +173,7 @@ const kpiCards = [
         bgColor: props.stats.result_this_month >= 0 ? 'bg-green-50' : 'bg-red-50',
         iconColor: props.stats.result_this_month >= 0 ? 'text-green-400' : 'text-red-400',
     },
-];
+]);
 </script>
 
 <template>

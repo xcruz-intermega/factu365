@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { trans } from 'laravel-vue-i18n';
 import AppLayout from '@/Layouts/AppLayout.vue';
@@ -36,13 +36,13 @@ const statusFilter = ref(props.filters.status || '');
 const sortBy = ref(props.filters.sort || '');
 const sortDir = ref<'asc' | 'desc'>((props.filters.dir as 'asc' | 'desc') || 'desc');
 
-const columns: Column[] = [
+const columns = computed<Column[]>(() => [
     { key: 'number', label: trans('documents.col_number'), sortable: true },
     { key: 'client', label: trans('documents.col_client') },
     { key: 'issue_date', label: trans('documents.col_date'), sortable: true },
     { key: 'total', label: trans('documents.col_total'), sortable: true, class: 'text-right' },
     { key: 'status', label: trans('documents.col_status'), sortable: true },
-];
+]);
 
 const statusColors: Record<string, 'gray' | 'green' | 'blue' | 'yellow' | 'red' | 'indigo' | 'purple'> = {
     draft: 'gray',
@@ -59,7 +59,7 @@ const statusColors: Record<string, 'gray' | 'green' | 'blue' | 'yellow' | 'red' 
     converted: 'purple',
 };
 
-const statusLabels: Record<string, string> = {
+const statusLabels = computed<Record<string, string>>(() => ({
     draft: trans('common.status_draft'),
     finalized: trans('common.status_finalized'),
     sent: trans('common.status_sent'),
@@ -72,7 +72,7 @@ const statusLabels: Record<string, string> = {
     accepted: trans('common.status_accepted'),
     rejected: trans('common.status_rejected'),
     converted: trans('common.status_converted'),
-};
+}));
 
 const formatCurrency = (val: number | string) => {
     const num = typeof val === 'string' ? parseFloat(val) : val;

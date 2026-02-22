@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { Head, useForm, Link, router } from '@inertiajs/vue3';
 import { trans } from 'laravel-vue-i18n';
 import AppLayout from '@/Layouts/AppLayout.vue';
@@ -165,7 +165,7 @@ const statusColors: Record<string, 'gray' | 'green' | 'blue' | 'yellow' | 'red' 
     converted: 'purple',
 };
 
-const statusLabels: Record<string, string> = {
+const statusLabels = computed<Record<string, string>>(() => ({
     draft: trans('common.status_draft'),
     finalized: trans('common.status_finalized'),
     sent: trans('common.status_sent'),
@@ -178,13 +178,13 @@ const statusLabels: Record<string, string> = {
     accepted: trans('common.status_accepted'),
     rejected: trans('common.status_rejected'),
     converted: trans('common.status_converted'),
-};
+}));
 
-const conversionLabels: Record<string, string> = {
+const conversionLabels = computed<Record<string, string>>(() => ({
     invoice: trans('documents.to_invoice'),
     delivery_note: trans('documents.to_delivery_note'),
     quote: trans('documents.to_quote'),
-};
+}));
 
 const formatCurrency = (val: number | string) => {
     const num = typeof val === 'string' ? parseFloat(val) : val;

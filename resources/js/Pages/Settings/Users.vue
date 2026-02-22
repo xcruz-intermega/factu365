@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { Head, useForm, Link, router, usePage } from '@inertiajs/vue3';
 import { trans } from 'laravel-vue-i18n';
 import AppLayout from '@/Layouts/AppLayout.vue';
@@ -26,12 +26,12 @@ const props = defineProps<{
 const page = usePage();
 const currentUser = page.props.auth.user;
 
-const roleLabels: Record<string, string> = {
+const roleLabels = computed<Record<string, string>>(() => ({
     owner: trans('settings.role_owner'),
     admin: trans('settings.role_admin'),
     accountant: trans('settings.role_accountant'),
     viewer: trans('settings.role_viewer'),
-};
+}));
 
 const roleColors: Record<string, string> = {
     owner: 'bg-purple-100 text-purple-800',

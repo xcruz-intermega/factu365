@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { trans } from 'laravel-vue-i18n';
 import AppLayout from '@/Layouts/AppLayout.vue';
@@ -46,24 +46,24 @@ const dateTo = ref(props.filters.date_to || '');
 const sortBy = ref(props.filters.sort || '');
 const sortDir = ref<'asc' | 'desc'>((props.filters.dir as 'asc' | 'desc') || 'desc');
 
-const columns: Column[] = [
+const columns = computed<Column[]>(() => [
     { key: 'expense_date', label: trans('expenses.col_date'), sortable: true },
     { key: 'concept', label: trans('expenses.col_concept') },
     { key: 'supplier', label: trans('expenses.col_supplier') },
     { key: 'category', label: trans('expenses.col_category') },
     { key: 'total', label: trans('expenses.col_total'), sortable: true, class: 'text-right' },
     { key: 'payment_status', label: trans('expenses.col_status'), sortable: true },
-];
+]);
 
 const statusColors: Record<string, 'gray' | 'green' | 'yellow'> = {
     pending: 'yellow',
     paid: 'green',
 };
 
-const statusLabels: Record<string, string> = {
+const statusLabels = computed<Record<string, string>>(() => ({
     pending: trans('expenses.status_pending'),
     paid: trans('expenses.status_paid'),
-};
+}));
 
 const formatCurrency = (val: number | string) => {
     const num = typeof val === 'string' ? parseFloat(val) : val;

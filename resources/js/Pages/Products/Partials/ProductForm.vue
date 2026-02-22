@@ -122,16 +122,16 @@ const removeComponent = (componentId: number) => {
     );
 };
 
-const exemptionCodes = [
+const exemptionCodes = computed(() => [
     { value: 'E1', label: trans('products.exemption_e1') },
     { value: 'E2', label: trans('products.exemption_e2') },
     { value: 'E3', label: trans('products.exemption_e3') },
     { value: 'E4', label: trans('products.exemption_e4') },
     { value: 'E5', label: trans('products.exemption_e5') },
     { value: 'E6', label: trans('products.exemption_e6') },
-];
+]);
 
-const units = [
+const units = computed(() => [
     { value: 'unit', label: trans('products.unit_unidad') },
     { value: 'hour', label: trans('products.unit_hora') },
     { value: 'day', label: trans('products.unit_dia') },
@@ -141,7 +141,7 @@ const units = [
     { value: 'm2', label: trans('products.unit_m2') },
     { value: 'l', label: trans('products.unit_litro') },
     { value: 'pack', label: trans('products.unit_pack') },
-];
+]);
 </script>
 
 <template>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { trans } from 'laravel-vue-i18n';
 import AppLayout from '@/Layouts/AppLayout.vue';
@@ -33,19 +33,19 @@ const typeFilter = ref(props.filters.type || '');
 const sortBy = ref(props.filters.sort || '');
 const sortDir = ref<'asc' | 'desc'>((props.filters.dir as 'asc' | 'desc') || 'asc');
 
-const columns: Column[] = [
+const columns = computed<Column[]>(() => [
     { key: 'legal_name', label: trans('clients.col_legal_name'), sortable: true },
     { key: 'nif', label: trans('clients.col_tax_id'), sortable: true },
     { key: 'type', label: trans('clients.col_type'), sortable: true },
     { key: 'email', label: trans('clients.col_email') },
     { key: 'phone', label: trans('clients.col_phone') },
-];
+]);
 
-const typeLabels: Record<string, string> = {
+const typeLabels = computed<Record<string, string>>(() => ({
     customer: trans('clients.type_client'),
     supplier: trans('clients.type_supplier'),
     both: trans('clients.type_both'),
-};
+}));
 
 const typeColors: Record<string, 'blue' | 'green' | 'purple'> = {
     customer: 'blue',

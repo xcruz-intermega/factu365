@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { trans } from 'laravel-vue-i18n';
 import AppLayout from '@/Layouts/AppLayout.vue';
@@ -36,14 +36,14 @@ const familyFilter = ref(props.filters.family || '');
 const sortBy = ref(props.filters.sort || '');
 const sortDir = ref<'asc' | 'desc'>((props.filters.dir as 'asc' | 'desc') || 'asc');
 
-const columns: Column[] = [
+const columns = computed<Column[]>(() => [
     { key: 'reference', label: trans('products.col_ref'), sortable: true },
     { key: 'name', label: trans('products.col_name'), sortable: true },
     { key: 'family', label: trans('products.col_family') },
     { key: 'type', label: trans('products.col_type'), sortable: true },
     { key: 'unit_price', label: trans('products.col_price'), sortable: true, class: 'text-right' },
     { key: 'vat_rate', label: trans('products.col_vat'), sortable: true, class: 'text-right' },
-];
+]);
 
 const formatCurrency = (val: number | string) => {
     return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(Number(val));
