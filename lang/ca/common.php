@@ -15,6 +15,8 @@ return [
     'add' => 'Afegir',
     'search' => 'Cercar',
     'export_csv' => 'Exportar CSV',
+    'export_pdf' => 'Exportar PDF',
+    'print' => 'Imprimir',
     'send' => 'Enviar',
     'upload' => 'Pujar',
     'activate' => 'Activar',

@@ -80,9 +80,18 @@ Route::prefix('/{tenant}')->middleware([
             Route::get('/sales/by-product', [ReportController::class, 'salesByProduct'])->name('sales.by-product');
             Route::get('/sales/by-period', [ReportController::class, 'salesByPeriod'])->name('sales.by-period');
             Route::get('/sales/export-csv', [ReportController::class, 'exportSalesCsv'])->name('sales.export-csv');
+            Route::get('/sales/by-client/pdf', [ReportController::class, 'exportSalesByClientPdf'])->name('sales.by-client.pdf');
+            Route::get('/sales/by-product/pdf', [ReportController::class, 'exportSalesByProductPdf'])->name('sales.by-product.pdf');
+            Route::get('/sales/by-period/pdf', [ReportController::class, 'exportSalesByPeriodPdf'])->name('sales.by-period.pdf');
             Route::get('/fiscal/modelo-303', [ReportController::class, 'modelo303'])->name('fiscal.modelo-303');
             Route::get('/fiscal/modelo-130', [ReportController::class, 'modelo130'])->name('fiscal.modelo-130');
             Route::get('/fiscal/modelo-390', [ReportController::class, 'modelo390'])->name('fiscal.modelo-390');
+            Route::get('/fiscal/modelo-303/pdf', [ReportController::class, 'exportModelo303Pdf'])->name('fiscal.modelo-303.pdf');
+            Route::get('/fiscal/modelo-130/pdf', [ReportController::class, 'exportModelo130Pdf'])->name('fiscal.modelo-130.pdf');
+            Route::get('/fiscal/modelo-390/pdf', [ReportController::class, 'exportModelo390Pdf'])->name('fiscal.modelo-390.pdf');
+            Route::get('/fiscal/modelo-303/csv', [ReportController::class, 'exportModelo303Csv'])->name('fiscal.modelo-303.csv');
+            Route::get('/fiscal/modelo-130/csv', [ReportController::class, 'exportModelo130Csv'])->name('fiscal.modelo-130.csv');
+            Route::get('/fiscal/modelo-390/csv', [ReportController::class, 'exportModelo390Csv'])->name('fiscal.modelo-390.csv');
         });
 
         // Settings + User management (admin+ only)

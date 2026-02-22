@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import { Head, router } from '@inertiajs/vue3';
 import { trans } from 'laravel-vue-i18n';
 import AppLayout from '@/Layouts/AppLayout.vue';
+import ReportToolbar from '@/Components/ReportToolbar.vue';
 import { Bar } from 'vue-chartjs';
 import {
     Chart as ChartJS,
@@ -61,12 +62,16 @@ const applyFilters = () => {
     }, { preserveState: true, replace: true });
 };
 
-const exportCsv = () => {
-    window.location.href = route('reports.sales.export-csv', {
-        date_from: dateFrom.value,
-        date_to: dateTo.value,
-    });
-};
+const pdfUrl = () => route('reports.sales.by-period.pdf', {
+    date_from: dateFrom.value,
+    date_to: dateTo.value,
+    group_by: groupBy.value,
+});
+
+const csvUrl = () => route('reports.sales.export-csv', {
+    date_from: dateFrom.value,
+    date_to: dateTo.value,
+});
 
 // Chart
 const chartData = {
@@ -109,8 +114,8 @@ const chartOptions = {
             <h1 class="text-lg font-semibold text-gray-900">{{ $t('reports.sales_by_period') }}</h1>
         </template>
 
-        <!-- Filters -->
-        <div class="mb-6 flex flex-wrap items-end gap-4">
+        <!-- Filters + Toolbar -->
+        <div class="mb-6 flex flex-wrap items-end gap-4 print:hidden">
             <div>
                 <label class="block text-xs font-medium text-gray-500">{{ $t('common.from') }}</label>
                 <input type="date" v-model="dateFrom" @change="applyFilters" class="mt-1 rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
@@ -126,16 +131,11 @@ const chartOptions = {
                     <option value="quarter">{{ $t('reports.group_quarter') }}</option>
                 </select>
             </div>
-            <button @click="exportCsv" class="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-                <svg class="-ml-0.5 mr-1.5 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                </svg>
-                {{ $t('common.export_csv') }}
-            </button>
+            <ReportToolbar :pdfUrl="pdfUrl()" :csvUrl="csvUrl()" />
         </div>
 
         <!-- Chart -->
-        <div v-if="data.length > 0" class="mb-6 rounded-lg bg-white p-6 shadow">
+        <div v-if="data.length > 0" class="mb-6 rounded-lg bg-white p-6 shadow print:hidden">
             <div class="h-64">
                 <Bar :data="chartData" :options="chartOptions" />
             </div>

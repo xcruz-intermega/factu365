@@ -76,4 +76,8 @@ return [
     'col_vat_deductible_short' => 'IVA deducible',
     'col_difference' => 'Diferencia',
     'annual_result' => 'Resultado anual',
+
+    // PDF
+    'generated_on' => 'Generado el',
+    'pdf_period_label' => 'Periodo: :from a :to',
 ];

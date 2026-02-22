@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import { Head, router } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
+import ReportToolbar from '@/Components/ReportToolbar.vue';
 
 interface VatRow {
     vat_rate: string | number;
@@ -45,6 +46,14 @@ const applyFilters = () => {
         year: year.value,
     }, { preserveState: true, replace: true });
 };
+
+const pdfUrl = () => route('reports.fiscal.modelo-390.pdf', {
+    year: year.value,
+});
+
+const csvUrl = () => route('reports.fiscal.modelo-390.csv', {
+    year: year.value,
+});
 </script>
 
 <template>
@@ -55,14 +64,15 @@ const applyFilters = () => {
             <h1 class="text-lg font-semibold text-gray-900">{{ $t('reports.modelo_390_full') }}</h1>
         </template>
 
-        <!-- Filters -->
-        <div class="mb-6 flex items-end gap-4">
+        <!-- Filters + Toolbar -->
+        <div class="mb-6 flex flex-wrap items-end gap-4 print:hidden">
             <div>
                 <label class="block text-xs font-medium text-gray-500">{{ $t('reports.fiscal_year') }}</label>
                 <select v-model="year" @change="applyFilters" class="mt-1 rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                     <option v-for="y in years" :key="y" :value="y">{{ y }}</option>
                 </select>
             </div>
+            <ReportToolbar :pdfUrl="pdfUrl()" :csvUrl="csvUrl()" />
         </div>
 
         <!-- Company info -->
