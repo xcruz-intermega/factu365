@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { router, usePage } from '@inertiajs/vue3';
+import { getActiveLanguage, loadLanguageAsync } from 'laravel-vue-i18n';
 
 const page = usePage();
 const open = ref(false);
@@ -11,12 +12,13 @@ const locales = [
     { code: 'ca', label: 'CA', name: 'Català' },
 ];
 
-const currentLocale = () => page.props.locale as string;
+const currentLocale = () => getActiveLanguage();
 
 function switchLocale(code: string) {
     open.value = false;
     if (code === currentLocale()) return;
-    router.patch(route('locale.update'), { locale: code }, { preserveState: false });
+    loadLanguageAsync(code);
+    router.patch(route('locale.update'), { locale: code }, { preserveState: true });
 }
 
 function closeDropdown() {

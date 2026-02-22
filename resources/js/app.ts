@@ -19,6 +19,8 @@ createInertiaApp({
             import.meta.glob<DefineComponent>('./Pages/**/*.vue'),
         ),
     setup({ el, App, props, plugin }) {
+        const initialLocale = (props.initialPage.props.locale as string) || 'es';
+
         createApp({ render: () => h(App, props) })
             .use(plugin)
             .use(ZiggyVue)
@@ -28,9 +30,10 @@ createInertiaApp({
                 },
             })
             .use(i18nVue, {
+                lang: initialLocale,
                 resolve: async (lang: string) => {
                     const langs = import.meta.glob('../../lang/*.json');
-                    return await langs[`../../lang/${lang}.json`]();
+                    return await langs[`../../lang/php_${lang}.json`]();
                 },
             })
             .mount(el);
