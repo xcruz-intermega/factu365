@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use Inertia\Inertia;
 
 class CentralLoginController extends Controller
 {
@@ -46,7 +47,7 @@ class CentralLoginController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect("/{$tenant->slug}/dashboard");
+        return Inertia::location("/{$tenant->slug}/dashboard");
     }
 
     private function resolveTenant(string $company): Tenant
