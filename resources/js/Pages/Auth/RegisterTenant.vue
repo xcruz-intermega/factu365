@@ -53,7 +53,7 @@ const submit = () => {
 
             <div class="mt-4">
                 <InputLabel for="slug" value="Identificador de empresa" />
-                <div class="mt-1 flex items-center">
+                <div class="mt-1 flex">
                     <span class="inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-50 px-3 text-sm text-gray-500">
                         {{ host }}/
                     </span>
