@@ -6,6 +6,8 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 
+const host = window.location.host;
+
 const form = useForm({
     company_name: '',
     slug: '',
@@ -53,7 +55,7 @@ const submit = () => {
                 <InputLabel for="slug" value="Identificador de empresa" />
                 <div class="mt-1 flex items-center">
                     <span class="inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-50 px-3 text-sm text-gray-500">
-                        factu365.local/
+                        {{ host }}/
                     </span>
                     <TextInput
                         id="slug"
