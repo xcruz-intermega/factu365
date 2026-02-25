@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { Head, router, usePage } from '@inertiajs/vue3';
+import { Head, router, useForm, usePage } from '@inertiajs/vue3';
 import { trans } from 'laravel-vue-i18n';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import SettingsNav from './Partials/SettingsNav.vue';
@@ -39,6 +39,33 @@ const createBackup = () => {
         preserveScroll: true,
         onFinish: () => {
             creating.value = false;
+        },
+    });
+};
+
+// Upload
+const fileInput = ref<HTMLInputElement | null>(null);
+const uploadForm = useForm<{ file: File | null }>({ file: null });
+
+const triggerFileSelect = () => {
+    fileInput.value?.click();
+};
+
+const onFileSelected = (event: Event) => {
+    const target = event.target as HTMLInputElement;
+    const file = target.files?.[0];
+    if (!file) return;
+
+    uploadForm.file = file;
+    uploadForm.post(route('settings.backups.upload'), {
+        preserveScroll: true,
+        forceFormData: true,
+        onSuccess: () => {
+            uploadForm.reset();
+            if (fileInput.value) fileInput.value.value = '';
+        },
+        onError: () => {
+            if (fileInput.value) fileInput.value.value = '';
         },
     });
 };
@@ -141,6 +168,35 @@ const typeLabels = computed<Record<string, string>>(() => ({
                 </svg>
                 {{ creating ? $t('settings.backup_creating') : $t('settings.backup_create_tenant') }}
             </button>
+        </div>
+
+        <!-- Upload backup section -->
+        <div class="mb-6 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+            <h3 class="mb-2 text-sm font-semibold text-gray-900">{{ $t('settings.backup_upload_section') }}</h3>
+            <p class="mb-4 text-sm text-gray-600">{{ $t('settings.backup_upload_description') }}</p>
+
+            <input
+                ref="fileInput"
+                type="file"
+                accept=".tar.gz,.gz"
+                class="hidden"
+                @change="onFileSelected"
+            />
+            <button
+                @click="triggerFileSelect()"
+                :disabled="uploadForm.processing"
+                class="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:opacity-50"
+            >
+                <svg v-if="uploadForm.processing" class="-ml-0.5 mr-1.5 h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                </svg>
+                <svg v-else class="-ml-0.5 mr-1.5 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
+                </svg>
+                {{ uploadForm.processing ? $t('settings.backup_uploading') : $t('settings.backup_upload_button') }}
+            </button>
+            <p v-if="uploadForm.errors.file" class="mt-2 text-sm text-red-600">{{ uploadForm.errors.file }}</p>
         </div>
 
         <!-- Backups list -->

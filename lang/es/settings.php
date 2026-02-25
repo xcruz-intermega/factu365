@@ -220,6 +220,13 @@ return [
     'error_backup_failed' => 'Error al crear la copia de seguridad: :error',
     'error_restore_failed' => 'Error al restaurar la copia: :error',
     'error_backup_not_found' => 'Copia de seguridad no encontrada.',
+    'backup_upload_section' => 'Subir copia de seguridad',
+    'backup_upload_description' => 'Sube un archivo .tar.gz generado previamente desde este sistema.',
+    'backup_upload_button' => 'Subir archivo',
+    'backup_uploading' => 'Subiendo...',
+    'flash_backup_uploaded' => 'Copia de seguridad subida correctamente.',
+    'error_upload_invalid_format' => 'El archivo debe ser .tar.gz.',
+    'error_upload_failed' => 'Error al subir la copia: :error',
     'error_backup_owner_only' => 'Solo el propietario puede crear copias completas.',
     'error_restore_owner_only' => 'Solo el propietario puede restaurar copias.',
 ];

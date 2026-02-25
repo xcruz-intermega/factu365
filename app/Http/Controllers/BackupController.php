@@ -72,6 +72,29 @@ class BackupController extends Controller
         }
     }
 
+    public function upload(Request $request)
+    {
+        $request->validate([
+            'file' => ['required', 'file', 'max:512000'], // 500MB max
+        ]);
+
+        $uploadedFile = $request->file('file');
+        $originalName = $uploadedFile->getClientOriginalName();
+
+        // Validate extension
+        if (! str_ends_with($originalName, '.tar.gz')) {
+            return back()->with('error', __('settings.error_upload_invalid_format'));
+        }
+
+        try {
+            $this->backupService->storeUploadedBackup($uploadedFile, $originalName);
+
+            return back()->with('success', __('settings.flash_backup_uploaded'));
+        } catch (\Throwable $e) {
+            return back()->with('error', __('settings.error_upload_failed', ['error' => $e->getMessage()]));
+        }
+    }
+
     public function destroy(string $filename)
     {
         $deleted = $this->backupService->deleteBackup($filename);

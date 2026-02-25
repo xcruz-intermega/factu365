@@ -220,6 +220,13 @@ return [
     'error_backup_failed' => 'Error en crear la còpia de seguretat: :error',
     'error_restore_failed' => 'Error en restaurar la còpia: :error',
     'error_backup_not_found' => 'Còpia de seguretat no trobada.',
+    'backup_upload_section' => 'Pujar còpia de seguretat',
+    'backup_upload_description' => 'Puja un fitxer .tar.gz generat prèviament des d\'aquest sistema.',
+    'backup_upload_button' => 'Pujar fitxer',
+    'backup_uploading' => 'Pujant...',
+    'flash_backup_uploaded' => 'Còpia de seguretat pujada correctament.',
+    'error_upload_invalid_format' => 'El fitxer ha de ser .tar.gz.',
+    'error_upload_failed' => 'Error en pujar la còpia: :error',
     'error_backup_owner_only' => 'Només el propietari pot crear còpies completes.',
     'error_restore_owner_only' => 'Només el propietari pot restaurar còpies.',
 ];

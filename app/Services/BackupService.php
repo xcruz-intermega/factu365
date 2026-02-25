@@ -260,6 +260,33 @@ class BackupService
     }
 
     /**
+     * Store an uploaded backup file, validating it contains a manifest.
+     */
+    public function storeUploadedBackup(\Illuminate\Http\UploadedFile $file, string $originalName): string
+    {
+        // Sanitize filename: keep only the basename, prefix with "uploaded_" if needed
+        $safeName = basename($originalName);
+
+        // Avoid overwriting existing files — append timestamp if collision
+        if (File::exists("{$this->backupBasePath}/{$safeName}")) {
+            $safeName = str_replace('.tar.gz', '_' . now()->format('His') . '.tar.gz', $safeName);
+        }
+
+        $destPath = "{$this->backupBasePath}/{$safeName}";
+        $file->move($this->backupBasePath, $safeName);
+
+        // Validate that it's a valid backup archive with a manifest
+        $manifest = $this->readManifestFromArchive($destPath);
+
+        if (empty($manifest)) {
+            File::delete($destPath);
+            throw new \RuntimeException('The uploaded file is not a valid backup (no manifest found).');
+        }
+
+        return $destPath;
+    }
+
+    /**
      * Delete a backup file.
      */
     public function deleteBackup(string $filename): bool

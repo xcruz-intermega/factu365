@@ -220,6 +220,13 @@ return [
     'error_backup_failed' => 'Backup failed: :error',
     'error_restore_failed' => 'Restore failed: :error',
     'error_backup_not_found' => 'Backup not found.',
+    'backup_upload_section' => 'Upload backup',
+    'backup_upload_description' => 'Upload a .tar.gz file previously generated from this system.',
+    'backup_upload_button' => 'Upload file',
+    'backup_uploading' => 'Uploading...',
+    'flash_backup_uploaded' => 'Backup uploaded successfully.',
+    'error_upload_invalid_format' => 'The file must be .tar.gz.',
+    'error_upload_failed' => 'Upload failed: :error',
     'error_backup_owner_only' => 'Only the owner can create full backups.',
     'error_restore_owner_only' => 'Only the owner can restore backups.',
 ];

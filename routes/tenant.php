@@ -148,6 +148,7 @@ Route::prefix('/{tenant}')->middleware([
                 // Backups
                 Route::get('/backups', [BackupController::class, 'index'])->name('backups');
                 Route::post('/backups/create', [BackupController::class, 'create'])->name('backups.create');
+                Route::post('/backups/upload', [BackupController::class, 'upload'])->name('backups.upload');
                 Route::get('/backups/{filename}/download', [BackupController::class, 'download'])->name('backups.download')->where('filename', '.*');
                 Route::post('/backups/restore', [BackupController::class, 'restore'])->name('backups.restore');
                 Route::delete('/backups/{filename}', [BackupController::class, 'destroy'])->name('backups.destroy')->where('filename', '.*');
