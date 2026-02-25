@@ -82,6 +82,8 @@ Route::prefix('/{tenant}')->middleware([
         // Expenses
         Route::resource('expenses', ExpenseController::class)->except(['show']);
         Route::post('/expenses/{expense}/mark-paid', [ExpenseController::class, 'markPaid'])->name('expenses.mark-paid');
+        Route::get('/expenses/{expense}/attachment', [ExpenseController::class, 'attachment'])->name('expenses.attachment');
+        Route::get('/expenses/{expense}/attachment/preview', [ExpenseController::class, 'previewAttachment'])->name('expenses.attachment.preview');
 
         // Expense Categories
         Route::get('/expense-categories', [ExpenseCategoryController::class, 'index'])->name('expense-categories.index');

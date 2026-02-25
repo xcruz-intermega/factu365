@@ -22,6 +22,7 @@ const props = defineProps<{
     categories: Category[];
     suppliers: Supplier[];
     isEdit?: boolean;
+    expenseId?: number;
 }>();
 
 const emit = defineEmits<{
@@ -257,9 +258,24 @@ const handleFileChange = (e: Event) => {
                             class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:rounded-md file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-indigo-700 hover:file:bg-indigo-100"
                         />
                         <p v-if="form.errors.attachment" class="mt-1 text-sm text-red-600">{{ form.errors.attachment }}</p>
-                        <p v-if="isEdit && form.attachment_path" class="mt-1 text-xs text-gray-500">
-                            {{ $t('expenses.attachment_exists') }}
-                        </p>
+                        <div v-if="isEdit && form.attachment_path && expenseId" class="mt-2 flex items-center gap-3">
+                            <a
+                                :href="route('expenses.attachment.preview', expenseId)"
+                                target="_blank"
+                                class="inline-flex items-center gap-1 text-sm text-indigo-600 hover:text-indigo-900"
+                            >
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>
+                                {{ $t('expenses.view_attachment') }}
+                            </a>
+                            <a
+                                :href="route('expenses.attachment', expenseId)"
+                                class="inline-flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900"
+                            >
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>
+                                {{ $t('expenses.download_attachment') }}
+                            </a>
+                            <span class="text-xs text-gray-400">{{ $t('expenses.attachment_exists') }}</span>
+                        </div>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700">{{ $t('expenses.notes') }}</label>

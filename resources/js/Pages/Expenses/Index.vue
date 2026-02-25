@@ -253,12 +253,23 @@ const executeMarkPaid = () => {
             </template>
 
             <template #cell-concept="{ row }">
-                <Link
-                    :href="route('expenses.edit', row.id)"
-                    class="font-medium text-indigo-600 hover:text-indigo-900"
-                >
-                    {{ row.concept }}
-                </Link>
+                <div class="flex items-center gap-1.5">
+                    <Link
+                        :href="route('expenses.edit', row.id)"
+                        class="font-medium text-indigo-600 hover:text-indigo-900"
+                    >
+                        {{ row.concept }}
+                    </Link>
+                    <a
+                        v-if="row.attachment_path"
+                        :href="route('expenses.attachment.preview', row.id)"
+                        target="_blank"
+                        class="text-gray-400 hover:text-indigo-600"
+                        :title="$t('expenses.view_attachment')"
+                    >
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m18.375 12.739-7.693 7.693a4.5 4.5 0 0 1-6.364-6.364l10.94-10.94A3 3 0 1 1 19.5 7.372L8.552 18.32m.009-.01-.01.01m5.699-9.941-7.81 7.81a1.5 1.5 0 0 0 2.112 2.13" /></svg>
+                    </a>
+                </div>
                 <p v-if="row.invoice_number" class="text-xs text-gray-400">{{ row.invoice_number }}</p>
             </template>
 

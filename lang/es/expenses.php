@@ -61,6 +61,8 @@ return [
     'payment_method' => 'Método pago',
     'attachment' => 'Adjunto (PDF, imagen)',
     'attachment_exists' => 'Adjunto actual guardado. Sube uno nuevo para reemplazarlo.',
+    'view_attachment' => 'Ver adjunto',
+    'download_attachment' => 'Descargar',
     'notes' => 'Notas',
     'notes_placeholder' => 'Notas adicionales',
 

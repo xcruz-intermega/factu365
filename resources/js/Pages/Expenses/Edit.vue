@@ -89,6 +89,7 @@ const submit = () => {
             :categories="categories"
             :suppliers="suppliers"
             :is-edit="true"
+            :expense-id="expense.id"
             @submit="submit"
         />
     </AppLayout>

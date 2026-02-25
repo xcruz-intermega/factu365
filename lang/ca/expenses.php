@@ -61,6 +61,8 @@ return [
     'payment_method' => 'Mètode pagament',
     'attachment' => 'Adjunt (PDF, imatge)',
     'attachment_exists' => 'Adjunt actual desat. Puja un de nou per substituir-lo.',
+    'view_attachment' => 'Veure adjunt',
+    'download_attachment' => 'Descarregar',
     'notes' => 'Notes',
     'notes_placeholder' => 'Notes addicionals',
 

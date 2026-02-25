@@ -61,6 +61,8 @@ return [
     'payment_method' => 'Payment method',
     'attachment' => 'Attachment (PDF, image)',
     'attachment_exists' => 'Current attachment saved. Upload a new one to replace it.',
+    'view_attachment' => 'View attachment',
+    'download_attachment' => 'Download',
     'notes' => 'Notes',
     'notes_placeholder' => 'Additional notes',
 

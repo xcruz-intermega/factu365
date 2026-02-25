@@ -132,6 +132,24 @@ class ExpenseController extends Controller
             ->with('success', __('expenses.flash_deleted'));
     }
 
+    public function attachment(Expense $expense)
+    {
+        if (!$expense->attachment_path || !Storage::disk('local')->exists($expense->attachment_path)) {
+            abort(404);
+        }
+
+        return Storage::disk('local')->download($expense->attachment_path);
+    }
+
+    public function previewAttachment(Expense $expense)
+    {
+        if (!$expense->attachment_path || !Storage::disk('local')->exists($expense->attachment_path)) {
+            abort(404);
+        }
+
+        return response()->file(Storage::disk('local')->path($expense->attachment_path));
+    }
+
     public function markPaid(Request $request, Expense $expense)
     {
         $validated = $request->validate([
