@@ -8,6 +8,17 @@ import LanguageSwitcher from '@/Components/LanguageSwitcher.vue';
 
 const sidebarOpen = ref(false);
 const collapsed = ref(false);
+const collapsedSections = ref(new Set<number>());
+
+const toggleSection = (idx: number) => {
+    const next = new Set(collapsedSections.value);
+    if (next.has(idx)) {
+        next.delete(idx);
+    } else {
+        next.add(idx);
+    }
+    collapsedSections.value = next;
+};
 
 onMounted(() => {
     const stored = localStorage.getItem('sidebar-collapsed');
@@ -133,31 +144,59 @@ function itemHref(item: NavItem): string {
                 'fixed inset-y-0 z-50 flex w-64 flex-col transition-all duration-300 ease-in-out lg:translate-x-0',
             ]"
         >
-            <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-indigo-700 pb-4" :class="collapsed ? 'px-3' : 'px-6'">
-                <div class="flex h-16 shrink-0 items-center gap-2" :class="collapsed ? 'justify-center' : ''">
+            <div class="flex grow flex-col overflow-y-auto border-r border-gray-200 bg-white">
+                <!-- Logo bar (blue) -->
+                <div class="flex h-16 shrink-0 items-center gap-2 bg-indigo-600" :class="collapsed ? 'justify-center px-3' : 'px-6'">
                     <img src="/images/logo.svg" alt="Factu365" class="h-10 w-10 object-contain" />
                     <span v-if="!collapsed" class="font-brand text-[30px] font-extrabold text-white">Factu365</span>
+                    <!-- Mobile close button -->
+                    <button
+                        type="button"
+                        class="ml-auto -mr-2 p-1.5 text-white/80 hover:text-white lg:hidden"
+                        @click="sidebarOpen = false"
+                    >
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
                 </div>
-                <nav class="flex flex-1 flex-col">
-                    <div class="flex flex-1 flex-col gap-y-4">
+
+                <nav class="flex flex-1 flex-col gap-y-1 pb-4" :class="collapsed ? 'px-3' : 'px-4'" style="padding-top: 0.75rem;">
+                    <div class="flex flex-1 flex-col gap-y-1">
                         <div v-for="(section, sIdx) in sections.filter(s => !s.hidden)" :key="sIdx">
-                            <p v-if="section.title && !collapsed" class="mb-1 px-2 text-xs font-semibold uppercase tracking-wider text-indigo-300">
+                            <!-- Section header (collapsable) -->
+                            <button
+                                v-if="section.title && !collapsed"
+                                @click="toggleSection(sIdx)"
+                                class="mt-3 mb-1 flex w-full items-center gap-x-1 px-2 text-xs font-semibold uppercase tracking-wider text-indigo-600 hover:text-indigo-800"
+                            >
+                                <svg
+                                    class="h-3.5 w-3.5 shrink-0 transition-transform duration-200"
+                                    :class="collapsedSections.has(sIdx) ? '-rotate-90' : ''"
+                                    fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+                                >
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                </svg>
                                 {{ section.title }}
-                            </p>
-                            <div v-else-if="section.title && collapsed" class="mb-1 border-t border-indigo-600"></div>
-                            <ul class="flex flex-col gap-y-1">
+                            </button>
+                            <div v-else-if="section.title && collapsed" class="mt-2 mb-1 border-t border-gray-200"></div>
+
+                            <!-- Section items -->
+                            <ul v-show="!section.title || !collapsedSections.has(sIdx)" class="flex flex-col gap-y-0.5">
                                 <li v-for="item in section.items" :key="item.name + (item.routeParams?.type || '') + (item.queryParams?.type || '')">
                                     <Link
                                         :href="itemHref(item)"
-                                        class="group relative flex items-center gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-indigo-200 hover:bg-indigo-600 hover:text-white"
+                                        class="group relative flex items-center gap-x-3 rounded-md p-2 text-sm font-medium leading-6 text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                                         :class="[
-                                            isActive(item) ? 'bg-indigo-600 text-white' : '',
-                                            collapsed ? 'justify-center' : '',
+                                            isActive(item) ? 'bg-gray-100 text-gray-900 font-semibold' : '',
+                                            collapsed ? 'justify-center' : 'pl-8',
+                                            !section.title ? 'pl-2' : '',
                                         ]"
                                         :title="collapsed ? item.name : undefined"
                                     >
                                         <svg
                                             class="h-6 w-6 shrink-0"
+                                            :class="isActive(item) ? 'text-indigo-600' : 'text-gray-400 group-hover:text-gray-500'"
                                             fill="none"
                                             viewBox="0 0 24 24"
                                             stroke-width="1.5"
@@ -191,7 +230,7 @@ function itemHref(item: NavItem): string {
                     <div class="hidden lg:block">
                         <button
                             @click="toggleCollapsed"
-                            class="flex w-full items-center gap-x-3 rounded-md p-2 text-sm font-semibold text-indigo-200 hover:bg-indigo-600 hover:text-white"
+                            class="flex w-full items-center gap-x-3 rounded-md p-2 text-sm font-semibold text-gray-500 hover:bg-gray-50 hover:text-gray-700"
                             :class="collapsed ? 'justify-center' : ''"
                         >
                             <svg class="h-6 w-6 shrink-0 transition-transform" :class="collapsed ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -202,25 +241,25 @@ function itemHref(item: NavItem): string {
                     </div>
 
                     <!-- User info at bottom -->
-                    <div v-if="user" class="mt-auto border-t border-indigo-600 pt-4">
+                    <div v-if="user" class="mt-auto border-t border-gray-200 pt-4">
                         <Link
                             :href="route('profile.edit')"
-                            class="flex items-center gap-x-3 rounded-md p-2 text-sm font-semibold text-indigo-200 hover:bg-indigo-600 hover:text-white"
+                            class="flex items-center gap-x-3 rounded-md p-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                             :class="collapsed ? 'justify-center' : ''"
                         >
-                            <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-500 text-sm font-bold text-white">
+                            <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-sm font-bold text-white">
                                 {{ user.name.charAt(0).toUpperCase() }}
                             </div>
                             <div v-if="!collapsed" class="min-w-0">
-                                <p class="truncate text-sm font-semibold text-white">{{ user.name }}</p>
-                                <p class="truncate text-xs text-indigo-300">{{ user.email }}</p>
+                                <p class="truncate text-sm font-semibold text-gray-900">{{ user.name }}</p>
+                                <p class="truncate text-xs text-gray-500">{{ user.email }}</p>
                             </div>
                         </Link>
                         <Link
                             :href="route('logout')"
                             method="post"
                             as="button"
-                            class="mt-1 flex w-full items-center gap-x-3 rounded-md p-2 text-sm font-semibold text-indigo-200 hover:bg-indigo-600 hover:text-white"
+                            class="mt-1 flex w-full items-center gap-x-3 rounded-md p-2 text-sm font-semibold text-gray-500 hover:bg-gray-50 hover:text-gray-700"
                             :class="collapsed ? 'justify-center' : ''"
                         >
                             <svg class="h-6 w-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -231,7 +270,7 @@ function itemHref(item: NavItem): string {
                     </div>
 
                     <!-- Version -->
-                    <p class="mt-2 text-center text-xs text-indigo-400/60">v{{ appVersion }}</p>
+                    <p class="mt-2 text-center text-xs text-gray-400/60">v{{ appVersion }}</p>
                 </nav>
             </div>
         </div>
