@@ -52,6 +52,11 @@ const props = defineProps<{
         exemption_code: string;
         irpf_applicable: boolean;
         unit: string;
+        track_stock: boolean;
+        stock_quantity: number;
+        minimum_stock: number;
+        allow_negative_stock: boolean;
+        stock_mode: string;
     }>;
     submitLabel: string;
     families?: FamilyOption[];
@@ -284,6 +289,79 @@ const units = computed(() => [
                         <span class="ms-2 text-sm text-gray-600">{{ $t('products.apply_irpf') }}</span>
                     </label>
                     <InputError class="mt-2" :message="form.errors.irpf_applicable" />
+                </div>
+            </div>
+        </div>
+
+        <!-- Stock (only for products, not services) -->
+        <div v-if="form.type === 'product'" class="rounded-lg bg-white p-6 shadow">
+            <h3 class="mb-4 text-base font-semibold text-gray-900">{{ $t('products.section_stock') }}</h3>
+
+            <div class="space-y-4">
+                <!-- Track stock toggle -->
+                <label class="flex items-center">
+                    <Checkbox v-model:checked="form.track_stock" />
+                    <span class="ms-2 text-sm text-gray-600">{{ $t('products.track_stock') }}</span>
+                </label>
+                <InputError class="mt-1" :message="form.errors.track_stock" />
+
+                <!-- Stock fields (visible when tracking) -->
+                <div v-if="form.track_stock" class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    <div>
+                        <InputLabel for="stock_quantity" :value="$t('products.stock_quantity')" />
+                        <TextInput
+                            id="stock_quantity"
+                            type="number"
+                            class="mt-1 block w-full"
+                            v-model="form.stock_quantity"
+                            step="0.0001"
+                            min="0"
+                            :disabled="!!productId"
+                        />
+                        <p v-if="productId" class="mt-1 text-xs text-gray-500">
+                            <Link :href="route('products.stock-movements', productId)" class="text-indigo-600 hover:underline">
+                                {{ $t('products.stock_adjust') }} →
+                            </Link>
+                        </p>
+                        <InputError class="mt-2" :message="form.errors.stock_quantity" />
+                    </div>
+
+                    <div>
+                        <InputLabel for="minimum_stock" :value="$t('products.minimum_stock')" />
+                        <TextInput
+                            id="minimum_stock"
+                            type="number"
+                            class="mt-1 block w-full"
+                            v-model="form.minimum_stock"
+                            step="0.0001"
+                            min="0"
+                        />
+                        <InputError class="mt-2" :message="form.errors.minimum_stock" />
+                    </div>
+
+                    <div class="flex items-center pt-6">
+                        <label class="flex items-center">
+                            <Checkbox v-model:checked="form.allow_negative_stock" />
+                            <span class="ms-2 text-sm text-gray-600">{{ $t('products.allow_negative_stock') }}</span>
+                        </label>
+                        <InputError class="mt-2" :message="form.errors.allow_negative_stock" />
+                    </div>
+
+                    <!-- Stock mode (only if composite product) -->
+                    <div v-if="components && components.length > 0" class="sm:col-span-2 lg:col-span-3">
+                        <InputLabel :value="$t('products.stock_mode')" />
+                        <div class="mt-2 flex gap-6">
+                            <label class="flex items-center">
+                                <input type="radio" v-model="form.stock_mode" value="self" class="text-indigo-600 focus:ring-indigo-500" />
+                                <span class="ms-2 text-sm text-gray-600">{{ $t('products.stock_mode_self') }}</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="radio" v-model="form.stock_mode" value="components" class="text-indigo-600 focus:ring-indigo-500" />
+                                <span class="ms-2 text-sm text-gray-600">{{ $t('products.stock_mode_components') }}</span>
+                            </label>
+                        </div>
+                        <InputError class="mt-2" :message="form.errors.stock_mode" />
+                    </div>
                 </div>
             </div>
         </div>

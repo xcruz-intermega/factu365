@@ -86,4 +86,44 @@ return [
     'flash_component_added' => 'Component added.',
     'flash_component_deleted' => 'Component removed.',
     'error_component_exists' => 'This component has already been added.',
+
+    // Stock
+    'section_stock' => 'Inventory',
+    'track_stock' => 'Track stock',
+    'stock_quantity' => 'Current stock',
+    'minimum_stock' => 'Minimum stock',
+    'allow_negative_stock' => 'Allow negative stock',
+    'stock_mode' => 'Stock mode',
+    'stock_mode_self' => 'Own stock',
+    'stock_mode_components' => 'Deduct from components',
+    'col_stock' => 'Stock',
+    'stock_adjust' => 'Adjust',
+    'stock_components' => 'Comp.',
+
+    // Stock movements
+    'stock_movements_title' => 'Stock movements — :name',
+    'movement_type_sale' => 'Sale',
+    'movement_type_purchase' => 'Purchase',
+    'movement_type_adjustment' => 'Adjustment',
+    'movement_type_return' => 'Return',
+    'movement_type_initial' => 'Initial',
+    'col_date' => 'Date',
+    'col_type' => 'Type',
+    'col_document' => 'Document',
+    'col_movement_qty' => 'Quantity',
+    'col_stock_after' => 'Stock after',
+    'col_notes' => 'Notes',
+    'col_user' => 'User',
+
+    // Manual adjustment
+    'adjustment_title' => 'Manual adjustment',
+    'adjustment_quantity' => 'Quantity (+/-)',
+    'adjustment_notes' => 'Notes',
+    'adjustment_placeholder' => 'Reason for adjustment...',
+    'flash_adjustment_created' => 'Stock adjustment recorded.',
+
+    // Warnings
+    'insufficient_stock' => 'Insufficient stock for \':name\' (available: :available).',
+    'negative_stock_warning' => 'Stock will go negative',
+    'stock_available' => 'Available: :qty',
 ];

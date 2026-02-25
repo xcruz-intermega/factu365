@@ -43,6 +43,7 @@ const columns = computed<Column[]>(() => [
     { key: 'type', label: trans('products.col_type'), sortable: true },
     { key: 'unit_price', label: trans('products.col_price'), sortable: true, class: 'text-right' },
     { key: 'vat_rate', label: trans('products.col_vat'), sortable: true, class: 'text-right' },
+    { key: 'stock', label: trans('products.col_stock'), class: 'text-right' },
 ]);
 
 const formatCurrency = (val: number | string) => {
@@ -175,6 +176,26 @@ const executeDelete = () => {
 
             <template #cell-vat_rate="{ value }">
                 {{ value }}%
+            </template>
+
+            <template #cell-stock="{ row }">
+                <template v-if="row.track_stock && row.type === 'product'">
+                    <span v-if="row.stock_mode === 'components'" class="text-xs text-gray-400">
+                        {{ $t('products.stock_components') }}
+                    </span>
+                    <span
+                        v-else
+                        class="font-mono text-sm"
+                        :class="{
+                            'text-green-600': Number(row.stock_quantity) > Number(row.minimum_stock),
+                            'text-amber-500': Number(row.stock_quantity) > 0 && Number(row.stock_quantity) <= Number(row.minimum_stock),
+                            'text-red-600': Number(row.stock_quantity) <= 0,
+                        }"
+                    >
+                        {{ Number(row.stock_quantity) }}
+                    </span>
+                </template>
+                <span v-else class="text-gray-400">—</span>
             </template>
 
             <template #actions="{ row }">

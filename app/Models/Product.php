@@ -22,6 +22,11 @@ class Product extends Model
         'exemption_code',
         'irpf_applicable',
         'unit',
+        'track_stock',
+        'stock_quantity',
+        'minimum_stock',
+        'allow_negative_stock',
+        'stock_mode',
     ];
 
     protected function casts(): array
@@ -30,6 +35,10 @@ class Product extends Model
             'unit_price' => 'decimal:2',
             'vat_rate' => 'decimal:2',
             'irpf_applicable' => 'boolean',
+            'track_stock' => 'boolean',
+            'stock_quantity' => 'decimal:4',
+            'minimum_stock' => 'decimal:4',
+            'allow_negative_stock' => 'boolean',
         ];
     }
 
@@ -64,6 +73,21 @@ class Product extends Model
     public function isComposite(): bool
     {
         return $this->components()->exists();
+    }
+
+    public function stockMovements(): HasMany
+    {
+        return $this->hasMany(StockMovement::class);
+    }
+
+    public function tracksStock(): bool
+    {
+        return $this->type === 'product' && $this->track_stock;
+    }
+
+    public function usesComponentStock(): bool
+    {
+        return $this->stock_mode === 'components' && $this->isComposite();
     }
 
     public function isExempt(): bool

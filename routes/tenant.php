@@ -51,6 +51,8 @@ Route::prefix('/{tenant}')->middleware([
         Route::resource('products', ProductController::class)->except(['show']);
         Route::post('/products/{product}/components', [ProductController::class, 'storeComponent'])->name('products.components.store');
         Route::delete('/products/{product}/components/{component}', [ProductController::class, 'destroyComponent'])->name('products.components.destroy');
+        Route::get('/products/{product}/stock-movements', [ProductController::class, 'stockMovements'])->name('products.stock-movements');
+        Route::post('/products/{product}/stock-adjustment', [ProductController::class, 'stockAdjustment'])->name('products.stock-adjustment');
 
         // Documents (type-prefixed routes)
         Route::prefix('documents/{type}')->name('documents.')->group(function () {

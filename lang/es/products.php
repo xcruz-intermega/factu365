@@ -86,4 +86,44 @@ return [
     'flash_component_added' => 'Componente añadido.',
     'flash_component_deleted' => 'Componente eliminado.',
     'error_component_exists' => 'Este componente ya está añadido.',
+
+    // Stock
+    'section_stock' => 'Inventario',
+    'track_stock' => 'Controlar stock',
+    'stock_quantity' => 'Stock actual',
+    'minimum_stock' => 'Stock mínimo',
+    'allow_negative_stock' => 'Permitir stock negativo',
+    'stock_mode' => 'Modo de stock',
+    'stock_mode_self' => 'Stock propio',
+    'stock_mode_components' => 'Descontar de componentes',
+    'col_stock' => 'Stock',
+    'stock_adjust' => 'Ajustar',
+    'stock_components' => 'Comp.',
+
+    // Stock movements
+    'stock_movements_title' => 'Movimientos de stock — :name',
+    'movement_type_sale' => 'Venta',
+    'movement_type_purchase' => 'Compra',
+    'movement_type_adjustment' => 'Ajuste',
+    'movement_type_return' => 'Devolución',
+    'movement_type_initial' => 'Inicial',
+    'col_date' => 'Fecha',
+    'col_type' => 'Tipo',
+    'col_document' => 'Documento',
+    'col_movement_qty' => 'Cantidad',
+    'col_stock_after' => 'Stock result.',
+    'col_notes' => 'Notas',
+    'col_user' => 'Usuario',
+
+    // Manual adjustment
+    'adjustment_title' => 'Ajuste manual',
+    'adjustment_quantity' => 'Cantidad (+/-)',
+    'adjustment_notes' => 'Notas',
+    'adjustment_placeholder' => 'Motivo del ajuste...',
+    'flash_adjustment_created' => 'Ajuste de stock registrado.',
+
+    // Warnings
+    'insufficient_stock' => 'Stock insuficiente para \':name\' (disponible: :available).',
+    'negative_stock_warning' => 'El stock quedará negativo',
+    'stock_available' => 'Disponible: :qty',
 ];

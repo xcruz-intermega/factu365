@@ -31,6 +31,11 @@ const props = defineProps<{
         exemption_code: string;
         irpf_applicable: boolean;
         unit: string;
+        track_stock: boolean;
+        stock_quantity: number;
+        minimum_stock: number;
+        allow_negative_stock: boolean;
+        stock_mode: string;
         components: ProductComponentData[];
     };
     families: Array<{ id: number; name: string; parent_id: number | null }>;
@@ -48,6 +53,11 @@ const form = useForm({
     exemption_code: props.product.exemption_code || '',
     irpf_applicable: props.product.irpf_applicable || false,
     unit: props.product.unit || 'unit',
+    track_stock: props.product.track_stock || false,
+    stock_quantity: Number(props.product.stock_quantity) || 0,
+    minimum_stock: Number(props.product.minimum_stock) || 0,
+    allow_negative_stock: props.product.allow_negative_stock ?? true,
+    stock_mode: props.product.stock_mode || 'self',
 });
 
 const submit = () => {

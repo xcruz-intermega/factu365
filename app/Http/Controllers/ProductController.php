@@ -6,6 +6,8 @@ use App\Http\Requests\ProductRequest;
 use App\Models\Product;
 use App\Models\ProductComponent;
 use App\Models\ProductFamily;
+use App\Models\StockMovement;
+use App\Services\StockService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -104,5 +106,36 @@ class ProductController extends Controller
         $component->delete();
 
         return back()->with('success', __('products.flash_component_deleted'));
+    }
+
+    public function stockMovements(Product $product)
+    {
+        $movements = StockMovement::where('product_id', $product->id)
+            ->with(['document:id,document_type,number', 'user:id,name'])
+            ->orderByDesc('created_at')
+            ->paginate(25)
+            ->withQueryString();
+
+        return Inertia::render('Products/StockMovements', [
+            'product' => $product->only(['id', 'name', 'reference', 'stock_quantity', 'minimum_stock', 'track_stock']),
+            'movements' => $movements,
+        ]);
+    }
+
+    public function stockAdjustment(Request $request, Product $product)
+    {
+        $validated = $request->validate([
+            'quantity' => 'required|numeric|not_in:0',
+            'notes' => 'nullable|string|max:500',
+        ]);
+
+        app(StockService::class)->moveStock(
+            product: $product,
+            quantity: (float) $validated['quantity'],
+            type: 'adjustment',
+            notes: $validated['notes'] ?? null,
+        );
+
+        return back()->with('success', __('products.flash_adjustment_created'));
     }
 }

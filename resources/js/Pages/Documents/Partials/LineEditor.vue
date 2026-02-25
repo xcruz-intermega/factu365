@@ -33,6 +33,11 @@ interface Product {
     unit: string | null;
     type: string;
     product_family_id: number | null;
+    track_stock: boolean;
+    stock_quantity: number;
+    minimum_stock: number;
+    allow_negative_stock: boolean;
+    stock_mode: string;
     components?: ProductComponent[];
 }
 
@@ -203,6 +208,45 @@ const hasClientDiscount = (line: LineInput): boolean => {
     return resolved !== null && resolved === line.discount_percent;
 };
 
+const getProductForLine = (line: LineInput): Product | undefined => {
+    if (!line.product_id) return undefined;
+    return props.products.find(p => p.id === line.product_id);
+};
+
+const lineTracksStock = (line: LineInput): boolean => {
+    const product = getProductForLine(line);
+    return !!(product?.track_stock && product.type === 'product' && product.stock_mode !== 'components');
+};
+
+const lineStockQty = (line: LineInput): number => {
+    const product = getProductForLine(line);
+    return product ? Number(product.stock_quantity) : 0;
+};
+
+const lineStockColor = (line: LineInput): string => {
+    const product = getProductForLine(line);
+    if (!product) return '';
+    const qty = Number(product.stock_quantity);
+    const min = Number(product.minimum_stock);
+    if (qty <= 0) return 'text-red-600';
+    if (qty <= min) return 'text-amber-500';
+    return 'text-green-600';
+};
+
+const lineStockInsufficient = (line: LineInput): boolean => {
+    const product = getProductForLine(line);
+    if (!product || !product.track_stock || product.type !== 'product') return false;
+    if (product.allow_negative_stock) return false;
+    return line.quantity > Number(product.stock_quantity);
+};
+
+const lineStockWarning = (line: LineInput): boolean => {
+    const product = getProductForLine(line);
+    if (!product || !product.track_stock || product.type !== 'product') return false;
+    if (!product.allow_negative_stock) return false;
+    return line.quantity > Number(product.stock_quantity);
+};
+
 const lineError = (index: number, field: string): string | undefined => {
     return props.errors[`lines.${index}.${field}`];
 };
@@ -246,7 +290,16 @@ const lineError = (index: number, field: string): string | undefined => {
                     <!-- Row 1: Product selector + Concept -->
                     <div class="grid grid-cols-1 gap-3 sm:grid-cols-12">
                         <div class="sm:col-span-4">
-                            <label class="block text-xs font-medium text-gray-600">{{ $t('documents.product') }}</label>
+                            <label class="flex items-center gap-2 text-xs font-medium text-gray-600">
+                                {{ $t('documents.product') }}
+                                <span
+                                    v-if="lineTracksStock(line)"
+                                    class="inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-semibold"
+                                    :class="lineStockColor(line)"
+                                >
+                                    {{ $t('products.col_stock') }}: {{ lineStockQty(line) }}
+                                </span>
+                            </label>
                             <div class="mt-0.5">
                                 <SearchSelect
                                     :model-value="line.product_id ?? null"
@@ -295,9 +348,20 @@ const lineError = (index: number, field: string): string | undefined => {
                                 @input="updateLine(index, 'quantity', Number(($event.target as HTMLInputElement).value))"
                                 step="0.0001"
                                 min="0.0001"
-                                class="mt-0.5 block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                                :class="{ 'border-red-500': lineError(index, 'quantity') }"
+                                class="mt-0.5 block w-full rounded-md text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                :class="{
+                                    'border-red-500 ring-1 ring-red-500': lineStockInsufficient(line) || lineError(index, 'quantity'),
+                                    'border-amber-400 ring-1 ring-amber-400': lineStockWarning(line) && !lineStockInsufficient(line),
+                                    'border-gray-300': !lineStockInsufficient(line) && !lineStockWarning(line) && !lineError(index, 'quantity'),
+                                }"
+                                :title="lineStockInsufficient(line) ? $t('products.stock_available', { qty: String(lineStockQty(line)) }) : lineStockWarning(line) ? $t('products.negative_stock_warning') : ''"
                             />
+                            <p v-if="lineStockInsufficient(line)" class="mt-0.5 text-[10px] text-red-600">
+                                {{ $t('products.stock_available', { qty: String(lineStockQty(line)) }) }}
+                            </p>
+                            <p v-else-if="lineStockWarning(line)" class="mt-0.5 text-[10px] text-amber-500">
+                                {{ $t('products.negative_stock_warning') }}
+                            </p>
                         </div>
                         <div class="sm:col-span-3">
                             <label class="block text-xs font-medium text-gray-600">{{ $t('documents.unit_price_required') }}</label>

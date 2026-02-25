@@ -11,8 +11,10 @@ use App\Models\DocumentSeries;
 use App\Models\PaymentTemplate;
 use App\Models\PdfTemplate;
 use App\Models\Product;
+use App\Exceptions\InsufficientStockException;
 use App\Services\NumberingService;
 use App\Services\PdfGeneratorService;
+use App\Services\StockService;
 use App\Services\TaxCalculatorService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -25,6 +27,7 @@ class DocumentController extends Controller
         private TaxCalculatorService $taxCalculator,
         private NumberingService $numberingService,
         private PdfGeneratorService $pdfGenerator,
+        private StockService $stockService,
     ) {}
 
     public function index(Request $request, string $type)
@@ -67,7 +70,7 @@ class DocumentController extends Controller
             'documentTypeLabel' => Document::documentTypeLabel($type),
             'direction' => $direction,
             'clients' => Client::with('discounts')->orderBy('legal_name')->get(['id', 'legal_name', 'trade_name', 'nif', 'type', 'payment_terms_days', 'payment_template_id']),
-            'products' => Product::with(['components.component:id,name,reference,unit_price,vat_rate,exemption_code,irpf_applicable,unit,type,product_family_id'])->orderBy('name')->get(['id', 'name', 'reference', 'unit_price', 'vat_rate', 'exemption_code', 'irpf_applicable', 'unit', 'type', 'product_family_id']),
+            'products' => Product::with(['components.component:id,name,reference,unit_price,vat_rate,exemption_code,irpf_applicable,unit,type,product_family_id,track_stock,stock_quantity,minimum_stock,allow_negative_stock,stock_mode'])->orderBy('name')->get(['id', 'name', 'reference', 'unit_price', 'vat_rate', 'exemption_code', 'irpf_applicable', 'unit', 'type', 'product_family_id', 'track_stock', 'stock_quantity', 'minimum_stock', 'allow_negative_stock', 'stock_mode']),
             'series' => DocumentSeries::forType($type)->forYear(now()->year)->get(),
             'paymentTemplates' => PaymentTemplate::with('lines')->orderBy('name')->get(),
             'parentDocument' => $request->input('from')
@@ -170,6 +173,19 @@ class DocumentController extends Controller
             return $document;
         });
 
+        // Stock: deduct on delivery note creation
+        if ($document->document_type === Document::TYPE_DELIVERY_NOTE) {
+            try {
+                $this->stockService->processDocumentLines($document, 'out');
+            } catch (InsufficientStockException $e) {
+                return redirect()->route('documents.edit', [$type, $document])
+                    ->with('warning', __('products.insufficient_stock', [
+                        'name' => $e->productName,
+                        'available' => $e->availableQuantity,
+                    ]));
+            }
+        }
+
         return redirect()->route('documents.edit', [$type, $document])
             ->with('success', __("documents.flash_created_{$type}"));
     }
@@ -186,7 +202,7 @@ class DocumentController extends Controller
             'documentType' => $type,
             'documentTypeLabel' => Document::documentTypeLabel($type),
             'clients' => Client::with('discounts')->orderBy('legal_name')->get(['id', 'legal_name', 'trade_name', 'nif', 'type', 'payment_terms_days', 'payment_template_id']),
-            'products' => Product::with(['components.component:id,name,reference,unit_price,vat_rate,exemption_code,irpf_applicable,unit,type,product_family_id'])->orderBy('name')->get(['id', 'name', 'reference', 'unit_price', 'vat_rate', 'exemption_code', 'irpf_applicable', 'unit', 'type', 'product_family_id']),
+            'products' => Product::with(['components.component:id,name,reference,unit_price,vat_rate,exemption_code,irpf_applicable,unit,type,product_family_id,track_stock,stock_quantity,minimum_stock,allow_negative_stock,stock_mode'])->orderBy('name')->get(['id', 'name', 'reference', 'unit_price', 'vat_rate', 'exemption_code', 'irpf_applicable', 'unit', 'type', 'product_family_id', 'track_stock', 'stock_quantity', 'minimum_stock', 'allow_negative_stock', 'stock_mode']),
             'series' => DocumentSeries::forType($type)->forYear(now()->year)->get(),
             'canFinalize' => $document->canBeFinalized(),
             'canEdit' => $document->canBeEdited(),
@@ -315,6 +331,34 @@ class DocumentController extends Controller
             ]);
         });
 
+        // Stock processing after finalization
+        try {
+            // Issued invoices: deduct stock (unless converted from delivery note, which already deducted)
+            if ($document->document_type === Document::TYPE_INVOICE && $document->direction === 'issued') {
+                $parentIsDeliveryNote = $document->parent_document_id
+                    && $document->parentDocument?->document_type === Document::TYPE_DELIVERY_NOTE;
+                if (! $parentIsDeliveryNote) {
+                    $this->stockService->processDocumentLines($document, 'out');
+                }
+            }
+
+            // Purchase invoices: add stock
+            if ($document->document_type === Document::TYPE_PURCHASE_INVOICE) {
+                $this->stockService->processDocumentLines($document, 'in');
+            }
+
+            // Rectificatives: reverse the corrected document's stock movements
+            if ($document->document_type === Document::TYPE_RECTIFICATIVE && $document->corrected_document_id) {
+                $this->stockService->reverseDocumentMovements($document->correctedDocument);
+            }
+        } catch (InsufficientStockException $e) {
+            return redirect()->route('documents.edit', [$type, $document])
+                ->with('warning', __('products.insufficient_stock', [
+                    'name' => $e->productName,
+                    'available' => $e->availableQuantity,
+                ]));
+        }
+
         // Dispatch VeriFactu event for invoices and rectificatives
         InvoiceFinalized::dispatch($document->fresh());
 
@@ -409,6 +453,19 @@ class DocumentController extends Controller
 
             return $newDocument;
         });
+
+        // Stock: deduct when converting TO a delivery note
+        if ($newType === Document::TYPE_DELIVERY_NOTE) {
+            try {
+                $this->stockService->processDocumentLines($newDocument, 'out');
+            } catch (InsufficientStockException $e) {
+                return redirect()->route('documents.edit', [$newType, $newDocument])
+                    ->with('warning', __('products.insufficient_stock', [
+                        'name' => $e->productName,
+                        'available' => $e->availableQuantity,
+                    ]));
+            }
+        }
 
         return redirect()->route('documents.edit', [$newType, $newDocument])
             ->with('success', __('documents.flash_converted', ['type' => Document::documentTypeLabel($newType)]));

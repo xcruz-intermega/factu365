@@ -86,4 +86,44 @@ return [
     'flash_component_added' => 'Component afegit.',
     'flash_component_deleted' => 'Component eliminat.',
     'error_component_exists' => 'Aquest component ja està afegit.',
+
+    // Stock
+    'section_stock' => 'Inventari',
+    'track_stock' => 'Controlar estoc',
+    'stock_quantity' => 'Estoc actual',
+    'minimum_stock' => 'Estoc mínim',
+    'allow_negative_stock' => 'Permetre estoc negatiu',
+    'stock_mode' => 'Mode d\'estoc',
+    'stock_mode_self' => 'Estoc propi',
+    'stock_mode_components' => 'Descomptar de components',
+    'col_stock' => 'Estoc',
+    'stock_adjust' => 'Ajustar',
+    'stock_components' => 'Comp.',
+
+    // Stock movements
+    'stock_movements_title' => 'Moviments d\'estoc — :name',
+    'movement_type_sale' => 'Venda',
+    'movement_type_purchase' => 'Compra',
+    'movement_type_adjustment' => 'Ajust',
+    'movement_type_return' => 'Devolució',
+    'movement_type_initial' => 'Inicial',
+    'col_date' => 'Data',
+    'col_type' => 'Tipus',
+    'col_document' => 'Document',
+    'col_movement_qty' => 'Quantitat',
+    'col_stock_after' => 'Estoc result.',
+    'col_notes' => 'Notes',
+    'col_user' => 'Usuari',
+
+    // Manual adjustment
+    'adjustment_title' => 'Ajust manual',
+    'adjustment_quantity' => 'Quantitat (+/-)',
+    'adjustment_notes' => 'Notes',
+    'adjustment_placeholder' => 'Motiu de l\'ajust...',
+    'flash_adjustment_created' => 'Ajust d\'estoc registrat.',
+
+    // Warnings
+    'insufficient_stock' => 'Estoc insuficient per a \':name\' (disponible: :available).',
+    'negative_stock_warning' => 'L\'estoc quedarà negatiu',
+    'stock_available' => 'Disponible: :qty',
 ];

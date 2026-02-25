@@ -18,6 +18,11 @@ const form = useForm({
     exemption_code: '',
     irpf_applicable: false,
     unit: 'unit',
+    track_stock: false,
+    stock_quantity: 0,
+    minimum_stock: 0,
+    allow_negative_stock: true,
+    stock_mode: 'self',
 });
 
 const submit = () => {

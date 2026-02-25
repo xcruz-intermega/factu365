@@ -48,6 +48,11 @@ interface Product {
     unit: string | null;
     type: string;
     product_family_id: number | null;
+    track_stock: boolean;
+    stock_quantity: number;
+    minimum_stock: number;
+    allow_negative_stock: boolean;
+    stock_mode: string;
     components?: Array<{
         id: number;
         component_product_id: number;
