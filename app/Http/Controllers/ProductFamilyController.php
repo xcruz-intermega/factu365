@@ -10,7 +10,7 @@ class ProductFamilyController extends Controller
 {
     public function index()
     {
-        return Inertia::render('Settings/ProductFamilies', [
+        return Inertia::render('Products/Families', [
             'families' => ProductFamily::with('children')
                 ->roots()
                 ->orderBy('sort_order')

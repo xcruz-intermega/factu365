@@ -21,6 +21,7 @@ return [
     'clients' => 'Clientes',
     'suppliers' => 'Proveedores',
     'products' => 'Productos',
+    'product_families' => 'Familias',
     'settings' => 'Configuración',
     'company' => 'Empresa',
 ];

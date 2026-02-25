@@ -54,6 +54,12 @@ Route::prefix('/{tenant}')->middleware([
         Route::get('/products/{product}/stock-movements', [ProductController::class, 'stockMovements'])->name('products.stock-movements');
         Route::post('/products/{product}/stock-adjustment', [ProductController::class, 'stockAdjustment'])->name('products.stock-adjustment');
 
+        // Product Families
+        Route::get('/product-families', [ProductFamilyController::class, 'index'])->name('product-families.index');
+        Route::post('/product-families', [ProductFamilyController::class, 'store'])->name('product-families.store');
+        Route::put('/product-families/{family}', [ProductFamilyController::class, 'update'])->name('product-families.update');
+        Route::delete('/product-families/{family}', [ProductFamilyController::class, 'destroy'])->name('product-families.destroy');
+
         // Documents (type-prefixed routes)
         Route::prefix('documents/{type}')->name('documents.')->group(function () {
             Route::get('/', [DocumentController::class, 'index'])->name('index');
@@ -118,10 +124,6 @@ Route::prefix('/{tenant}')->middleware([
 
                 Route::post('/demo-data', [SettingsController::class, 'seedDemoData'])->name('demo-data');
 
-                Route::get('/product-families', [ProductFamilyController::class, 'index'])->name('product-families');
-                Route::post('/product-families', [ProductFamilyController::class, 'store'])->name('product-families.store');
-                Route::put('/product-families/{family}', [ProductFamilyController::class, 'update'])->name('product-families.update');
-                Route::delete('/product-families/{family}', [ProductFamilyController::class, 'destroy'])->name('product-families.destroy');
 
                 Route::get('/payment-templates', [PaymentTemplateController::class, 'index'])->name('payment-templates');
                 Route::post('/payment-templates', [PaymentTemplateController::class, 'store'])->name('payment-templates.store');
