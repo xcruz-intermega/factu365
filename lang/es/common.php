@@ -13,6 +13,7 @@ return [
     'confirm' => 'Confirmar',
     'close' => 'Cerrar',
     'add' => 'Añadir',
+    'back' => 'Volver',
     'search' => 'Buscar',
     'export_csv' => 'Exportar CSV',
     'export_pdf' => 'Exportar PDF',
