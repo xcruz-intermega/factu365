@@ -13,6 +13,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\PaymentTemplateController;
 use App\Http\Controllers\ExpenseCategoryController;
 use App\Http\Controllers\ProductFamilyController;
+use App\Http\Controllers\BackupController;
 use App\Http\Controllers\SettingsController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\SetLocale;
@@ -143,6 +144,13 @@ Route::prefix('/{tenant}')->middleware([
                 Route::post('/users', [\App\Http\Controllers\UserController::class, 'store'])->name('users.store');
                 Route::put('/users/{user}', [\App\Http\Controllers\UserController::class, 'update'])->name('users.update');
                 Route::delete('/users/{user}', [\App\Http\Controllers\UserController::class, 'destroy'])->name('users.destroy');
+
+                // Backups
+                Route::get('/backups', [BackupController::class, 'index'])->name('backups');
+                Route::post('/backups/create', [BackupController::class, 'create'])->name('backups.create');
+                Route::get('/backups/{filename}/download', [BackupController::class, 'download'])->name('backups.download')->where('filename', '.*');
+                Route::post('/backups/restore', [BackupController::class, 'restore'])->name('backups.restore');
+                Route::delete('/backups/{filename}', [BackupController::class, 'destroy'])->name('backups.destroy')->where('filename', '.*');
             });
         });
     });
