@@ -23,5 +23,6 @@ return [
     'products' => 'Products',
     'product_families' => 'Families',
     'settings' => 'Settings',
+    'expense_categories' => 'Categories',
     'company' => 'Company',
 ];

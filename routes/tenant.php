@@ -11,6 +11,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\PaymentTemplateController;
+use App\Http\Controllers\ExpenseCategoryController;
 use App\Http\Controllers\ProductFamilyController;
 use App\Http\Controllers\SettingsController;
 use Illuminate\Support\Facades\Route;
@@ -81,6 +82,12 @@ Route::prefix('/{tenant}')->middleware([
         // Expenses
         Route::resource('expenses', ExpenseController::class)->except(['show']);
         Route::post('/expenses/{expense}/mark-paid', [ExpenseController::class, 'markPaid'])->name('expenses.mark-paid');
+
+        // Expense Categories
+        Route::get('/expense-categories', [ExpenseCategoryController::class, 'index'])->name('expense-categories.index');
+        Route::post('/expense-categories', [ExpenseCategoryController::class, 'store'])->name('expense-categories.store');
+        Route::put('/expense-categories/{category}', [ExpenseCategoryController::class, 'update'])->name('expense-categories.update');
+        Route::delete('/expense-categories/{category}', [ExpenseCategoryController::class, 'destroy'])->name('expense-categories.destroy');
 
         // Reports
         Route::prefix('reports')->name('reports.')->group(function () {

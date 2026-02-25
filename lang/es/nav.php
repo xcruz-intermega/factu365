@@ -23,5 +23,6 @@ return [
     'products' => 'Productos',
     'product_families' => 'Familias',
     'settings' => 'Configuración',
+    'expense_categories' => 'Categorías',
     'company' => 'Empresa',
 ];

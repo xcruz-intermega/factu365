@@ -72,6 +72,7 @@ const sections = computed<NavSection[]>(() => [
         items: [
             { name: trans('nav.purchase_invoices'), href: 'documents.index', routeParams: { type: 'purchase_invoice' }, routeMatch: 'documents.*', icon: 'M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2' },
             { name: trans('nav.expenses'), href: 'expenses.index', routeMatch: 'expenses.*', icon: 'M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z' },
+            { name: trans('nav.expense_categories'), href: 'expense-categories.index', routeMatch: 'expense-categories.*', icon: 'M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z M6 6h.008v.008H6V6z' },
         ],
     },
     {
