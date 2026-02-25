@@ -59,7 +59,7 @@ class ExpenseController extends Controller
         // Handle attachment
         $attachmentPath = null;
         if ($request->hasFile('attachment')) {
-            $attachmentPath = $request->file('attachment')->store('expenses', 'private');
+            $attachmentPath = $request->file('attachment')->store('expenses', 'local');
         }
 
         Expense::create([
@@ -103,9 +103,9 @@ class ExpenseController extends Controller
         if ($request->hasFile('attachment')) {
             // Delete old attachment
             if ($attachmentPath) {
-                Storage::disk('private')->delete($attachmentPath);
+                Storage::disk('local')->delete($attachmentPath);
             }
-            $attachmentPath = $request->file('attachment')->store('expenses', 'private');
+            $attachmentPath = $request->file('attachment')->store('expenses', 'local');
         }
 
         $expense->update([
@@ -123,7 +123,7 @@ class ExpenseController extends Controller
     public function destroy(Expense $expense)
     {
         if ($expense->attachment_path) {
-            Storage::disk('private')->delete($expense->attachment_path);
+            Storage::disk('local')->delete($expense->attachment_path);
         }
 
         $expense->delete();
