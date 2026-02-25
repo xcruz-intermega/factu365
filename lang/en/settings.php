@@ -196,7 +196,7 @@ return [
     'tab_backups' => 'Backups',
     'backups_title' => 'Backups',
     'backup_create_section' => 'Create backup',
-    'backup_create_description' => 'Generate a file with the database and files of your company. Full backups include all companies in the system.',
+    'backup_create_description' => 'Generate a file with the database and files of your company so you can restore them if needed.',
     'backup_create_tenant' => 'Backup this company',
     'backup_create_full' => 'Full backup',
     'backup_creating' => 'Creating backup...',

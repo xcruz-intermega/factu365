@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use PharData;
-use Stancl\Tenancy\Tenancy;
+use PDO;
 use Symfony\Component\Process\Process;
 
 class BackupService
@@ -16,7 +17,8 @@ class BackupService
 
     public function __construct()
     {
-        $this->backupBasePath = storage_path('app/backups');
+        // Use base_path() to avoid tenancy overriding storage_path()
+        $this->backupBasePath = base_path('storage/app/backups');
 
         if (! File::isDirectory($this->backupBasePath)) {
             File::makeDirectory($this->backupBasePath, 0755, true);
@@ -30,7 +32,7 @@ class BackupService
     {
         $timestamp = now()->format('Y-m-d_His');
         $backupName = "backup_full_{$timestamp}";
-        $tempDir = storage_path("app/backups/tmp_{$backupName}");
+        $tempDir = $this->backupBasePath . "/tmp_{$backupName}";
 
         try {
             File::makeDirectory($tempDir, 0755, true);
@@ -93,7 +95,7 @@ class BackupService
         $timestamp = now()->format('Y-m-d_His');
         $slug = $tenant->slug ?? $tenant->id;
         $backupName = "backup_tenant_{$slug}_{$timestamp}";
-        $tempDir = storage_path("app/backups/tmp_{$backupName}");
+        $tempDir = $this->backupBasePath . "/tmp_{$backupName}";
 
         try {
             File::makeDirectory($tempDir, 0755, true);
@@ -301,80 +303,123 @@ class BackupService
     private function dumpDatabase(string $dbName, string $outputPath): void
     {
         $creds = $this->getMysqlCredentials();
+        $pdo = $this->createPdo($dbName, $creds);
 
-        $command = sprintf(
-            'mysqldump --single-transaction --no-tablespaces --host=%s --port=%s --user=%s %s | gzip > %s',
-            escapeshellarg($creds['host']),
-            escapeshellarg((string) $creds['port']),
-            escapeshellarg($creds['user']),
-            escapeshellarg($dbName),
-            escapeshellarg($outputPath)
-        );
+        $sqlPath = str_replace('.sql.gz', '.sql', $outputPath);
+        $handle = fopen($sqlPath, 'w');
 
-        $process = Process::fromShellCommandline($command);
-        $process->setTimeout(300);
-        $process->setEnv(['MYSQL_PWD' => $creds['password']]);
-        $process->run();
-
-        if (! $process->isSuccessful()) {
-            throw new \RuntimeException(
-                "mysqldump failed for {$dbName}: " . $process->getErrorOutput()
-            );
+        if (! $handle) {
+            throw new \RuntimeException("Cannot open {$sqlPath} for writing.");
         }
+
+        try {
+            // Header
+            fwrite($handle, "-- Backup of `{$dbName}` generated " . now()->toIso8601String() . "\n");
+            fwrite($handle, "SET FOREIGN_KEY_CHECKS=0;\nSET SQL_MODE='NO_AUTO_VALUE_ON_ZERO';\n\n");
+
+            // Get all tables
+            $tables = $pdo->query("SHOW TABLES")->fetchAll(PDO::FETCH_COLUMN);
+
+            foreach ($tables as $table) {
+                // Table structure
+                $createStmt = $pdo->query("SHOW CREATE TABLE `{$table}`")->fetch(PDO::FETCH_ASSOC);
+                fwrite($handle, "DROP TABLE IF EXISTS `{$table}`;\n");
+                fwrite($handle, $createStmt['Create Table'] . ";\n\n");
+
+                // Table data
+                $rows = $pdo->query("SELECT * FROM `{$table}`");
+                $rows->setFetchMode(PDO::FETCH_ASSOC);
+
+                foreach ($rows as $row) {
+                    $values = array_map(function ($value) use ($pdo) {
+                        if ($value === null) {
+                            return 'NULL';
+                        }
+                        return $pdo->quote((string) $value);
+                    }, $row);
+
+                    $columns = implode('`,`', array_keys($row));
+                    $valueStr = implode(',', $values);
+                    fwrite($handle, "INSERT INTO `{$table}` (`{$columns}`) VALUES ({$valueStr});\n");
+                }
+
+                fwrite($handle, "\n");
+            }
+
+            fwrite($handle, "SET FOREIGN_KEY_CHECKS=1;\n");
+        } finally {
+            fclose($handle);
+        }
+
+        // Verify the dump is not empty
+        if (File::size($sqlPath) < 50) {
+            File::delete($sqlPath);
+            throw new \RuntimeException("Dump produced empty output for {$dbName}.");
+        }
+
+        // Gzip the .sql file
+        $gzHandle = gzopen($outputPath, 'wb9');
+        $sqlHandle = fopen($sqlPath, 'rb');
+
+        while (! feof($sqlHandle)) {
+            gzwrite($gzHandle, fread($sqlHandle, 524288)); // 512KB chunks
+        }
+
+        fclose($sqlHandle);
+        gzclose($gzHandle);
+        File::delete($sqlPath);
     }
 
     private function restoreDatabase(string $dbName, string $dumpPath): void
     {
         $creds = $this->getMysqlCredentials();
-        $env = ['MYSQL_PWD' => $creds['password']];
-        $baseArgs = [
-            '--host=' . $creds['host'],
-            '--port=' . (string) $creds['port'],
-            '--user=' . $creds['user'],
-        ];
 
-        // Create database if not exists
-        $createCommand = sprintf(
-            'mysql %s -e %s',
-            implode(' ', array_map('escapeshellarg', $baseArgs)),
-            escapeshellarg("CREATE DATABASE IF NOT EXISTS `{$dbName}`")
+        // Create database if not exists (connect without selecting a DB)
+        $pdoNoDB = new PDO(
+            "mysql:host={$creds['host']};port={$creds['port']}",
+            $creds['user'],
+            $creds['password'],
+            [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
         );
+        $pdoNoDB->exec("CREATE DATABASE IF NOT EXISTS `{$dbName}`");
 
-        $process = Process::fromShellCommandline($createCommand);
-        $process->setTimeout(30);
-        $process->setEnv($env);
-        $process->run();
+        // Connect to the target database
+        $pdo = $this->createPdo($dbName, $creds);
 
-        if (! $process->isSuccessful()) {
-            throw new \RuntimeException(
-                "Failed to create database {$dbName}: " . $process->getErrorOutput()
-            );
+        // Decompress and read SQL
+        $gzHandle = gzopen($dumpPath, 'rb');
+
+        if (! $gzHandle) {
+            throw new \RuntimeException("Cannot open dump file: {$dumpPath}");
         }
 
-        // Restore from dump
-        $restoreCommand = sprintf(
-            'gunzip -c %s | mysql %s %s',
-            escapeshellarg($dumpPath),
-            implode(' ', array_map('escapeshellarg', $baseArgs)),
-            escapeshellarg($dbName)
-        );
-
-        $process = Process::fromShellCommandline($restoreCommand);
-        $process->setTimeout(600);
-        $process->setEnv($env);
-        $process->run();
-
-        if (! $process->isSuccessful()) {
-            throw new \RuntimeException(
-                "Failed to restore database {$dbName}: " . $process->getErrorOutput()
-            );
+        $sql = '';
+        while (! gzeof($gzHandle)) {
+            $sql .= gzread($gzHandle, 524288);
         }
+        gzclose($gzHandle);
+
+        // Execute the SQL statements
+        $pdo->exec($sql);
+    }
+
+    private function createPdo(string $dbName, array $creds): PDO
+    {
+        return new PDO(
+            "mysql:host={$creds['host']};port={$creds['port']};dbname={$dbName};charset=utf8mb4",
+            $creds['user'],
+            $creds['password'],
+            [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => false,
+            ]
+        );
     }
 
     private function copyTenantFiles(string $tenantId, string $targetDir): void
     {
         $filesDir = "{$targetDir}/files";
-        $sourcePath = storage_path("app/private/tenant{$tenantId}");
+        $sourcePath = base_path("storage/app/private/tenant{$tenantId}");
 
         if (File::isDirectory($sourcePath)) {
             File::makeDirectory($filesDir, 0755, true);
@@ -385,7 +430,7 @@ class BackupService
     private function restoreTenantFiles(string $tenantId, string $tenantDir): void
     {
         $filesDir = "{$tenantDir}/files";
-        $targetPath = storage_path("app/private/tenant{$tenantId}");
+        $targetPath = base_path("storage/app/private/tenant{$tenantId}");
 
         if (File::isDirectory($filesDir)) {
             if (! File::isDirectory($targetPath)) {
@@ -422,7 +467,7 @@ class BackupService
 
     private function extractArchive(string $archivePath): string
     {
-        $tempDir = storage_path('app/backups/tmp_restore_' . uniqid());
+        $tempDir = $this->backupBasePath . '/tmp_restore_' . uniqid();
         File::makeDirectory($tempDir, 0755, true);
 
         $phar = new PharData($archivePath);

@@ -196,7 +196,7 @@ return [
     'tab_backups' => 'Copias de seguridad',
     'backups_title' => 'Copias de seguridad',
     'backup_create_section' => 'Crear copia de seguridad',
-    'backup_create_description' => 'Genera un archivo con la base de datos y ficheros de tu empresa. Las copias completas incluyen todas las empresas del sistema.',
+    'backup_create_description' => 'Genera un archivo con la base de datos y ficheros de tu empresa para poder restaurarlos en caso de necesidad.',
     'backup_create_tenant' => 'Copia de esta empresa',
     'backup_create_full' => 'Copia completa',
     'backup_creating' => 'Creando copia...',

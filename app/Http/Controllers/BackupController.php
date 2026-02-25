@@ -23,24 +23,9 @@ class BackupController extends Controller
 
     public function create(Request $request)
     {
-        $request->validate([
-            'type' => ['required', 'in:full,tenant'],
-        ]);
-
-        $type = $request->input('type');
-
-        // Full backup requires owner role
-        if ($type === 'full' && $request->user()->role !== 'owner') {
-            return back()->with('error', __('settings.error_backup_owner_only'));
-        }
-
         try {
-            if ($type === 'full') {
-                $this->backupService->createFullBackup();
-            } else {
-                $tenant = tenant();
-                $this->backupService->createTenantBackup($tenant->id);
-            }
+            $tenant = tenant();
+            $this->backupService->createTenantBackup($tenant->id);
 
             return back()->with('success', __('settings.flash_backup_created'));
         } catch (\Throwable $e) {
@@ -78,18 +63,8 @@ class BackupController extends Controller
         }
 
         try {
-            // Determine restore scope from manifest
-            $backups = $this->backupService->listBackups();
-            $backup = collect($backups)->firstWhere('filename', $filename);
-
-            if ($backup && $backup['type'] === 'tenant') {
-                $tenantId = $backup['tenants'][0]['id'] ?? null;
-                if ($tenantId) {
-                    $this->backupService->restoreTenantBackup($path, $tenantId);
-                }
-            } else {
-                $this->backupService->restoreFullBackup($path);
-            }
+            $tenant = tenant();
+            $this->backupService->restoreTenantBackup($path, $tenant->id);
 
             return back()->with('success', __('settings.flash_restore_completed'));
         } catch (\Throwable $e) {

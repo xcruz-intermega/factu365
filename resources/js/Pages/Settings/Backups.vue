@@ -30,21 +30,15 @@ const page = usePage();
 const currentUser = computed(() => page.props.auth.user as { role: string });
 const isOwner = computed(() => currentUser.value?.role === 'owner');
 
-const creatingTenant = ref(false);
-const creatingFull = ref(false);
+const creating = ref(false);
 
-const createBackup = (type: 'tenant' | 'full') => {
-    if (type === 'tenant') {
-        creatingTenant.value = true;
-    } else {
-        creatingFull.value = true;
-    }
+const createBackup = () => {
+    creating.value = true;
 
-    router.post(route('settings.backups.create'), { type }, {
+    router.post(route('settings.backups.create'), { type: 'tenant' }, {
         preserveScroll: true,
         onFinish: () => {
-            creatingTenant.value = false;
-            creatingFull.value = false;
+            creating.value = false;
         },
     });
 };
@@ -133,38 +127,20 @@ const typeLabels = computed<Record<string, string>>(() => ({
             <h3 class="mb-2 text-sm font-semibold text-gray-900">{{ $t('settings.backup_create_section') }}</h3>
             <p class="mb-4 text-sm text-gray-600">{{ $t('settings.backup_create_description') }}</p>
 
-            <div class="flex flex-wrap gap-3">
-                <button
-                    @click="createBackup('tenant')"
-                    :disabled="creatingTenant || creatingFull"
-                    class="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 disabled:opacity-50"
-                >
-                    <svg v-if="creatingTenant" class="-ml-0.5 mr-1.5 h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                    </svg>
-                    <svg v-else class="-ml-0.5 mr-1.5 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" />
-                    </svg>
-                    {{ creatingTenant ? $t('settings.backup_creating') : $t('settings.backup_create_tenant') }}
-                </button>
-
-                <button
-                    v-if="isOwner"
-                    @click="createBackup('full')"
-                    :disabled="creatingTenant || creatingFull"
-                    class="inline-flex items-center rounded-md bg-gray-800 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-700 disabled:opacity-50"
-                >
-                    <svg v-if="creatingFull" class="-ml-0.5 mr-1.5 h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                    </svg>
-                    <svg v-else class="-ml-0.5 mr-1.5 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 0 1-3-3m3 3a3 3 0 1 0 0 6h13.5a3 3 0 1 0 0-6m-16.5-3a3 3 0 0 1 3-3h13.5a3 3 0 0 1 3 3m-19.5 0a4.5 4.5 0 0 1 .9-2.7L5.737 5.1a3.375 3.375 0 0 1 2.7-1.35h7.126c1.062 0 2.062.5 2.7 1.35l2.587 3.45a4.5 4.5 0 0 1 .9 2.7m0 0a3 3 0 0 1-3 3m0 3h.008v.008h-.008v-.008Zm0-6h.008v.008h-.008v-.008Zm-3 6h.008v.008h-.008v-.008Zm0-6h.008v.008h-.008v-.008Z" />
-                    </svg>
-                    {{ creatingFull ? $t('settings.backup_creating') : $t('settings.backup_create_full') }}
-                </button>
-            </div>
+            <button
+                @click="createBackup()"
+                :disabled="creating"
+                class="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 disabled:opacity-50"
+            >
+                <svg v-if="creating" class="-ml-0.5 mr-1.5 h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                </svg>
+                <svg v-else class="-ml-0.5 mr-1.5 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" />
+                </svg>
+                {{ creating ? $t('settings.backup_creating') : $t('settings.backup_create_tenant') }}
+            </button>
         </div>
 
         <!-- Backups list -->

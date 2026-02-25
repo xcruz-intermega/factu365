@@ -196,7 +196,7 @@ return [
     'tab_backups' => 'Còpies de seguretat',
     'backups_title' => 'Còpies de seguretat',
     'backup_create_section' => 'Crear còpia de seguretat',
-    'backup_create_description' => 'Genera un fitxer amb la base de dades i fitxers de la teva empresa. Les còpies completes inclouen totes les empreses del sistema.',
+    'backup_create_description' => 'Genera un fitxer amb la base de dades i fitxers de la teva empresa per poder restaurar-los en cas de necessitat.',
     'backup_create_tenant' => 'Còpia d\'aquesta empresa',
     'backup_create_full' => 'Còpia completa',
     'backup_creating' => 'Creant còpia...',
