@@ -168,7 +168,7 @@ function itemHref(item: NavItem): string {
                             <button
                                 v-if="section.title && !collapsed"
                                 @click="toggleSection(sIdx)"
-                                class="mt-3 mb-1 flex w-full items-center gap-x-1 px-2 text-xs font-semibold uppercase tracking-wider text-indigo-600 hover:text-indigo-800"
+                                class="mt-3 mb-1 flex w-full items-center gap-x-1 px-2 text-xs font-semibold tracking-wider text-gray-900 hover:text-black"
                             >
                                 <svg
                                     class="h-3.5 w-3.5 shrink-0 transition-transform duration-200"
