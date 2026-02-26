@@ -50,10 +50,8 @@ return [
     'total' => 'TOTAL',
 
     // Template names
-    'documents' => [
-        'default' => 'Clàssica',
-        'modern'  => 'Moderna',
-    ],
+    'template_default' => 'Clàssica',
+    'template_modern' => 'Moderna',
 
     // QR VeriFactu (legal text stays in Spanish per regulation)
     'qr_title' => 'Código QR VERI*FACTU',

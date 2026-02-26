@@ -76,22 +76,20 @@ const exportTemplate = (tpl: Template) => {
 
     <AppLayout>
         <template #header>
-            <div class="flex flex-1 items-center justify-between">
-                <h1 class="text-lg font-semibold text-gray-900">{{ $t('settings.pdf_title') }}</h1>
-                <div class="flex items-center gap-3">
-                    <button
-                        @click="showImportModal = true"
-                        class="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
-                    >
-                        {{ $t('settings.pdf_import') }}
-                    </button>
-                    <Link
-                        :href="route('settings.pdf-templates.create')"
-                        class="rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white shadow-sm hover:bg-indigo-500"
-                    >
-                        {{ $t('settings.pdf_create') }}
-                    </Link>
-                </div>
+            <h1 class="text-lg font-semibold text-gray-900">{{ $t('settings.pdf_title') }}</h1>
+            <div class="ml-4 flex items-center gap-3">
+                <button
+                    @click="showImportModal = true"
+                    class="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
+                >
+                    {{ $t('settings.pdf_import') }}
+                </button>
+                <Link
+                    :href="route('settings.pdf-templates.create')"
+                    class="rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white shadow-sm hover:bg-indigo-500"
+                >
+                    {{ $t('settings.pdf_create') }}
+                </Link>
             </div>
         </template>
 
@@ -126,7 +124,7 @@ const exportTemplate = (tpl: Template) => {
                         <div v-if="tpl.settings?.primary_color" class="h-4 w-4 rounded-full border border-gray-200" :style="{ backgroundColor: tpl.settings.primary_color }"></div>
                         <div v-if="tpl.settings?.accent_color" class="h-4 w-4 rounded-full border border-gray-200" :style="{ backgroundColor: tpl.settings.accent_color }"></div>
                         <span v-if="tpl.layout_json" class="text-xs text-indigo-500 font-medium">{{ $t('settings.pdf_custom') }}</span>
-                        <span v-else class="text-xs text-gray-400">{{ $t('pdf.' + tpl.blade_view) }}</span>
+                        <span v-else class="text-xs text-gray-400">{{ $t('pdf.template_' + tpl.blade_view.split('.').pop()) }}</span>
                     </div>
 
                     <!-- Actions -->
