@@ -181,4 +181,13 @@ return [
     'error_draft_status' => 'No es pot canviar l\'estat d\'un esborrany.',
     'error_invalid_status' => 'Estat no vàlid.',
     'error_draft_email' => 'No es pot enviar un document en esborrany.',
+
+    // Accounted
+    'col_accounted' => 'Comptab.',
+    'all_accounted' => 'Comptabilització',
+    'filter_accounted' => 'Comptabilitzada',
+    'filter_not_accounted' => 'No comptabilitzada',
+    'flash_accounted' => 'Document marcat com a comptabilitzat.',
+    'flash_unaccounted' => 'Document desmarcat com a comptabilitzat.',
+    'error_not_accountable' => 'Aquest tipus de document no admet comptabilització.',
 ];

@@ -181,4 +181,13 @@ return [
     'error_draft_status' => 'No se puede cambiar el estado de un borrador.',
     'error_invalid_status' => 'Estado no válido.',
     'error_draft_email' => 'No se puede enviar un documento en borrador.',
+
+    // Accounted
+    'col_accounted' => 'Contab.',
+    'all_accounted' => 'Contabilización',
+    'filter_accounted' => 'Contabilizada',
+    'filter_not_accounted' => 'No contabilizada',
+    'flash_accounted' => 'Documento marcado como contabilizado.',
+    'flash_unaccounted' => 'Documento desmarcado como contabilizado.',
+    'error_not_accountable' => 'Este tipo de documento no admite contabilización.',
 ];

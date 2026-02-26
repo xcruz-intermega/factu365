@@ -57,6 +57,7 @@ class Document extends Model
         'number',
         'title',
         'status',
+        'accounted',
         'client_id',
         'parent_document_id',
         'corrected_document_id',
@@ -96,6 +97,7 @@ class Document extends Model
             'total' => 'decimal:2',
             'global_discount_percent' => 'decimal:2',
             'global_discount_amount' => 'decimal:2',
+            'accounted' => 'boolean',
         ];
     }
 
@@ -213,6 +215,11 @@ class Document extends Model
     public function isNonFiscalType(): bool
     {
         return in_array($this->document_type, [self::TYPE_QUOTE, self::TYPE_DELIVERY_NOTE]);
+    }
+
+    public function isAccountable(): bool
+    {
+        return in_array($this->document_type, [self::TYPE_INVOICE, self::TYPE_RECTIFICATIVE, self::TYPE_PURCHASE_INVOICE]);
     }
 
     public function canBeEdited(): bool

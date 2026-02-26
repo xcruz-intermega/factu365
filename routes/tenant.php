@@ -79,6 +79,7 @@ Route::prefix('/{tenant}')->middleware([
             Route::get('/{document}/pdf/preview', [DocumentController::class, 'previewPdf'])->name('preview-pdf');
             Route::post('/{document}/send-email', [DocumentController::class, 'sendEmail'])->name('send-email');
             Route::post('/{document}/due-dates/{dueDate}/toggle-paid', [DocumentController::class, 'markDueDatePaid'])->name('due-date.toggle-paid');
+            Route::post('/{document}/toggle-accounted', [DocumentController::class, 'toggleAccounted'])->name('toggle-accounted');
         });
         Route::post('/documents/{document}/rectificative', [DocumentController::class, 'createRectificative'])->name('documents.rectificative');
 

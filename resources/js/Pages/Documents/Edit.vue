@@ -93,6 +93,13 @@ const doConvert = (targetType?: string) => {
 };
 
 const isNonFiscal = ['quote', 'delivery_note'].includes(props.documentType);
+const isAccountable = ['invoice', 'rectificative', 'purchase_invoice'].includes(props.documentType);
+
+const toggleAccounted = () => {
+    router.post(route('documents.toggle-accounted', { type: props.documentType, document: doc.id }), {}, {
+        preserveScroll: true,
+    });
+};
 
 // Rectificative
 const creatingRect = ref(false);
@@ -213,6 +220,9 @@ const formatCurrency = (val: number | string) => {
                 <Badge :color="statusColors[doc.status] || 'gray'">
                     {{ statusLabels[doc.status] || doc.status }}
                 </Badge>
+                <Badge v-if="isAccountable && doc.accounted" color="green">
+                    {{ $t('documents.filter_accounted') }}
+                </Badge>
             </div>
         </template>
 
@@ -291,6 +301,24 @@ const formatCurrency = (val: number | string) => {
                     class="rounded-md bg-red-50 px-3 py-1.5 text-sm font-medium text-red-700 hover:bg-red-100"
                 >
                     {{ $t('documents.cancel_doc') }}
+                </button>
+
+                <!-- Toggle accounted -->
+                <button
+                    v-if="isAccountable"
+                    @click="toggleAccounted"
+                    class="inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium"
+                    :class="doc.accounted
+                        ? 'bg-green-50 text-green-700 hover:bg-green-100'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
+                >
+                    <svg v-if="doc.accounted" class="-ml-0.5 mr-1 h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                    </svg>
+                    <svg v-else class="-ml-0.5 mr-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    {{ doc.accounted ? $t('documents.filter_accounted') : $t('documents.filter_not_accounted') }}
                 </button>
 
                 <span class="mx-1 text-gray-300">|</span>

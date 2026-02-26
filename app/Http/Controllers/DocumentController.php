@@ -43,6 +43,7 @@ class DocumentController extends Controller
             ->with(['client:id,legal_name,trade_name,nif', 'series:id,prefix'])
             ->search($request->input('search'))
             ->when($request->input('status'), fn ($q, $status) => $q->where('status', $status))
+            ->when($request->has('accounted'), fn ($q) => $q->where('accounted', (bool) $request->input('accounted')))
             ->when(
                 $request->input('sort'),
                 fn ($q) => $q->orderBy($request->input('sort'), $request->input('dir', 'desc')),
@@ -55,8 +56,9 @@ class DocumentController extends Controller
             'documents' => $documents,
             'documentType' => $type,
             'documentTypeLabel' => Document::documentTypeLabel($type),
-            'filters' => $request->only(['search', 'status', 'sort', 'dir']),
+            'filters' => $request->only(['search', 'status', 'accounted', 'sort', 'dir']),
             'statuses' => $this->getStatusesForType($type),
+            'isAccountable' => in_array($type, [Document::TYPE_INVOICE, Document::TYPE_RECTIFICATIVE, Document::TYPE_PURCHASE_INVOICE]),
         ]);
     }
 
@@ -658,6 +660,22 @@ class DocumentController extends Controller
         }
 
         return back()->with('success', $dueDate->isPaid() ? __('documents.flash_due_date_paid') : __('documents.flash_due_date_unpaid'));
+    }
+
+    public function toggleAccounted(string $type, Document $document)
+    {
+        $this->validateDocumentType($type);
+        $this->ensureDocumentMatchesType($document, $type);
+
+        if (! in_array($type, [Document::TYPE_INVOICE, Document::TYPE_RECTIFICATIVE, Document::TYPE_PURCHASE_INVOICE])) {
+            return back()->with('error', __('documents.error_not_accountable'));
+        }
+
+        $document->update(['accounted' => ! $document->accounted]);
+
+        return back()->with('success', $document->accounted
+            ? __('documents.flash_accounted')
+            : __('documents.flash_unaccounted'));
     }
 
     // -- Private helpers --

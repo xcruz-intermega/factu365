@@ -181,4 +181,13 @@ return [
     'error_draft_status' => 'Cannot change the status of a draft.',
     'error_invalid_status' => 'Invalid status.',
     'error_draft_email' => 'Cannot send a draft document.',
+
+    // Accounted
+    'col_accounted' => 'Acctd.',
+    'all_accounted' => 'Accounting',
+    'filter_accounted' => 'Accounted',
+    'filter_not_accounted' => 'Not accounted',
+    'flash_accounted' => 'Document marked as accounted.',
+    'flash_unaccounted' => 'Document unmarked as accounted.',
+    'error_not_accountable' => 'This document type does not support accounting status.',
 ];

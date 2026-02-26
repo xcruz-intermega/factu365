@@ -25,24 +25,33 @@ const props = defineProps<{
     filters: {
         search?: string;
         status?: string;
+        accounted?: string;
         sort?: string;
         dir?: string;
     };
     statuses: Array<{ value: string; label: string }>;
+    isAccountable: boolean;
 }>();
 
 const search = ref(props.filters.search || '');
 const statusFilter = ref(props.filters.status || '');
+const accountedFilter = ref(props.filters.accounted ?? '');
 const sortBy = ref(props.filters.sort || '');
 const sortDir = ref<'asc' | 'desc'>((props.filters.dir as 'asc' | 'desc') || 'desc');
 
-const columns = computed<Column[]>(() => [
-    { key: 'number', label: trans('documents.col_number'), sortable: true },
-    { key: 'client', label: trans('documents.col_client') },
-    { key: 'issue_date', label: trans('documents.col_date'), sortable: true },
-    { key: 'total', label: trans('documents.col_total'), sortable: true, class: 'text-right' },
-    { key: 'status', label: trans('documents.col_status'), sortable: true },
-]);
+const columns = computed<Column[]>(() => {
+    const cols: Column[] = [
+        { key: 'number', label: trans('documents.col_number'), sortable: true },
+        { key: 'client', label: trans('documents.col_client') },
+        { key: 'issue_date', label: trans('documents.col_date'), sortable: true },
+        { key: 'total', label: trans('documents.col_total'), sortable: true, class: 'text-right' },
+        { key: 'status', label: trans('documents.col_status'), sortable: true },
+    ];
+    if (props.isAccountable) {
+        cols.push({ key: 'accounted', label: trans('documents.col_accounted'), class: 'text-center' });
+    }
+    return cols;
+});
 
 const statusColors: Record<string, 'gray' | 'green' | 'blue' | 'yellow' | 'red' | 'indigo' | 'purple'> = {
     draft: 'gray',
@@ -89,6 +98,7 @@ const applyFilters = () => {
     router.get(route('documents.index', { type: props.documentType }), {
         search: search.value || undefined,
         status: statusFilter.value || undefined,
+        accounted: accountedFilter.value !== '' ? accountedFilter.value : undefined,
         sort: sortBy.value || undefined,
         dir: sortDir.value || undefined,
     }, {
@@ -111,6 +121,18 @@ const handleSearch = (val: string) => {
 const handleStatusFilter = (e: Event) => {
     statusFilter.value = (e.target as HTMLSelectElement).value;
     applyFilters();
+};
+
+const handleAccountedFilter = (e: Event) => {
+    accountedFilter.value = (e.target as HTMLSelectElement).value;
+    applyFilters();
+};
+
+const toggleAccounted = (doc: any) => {
+    router.post(route('documents.toggle-accounted', { type: props.documentType, document: doc.id }), {}, {
+        preserveState: true,
+        preserveScroll: true,
+    });
 };
 
 // Delete confirmation
@@ -162,6 +184,16 @@ const executeDelete = () => {
                     <option value="">{{ $t('documents.all_statuses') }}</option>
                     <option v-for="s in statuses" :key="s.value" :value="s.value">{{ s.label }}</option>
                 </select>
+                <select
+                    v-if="isAccountable"
+                    :value="accountedFilter"
+                    @change="handleAccountedFilter"
+                    class="rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                >
+                    <option value="">{{ $t('documents.all_accounted') }}</option>
+                    <option value="1">{{ $t('documents.filter_accounted') }}</option>
+                    <option value="0">{{ $t('documents.filter_not_accounted') }}</option>
+                </select>
             </div>
             <Link
                 :href="route('documents.create', { type: documentType })"
@@ -212,6 +244,23 @@ const executeDelete = () => {
                 <Badge :color="statusColors[value] || 'gray'">
                     {{ statusLabels[value] || value }}
                 </Badge>
+            </template>
+
+            <template v-if="isAccountable" #cell-accounted="{ row }">
+                <button
+                    @click.prevent="toggleAccounted(row)"
+                    class="inline-flex items-center justify-center"
+                    :title="row.accounted ? $t('documents.filter_accounted') : $t('documents.filter_not_accounted')"
+                >
+                    <!-- Check circle (accounted) -->
+                    <svg v-if="row.accounted" class="h-5 w-5 text-green-500" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                    </svg>
+                    <!-- Empty circle (not accounted) -->
+                    <svg v-else class="h-5 w-5 text-gray-300 hover:text-gray-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </button>
             </template>
 
             <template #actions="{ row }">
