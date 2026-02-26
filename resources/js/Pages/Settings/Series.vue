@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import { Head, useForm, Link, router } from '@inertiajs/vue3';
 import { trans } from 'laravel-vue-i18n';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import BillingNav from './Partials/BillingNav.vue';
+
 import ConfirmDialog from '@/Components/ConfirmDialog.vue';
 interface Series {
     id: number;
@@ -98,8 +98,6 @@ const executeDelete = () => {
         <template #header>
             <h1 class="text-lg font-semibold text-gray-900">{{ $t('settings.series_title') }}</h1>
         </template>
-
-        <BillingNav current="series" />
 
         <!-- New series button -->
         <div class="mb-4 flex justify-end">

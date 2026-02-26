@@ -24,6 +24,8 @@ return [
     'product_families' => 'Families',
     'billing' => 'Billing',
     'series' => 'Series',
+    'payment_templates' => 'Due dates',
+    'pdf_templates' => 'PDF Templates',
     'company_settings' => 'Company',
     'expense_categories' => 'Categories',
     'company' => 'Company',

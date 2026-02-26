@@ -24,6 +24,8 @@ return [
     'product_families' => 'Famílies',
     'billing' => 'Facturació',
     'series' => 'Sèries',
+    'payment_templates' => 'Venciments',
+    'pdf_templates' => 'Plantilles PDF',
     'company_settings' => 'Empresa',
     'expense_categories' => 'Categories',
     'company' => 'Empresa',
