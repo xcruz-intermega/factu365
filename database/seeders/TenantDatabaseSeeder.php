@@ -7,6 +7,7 @@ use App\Models\ExpenseCategory;
 use App\Models\PdfTemplate;
 use Illuminate\Database\Seeder;
 
+
 class TenantDatabaseSeeder extends Seeder
 {
     public function run(): void
@@ -58,6 +59,8 @@ class TenantDatabaseSeeder extends Seeder
         }
 
         // PDF templates
+        $defaultLayout = PdfTemplate::getDefaultLayout();
+
         PdfTemplate::create([
             'name' => 'Clásica',
             'blade_view' => 'pdf.documents.default',
@@ -69,7 +72,12 @@ class TenantDatabaseSeeder extends Seeder
                 'show_logo' => true,
                 'show_qr' => true,
             ],
+            'layout_json' => $defaultLayout,
         ]);
+
+        $modernLayout = $defaultLayout;
+        $modernLayout['global']['primary_color'] = '#4f46e5';
+        $modernLayout['global']['accent_color'] = '#6366f1';
 
         PdfTemplate::create([
             'name' => 'Moderna',
@@ -82,6 +90,7 @@ class TenantDatabaseSeeder extends Seeder
                 'show_logo' => true,
                 'show_qr' => true,
             ],
+            'layout_json' => $modernLayout,
         ]);
     }
 }

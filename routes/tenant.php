@@ -14,6 +14,7 @@ use App\Http\Controllers\PaymentTemplateController;
 use App\Http\Controllers\ExpenseCategoryController;
 use App\Http\Controllers\ProductFamilyController;
 use App\Http\Controllers\BackupController;
+use App\Http\Controllers\PdfTemplateController;
 use App\Http\Controllers\SettingsController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\SetLocale;
@@ -129,8 +130,16 @@ Route::prefix('/{tenant}')->middleware([
                 Route::post('/certificates/{certificate}/toggle', [SettingsController::class, 'toggleCertificate'])->name('certificates.toggle');
                 Route::delete('/certificates/{certificate}', [SettingsController::class, 'destroyCertificate'])->name('certificates.destroy');
 
-                Route::get('/pdf-templates', [SettingsController::class, 'pdfTemplates'])->name('pdf-templates');
-                Route::post('/pdf-templates/{template}/default', [SettingsController::class, 'setDefaultTemplate'])->name('pdf-templates.default');
+                Route::get('/pdf-templates', [PdfTemplateController::class, 'index'])->name('pdf-templates');
+                Route::get('/pdf-templates/create', [PdfTemplateController::class, 'create'])->name('pdf-templates.create');
+                Route::post('/pdf-templates', [PdfTemplateController::class, 'store'])->name('pdf-templates.store');
+                Route::get('/pdf-templates/{template}/edit', [PdfTemplateController::class, 'edit'])->name('pdf-templates.edit');
+                Route::put('/pdf-templates/{template}', [PdfTemplateController::class, 'update'])->name('pdf-templates.update');
+                Route::delete('/pdf-templates/{template}', [PdfTemplateController::class, 'destroy'])->name('pdf-templates.destroy');
+                Route::post('/pdf-templates/{template}/default', [PdfTemplateController::class, 'setDefault'])->name('pdf-templates.default');
+                Route::post('/pdf-templates/preview', [PdfTemplateController::class, 'preview'])->name('pdf-templates.preview');
+                Route::get('/pdf-templates/{template}/export', [PdfTemplateController::class, 'export'])->name('pdf-templates.export');
+                Route::post('/pdf-templates/import', [PdfTemplateController::class, 'import'])->name('pdf-templates.import');
 
                 Route::post('/demo-data', [SettingsController::class, 'seedDemoData'])->name('demo-data');
 

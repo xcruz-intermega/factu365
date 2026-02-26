@@ -6,7 +6,6 @@ use App\Models\Certificate;
 use App\Models\CompanyProfile;
 use App\Models\Document;
 use App\Models\DocumentSeries;
-use App\Models\PdfTemplate;
 use App\Services\VeriFactu\CertificateManager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -190,23 +189,6 @@ class SettingsController extends Controller
         $certificate->delete();
 
         return back()->with('success', __('settings.flash_cert_deleted'));
-    }
-
-    // ─── PDF Templates ───
-
-    public function pdfTemplates()
-    {
-        return Inertia::render('Settings/PdfTemplates', [
-            'templates' => PdfTemplate::all(),
-        ]);
-    }
-
-    public function setDefaultTemplate(PdfTemplate $template)
-    {
-        PdfTemplate::where('id', '!=', $template->id)->update(['is_default' => false]);
-        $template->update(['is_default' => true]);
-
-        return back()->with('success', __('settings.flash_pdf_default', ['name' => $template->name]));
     }
 
     // ─── VeriFactu Settings ───

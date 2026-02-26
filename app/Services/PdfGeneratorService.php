@@ -13,6 +13,7 @@ class PdfGeneratorService
 {
     public function __construct(
         private QrCodeService $qrCodeService,
+        private PdfLayoutRenderer $layoutRenderer,
     ) {}
 
     public function generate(Document $document, ?PdfTemplate $template = null): \Barryvdh\DomPDF\PDF
@@ -37,11 +38,31 @@ class PdfGeneratorService
             'statusLabel' => Document::statusLabel($document->status),
         ];
 
-        $view = $template?->blade_view ?? 'pdf.documents.default';
+        if ($template?->hasCustomLayout()) {
+            $html = $this->layoutRenderer->render($template->getLayout(), $data);
+            $pdf = Pdf::loadHTML($html);
+        } else {
+            $view = $template?->blade_view ?? 'pdf.documents.default';
+            $pdf = Pdf::loadView($view, $data);
+        }
 
-        $pdf = Pdf::loadView($view, $data);
+        $fontFamily = $template?->hasCustomLayout()
+            ? ($template->getLayout()['global']['font_family'] ?? 'DejaVu Sans')
+            : ($template?->getSetting('font_family', 'DejaVu Sans'));
+
         $pdf->setPaper('a4');
-        $pdf->setOption('defaultFont', $template?->getSetting('font_family', 'DejaVu Sans'));
+        $pdf->setOption('defaultFont', $fontFamily);
+        $pdf->setOption('isRemoteEnabled', true);
+
+        return $pdf;
+    }
+
+    public function generateFromLayout(array $layoutJson, array $data): \Barryvdh\DomPDF\PDF
+    {
+        $html = $this->layoutRenderer->render($layoutJson, $data);
+        $pdf = Pdf::loadHTML($html);
+        $pdf->setPaper('a4');
+        $pdf->setOption('defaultFont', $layoutJson['global']['font_family'] ?? 'DejaVu Sans');
         $pdf->setOption('isRemoteEnabled', true);
 
         return $pdf;
