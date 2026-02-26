@@ -1,8 +1,12 @@
 <?php
 
 return [
+    // Sections (SettingsNav)
+    'section_billing' => 'Facturación',
+    'section_company' => 'Empresa',
+
     // Tabs (SettingsNav)
-    'tab_company' => 'Empresa',
+    'tab_company' => 'Datos',
     'tab_series' => 'Series',
     'tab_families' => 'Familias',
     'tab_payment_templates' => 'Vencimientos',
