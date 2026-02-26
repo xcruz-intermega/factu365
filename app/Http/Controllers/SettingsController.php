@@ -46,7 +46,7 @@ class SettingsController extends Controller
         // Handle logo upload
         if ($request->hasFile('logo')) {
             if ($company?->logo_path) {
-                Storage::disk('private')->delete($company->logo_path);
+                Storage::disk('local')->delete($company->logo_path);
             }
             $validated['logo_path'] = $request->file('logo')->store('logos', 'private');
         }
@@ -183,7 +183,7 @@ class SettingsController extends Controller
     public function destroyCertificate(Certificate $certificate)
     {
         if ($certificate->pfx_path) {
-            Storage::disk('private')->delete($certificate->pfx_path);
+            Storage::disk('local')->delete($certificate->pfx_path);
         }
 
         $certificate->delete();
