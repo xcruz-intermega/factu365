@@ -240,7 +240,7 @@ class RegisterBookController extends Controller
             ->whereIn('document_type', [Document::TYPE_INVOICE, Document::TYPE_RECTIFICATIVE])
             ->where('status', '!=', Document::STATUS_DRAFT)
             ->whereBetween('issue_date', [$dateFrom, $dateTo])
-            ->with(['client:id,legal_name,trade_name,nif', 'series:id,name'])
+            ->with(['client:id,legal_name,trade_name,nif', 'series:id,prefix'])
             ->orderBy('issue_date')
             ->orderBy('number')
             ->get();
@@ -252,7 +252,7 @@ class RegisterBookController extends Controller
             'month_key' => $doc->issue_date->format('Y-m'),
             'month_label' => $doc->issue_date->translatedFormat('F Y'),
             'number' => $doc->number,
-            'series_name' => $doc->series?->name,
+            'series_name' => $doc->series?->prefix,
             'client_name' => $doc->client?->trade_name ?: ($doc->client?->legal_name ?? ''),
             'client_nif' => $doc->client?->nif ?? '',
             'tax_base' => (float) $doc->tax_base,
@@ -358,7 +358,7 @@ class RegisterBookController extends Controller
             ->whereIn('document_type', [Document::TYPE_INVOICE, Document::TYPE_RECTIFICATIVE])
             ->where('status', '!=', Document::STATUS_DRAFT)
             ->whereBetween('issue_date', [$dateFrom, $dateTo])
-            ->with(['client:id,legal_name,trade_name,nif', 'series:id,name', 'lines'])
+            ->with(['client:id,legal_name,trade_name,nif', 'series:id,prefix', 'lines'])
             ->orderBy('issue_date')
             ->orderBy('number')
             ->get();
@@ -379,7 +379,7 @@ class RegisterBookController extends Controller
                 'month_key' => $doc->issue_date->format('Y-m'),
                 'month_label' => $doc->issue_date->translatedFormat('F Y'),
                 'number' => $doc->number,
-                'series_name' => $doc->series?->name,
+                'series_name' => $doc->series?->prefix,
                 'client_name' => $doc->client?->trade_name ?: ($doc->client?->legal_name ?? ''),
                 'client_nif' => $doc->client?->nif ?? '',
                 'invoice_type' => $invoiceType,
