@@ -199,9 +199,8 @@ const pageTitle = computed(() =>
 
     <AppLayout>
         <template #header>
-            <div class="flex items-center justify-between">
-                <h1 class="text-lg font-semibold text-gray-900">{{ pageTitle }}</h1>
-                <div class="flex gap-2">
+            <h1 class="text-lg font-semibold text-gray-900">{{ pageTitle }}</h1>
+            <div class="ml-4 flex items-center gap-2">
                     <button
                         @click="previewPdf"
                         :disabled="previewLoading"
@@ -223,7 +222,6 @@ const pageTitle = computed(() =>
                         {{ saving ? $t('common.saving') : $t('common.save') }}
                     </button>
                 </div>
-            </div>
         </template>
 
         <div class="flex gap-6" style="min-height: calc(100vh - 180px);">
