@@ -6,7 +6,7 @@
     @if($layout === 'stacked')
         {{-- Stacked: client above, document below --}}
         <div class="info-box" style="margin-bottom: 10px;">
-            <div class="info-box-title">Datos del cliente</div>
+            <div class="info-box-title">{{ __('pdf.client_data') }}</div>
             @if($document->client)
                 <p class="name">{{ $document->client->trade_name ?: $document->client->legal_name }}</p>
                 @if($document->client->trade_name)
@@ -22,23 +22,23 @@
                     </p>
                 @endif
             @else
-                <p class="name" style="color: #9ca3af;">Sin cliente asignado</p>
+                <p class="name" style="color: #9ca3af;">{{ __('pdf.no_client') }}</p>
             @endif
         </div>
         <div class="info-box">
-            <div class="info-box-title">Datos del documento</div>
-            <p><strong>Fecha emisión:</strong> {{ $document->issue_date?->format('d/m/Y') }}</p>
+            <div class="info-box-title">{{ __('pdf.document_data') }}</div>
+            <p><strong>{{ __('pdf.issue_date') }}:</strong> {{ $document->issue_date?->format('d/m/Y') }}</p>
             @if($document->due_date)
-                <p><strong>Fecha vencimiento:</strong> {{ $document->due_date->format('d/m/Y') }}</p>
+                <p><strong>{{ __('pdf.due_date') }}:</strong> {{ $document->due_date->format('d/m/Y') }}</p>
             @endif
             @if($document->operation_date)
-                <p><strong>Fecha operación:</strong> {{ $document->operation_date->format('d/m/Y') }}</p>
+                <p><strong>{{ __('pdf.operation_date') }}:</strong> {{ $document->operation_date->format('d/m/Y') }}</p>
             @endif
             @if($document->invoice_type)
-                <p><strong>Tipo factura:</strong> {{ $document->invoice_type }}</p>
+                <p><strong>{{ __('pdf.invoice_type') }}:</strong> {{ $document->invoice_type }}</p>
             @endif
             @if($document->correctedDocument)
-                <p><strong>Rectifica a:</strong> {{ $document->correctedDocument->number }}</p>
+                <p><strong>{{ __('pdf.rectifies') }}:</strong> {{ $document->correctedDocument->number }}</p>
             @endif
         </div>
     @else
@@ -47,7 +47,7 @@
             <tr>
                 <td style="width: 55%; padding-right: 10px;">
                     <div class="info-box">
-                        <div class="info-box-title">Datos del cliente</div>
+                        <div class="info-box-title">{{ __('pdf.client_data') }}</div>
                         @if($document->client)
                             <p class="name">{{ $document->client->trade_name ?: $document->client->legal_name }}</p>
                             @if($document->client->trade_name)
@@ -63,25 +63,25 @@
                                 </p>
                             @endif
                         @else
-                            <p class="name" style="color: #9ca3af;">Sin cliente asignado</p>
+                            <p class="name" style="color: #9ca3af;">{{ __('pdf.no_client') }}</p>
                         @endif
                     </div>
                 </td>
                 <td style="width: 45%;">
                     <div class="info-box">
-                        <div class="info-box-title">Datos del documento</div>
-                        <p><strong>Fecha emisión:</strong> {{ $document->issue_date?->format('d/m/Y') }}</p>
+                        <div class="info-box-title">{{ __('pdf.document_data') }}</div>
+                        <p><strong>{{ __('pdf.issue_date') }}:</strong> {{ $document->issue_date?->format('d/m/Y') }}</p>
                         @if($document->due_date)
-                            <p><strong>Fecha vencimiento:</strong> {{ $document->due_date->format('d/m/Y') }}</p>
+                            <p><strong>{{ __('pdf.due_date') }}:</strong> {{ $document->due_date->format('d/m/Y') }}</p>
                         @endif
                         @if($document->operation_date)
-                            <p><strong>Fecha operación:</strong> {{ $document->operation_date->format('d/m/Y') }}</p>
+                            <p><strong>{{ __('pdf.operation_date') }}:</strong> {{ $document->operation_date->format('d/m/Y') }}</p>
                         @endif
                         @if($document->invoice_type)
-                            <p><strong>Tipo factura:</strong> {{ $document->invoice_type }}</p>
+                            <p><strong>{{ __('pdf.invoice_type') }}:</strong> {{ $document->invoice_type }}</p>
                         @endif
                         @if($document->correctedDocument)
-                            <p><strong>Rectifica a:</strong> {{ $document->correctedDocument->number }}</p>
+                            <p><strong>{{ __('pdf.rectifies') }}:</strong> {{ $document->correctedDocument->number }}</p>
                         @endif
                     </div>
                 </td>

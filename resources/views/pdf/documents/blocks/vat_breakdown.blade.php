@@ -3,11 +3,11 @@
     <table class="vat-table">
         <thead>
             <tr>
-                <th>Tipo IVA</th>
-                <th class="text-right">Base imponible</th>
-                <th class="text-right">Cuota IVA</th>
+                <th>{{ __('pdf.vat_type') }}</th>
+                <th class="text-right">{{ __('pdf.tax_base') }}</th>
+                <th class="text-right">{{ __('pdf.vat_amount') }}</th>
                 @if($vatBreakdown->sum('surcharge') > 0)
-                    <th class="text-right">Recargo</th>
+                    <th class="text-right">{{ __('pdf.surcharge') }}</th>
                 @endif
             </tr>
         </thead>

@@ -189,13 +189,13 @@
                     @if(($settings['show_logo'] ?? true) && $company?->logo_path)
                         <img src="{{ storage_path('app/private/' . $company->logo_path) }}" class="logo-modern" alt="Logo"><br>
                     @endif
-                    <div class="brand-name">{{ $company?->trade_name ?: $company?->legal_name ?? 'Mi Empresa' }}</div>
+                    <div class="brand-name">{{ $company?->trade_name ?: $company?->legal_name ?? '' }}</div>
                     <div class="brand-sub">{{ $company?->nif ?? '' }}</div>
                 </td>
                 <td style="width: 45%;">
                     <div class="doc-badge">
                         <div class="type-label">{{ $typeLabel }}</div>
-                        <div class="number">{{ $document->number ?: 'BORRADOR' }}</div>
+                        <div class="number">{{ $document->number ?: __('pdf.draft') }}</div>
                     </div>
                 </td>
             </tr>
@@ -208,18 +208,18 @@
             <table>
                 <tr>
                     <td style="width: 33%;">
-                        <span class="label">Fecha emisión</span><br>
+                        <span class="label">{{ __('pdf.issue_date') }}</span><br>
                         <span class="value">{{ $document->issue_date?->format('d/m/Y') }}</span>
                     </td>
                     @if($document->due_date)
                         <td style="width: 33%;">
-                            <span class="label">Fecha vencimiento</span><br>
+                            <span class="label">{{ __('pdf.due_date') }}</span><br>
                             <span class="value">{{ $document->due_date->format('d/m/Y') }}</span>
                         </td>
                     @endif
                     @if($document->operation_date)
                         <td style="width: 33%;">
-                            <span class="label">Fecha operación</span><br>
+                            <span class="label">{{ __('pdf.operation_date') }}</span><br>
                             <span class="value">{{ $document->operation_date->format('d/m/Y') }}</span>
                         </td>
                     @endif
@@ -233,7 +233,7 @@
                 <tr>
                     <td style="width: 48%; padding-right: 8px;">
                         <div class="info-card">
-                            <div class="info-card-label">Emisor</div>
+                            <div class="info-card-label">{{ __('pdf.issuer') }}</div>
                             @if($company)
                                 <p class="highlight">{{ $company->legal_name }}</p>
                                 <p>NIF: {{ $company->nif }}</p>
@@ -248,7 +248,7 @@
                     <td style="width: 4%;"></td>
                     <td style="width: 48%;">
                         <div class="info-card">
-                            <div class="info-card-label">Cliente</div>
+                            <div class="info-card-label">{{ __('pdf.client') }}</div>
                             @if($document->client)
                                 <p class="highlight">{{ $document->client->trade_name ?: $document->client->legal_name }}</p>
                                 @if($document->client->trade_name)<p>{{ $document->client->legal_name }}</p>@endif
@@ -258,7 +258,7 @@
                                     <p>{{ $document->client->address_postal_code }} {{ $document->client->address_city }}</p>
                                 @endif
                             @else
-                                <p class="highlight" style="color: #9ca3af;">Sin cliente asignado</p>
+                                <p class="highlight" style="color: #9ca3af;">{{ __('pdf.no_client') }}</p>
                             @endif
                         </div>
                     </td>
@@ -268,7 +268,7 @@
 
         @if($document->correctedDocument)
             <div class="date-strip" style="background-color: #fef2f2; border-color: #fecaca;">
-                <span class="label" style="color: #991b1b;">Factura rectificativa de:</span>
+                <span class="label" style="color: #991b1b;">{{ __('pdf.rectificative_of') }}</span>
                 <span class="value" style="color: #dc2626;">{{ $document->correctedDocument->number }}</span>
             </div>
         @endif
@@ -277,12 +277,12 @@
         <table class="lines-table">
             <thead>
                 <tr>
-                    <th style="width: 40%;">Concepto</th>
-                    <th class="text-right" style="width: 10%;">Cant.</th>
-                    <th class="text-right" style="width: 13%;">Precio</th>
-                    <th class="text-right" style="width: 10%;">Dto.</th>
-                    <th class="text-right" style="width: 10%;">IVA</th>
-                    <th class="text-right" style="width: 17%;">Importe</th>
+                    <th style="width: 40%;">{{ __('pdf.concept') }}</th>
+                    <th class="text-right" style="width: 10%;">{{ __('pdf.qty_short') }}</th>
+                    <th class="text-right" style="width: 13%;">{{ __('pdf.price') }}</th>
+                    <th class="text-right" style="width: 10%;">{{ __('pdf.discount_short') }}</th>
+                    <th class="text-right" style="width: 10%;">{{ __('pdf.vat') }}</th>
+                    <th class="text-right" style="width: 17%;">{{ __('pdf.amount') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -319,11 +319,11 @@
                             <table class="vat-breakdown">
                                 <thead>
                                     <tr>
-                                        <th>Tipo</th>
-                                        <th class="text-right">Base</th>
-                                        <th class="text-right">Cuota</th>
+                                        <th>{{ __('pdf.vat_type_short') }}</th>
+                                        <th class="text-right">{{ __('pdf.tax_base_short') }}</th>
+                                        <th class="text-right">{{ __('pdf.vat_amount_short') }}</th>
                                         @if($vatBreakdown->sum('surcharge') > 0)
-                                            <th class="text-right">Rec.</th>
+                                            <th class="text-right">{{ __('pdf.surcharge_short') }}</th>
                                         @endif
                                     </tr>
                                 </thead>
@@ -344,38 +344,38 @@
                     </td>
                     <td style="width: 48%; vertical-align: top;">
                         <div class="totals-box">
-                            <div class="totals-box-header">Resumen</div>
+                            <div class="totals-box-header">{{ __('pdf.summary') }}</div>
                             <div class="totals-box-body">
                                 <div class="totals-row">
                                     <table><tr>
-                                        <td class="label">Subtotal</td>
+                                        <td class="label">{{ __('pdf.subtotal') }}</td>
                                         <td class="value">{{ number_format((float)$document->subtotal, 2, ',', '.') }} €</td>
                                     </tr></table>
                                 </div>
                                 @if((float)$document->total_discount > 0)
                                     <div class="totals-row">
                                         <table><tr>
-                                            <td class="label">Descuento</td>
+                                            <td class="label">{{ __('pdf.discount') }}</td>
                                             <td class="value">-{{ number_format((float)$document->total_discount, 2, ',', '.') }} €</td>
                                         </tr></table>
                                     </div>
                                 @endif
                                 <div class="totals-row">
                                     <table><tr>
-                                        <td class="label">Base imponible</td>
+                                        <td class="label">{{ __('pdf.tax_base') }}</td>
                                         <td class="value">{{ number_format((float)$document->tax_base, 2, ',', '.') }} €</td>
                                     </tr></table>
                                 </div>
                                 <div class="totals-row">
                                     <table><tr>
-                                        <td class="label">IVA</td>
+                                        <td class="label">{{ __('pdf.vat') }}</td>
                                         <td class="value">{{ number_format((float)$document->total_vat, 2, ',', '.') }} €</td>
                                     </tr></table>
                                 </div>
                                 @if((float)$document->total_surcharge > 0)
                                     <div class="totals-row">
                                         <table><tr>
-                                            <td class="label">Recargo eq.</td>
+                                            <td class="label">{{ __('pdf.equivalence_surcharge_short') }}</td>
                                             <td class="value">{{ number_format((float)$document->total_surcharge, 2, ',', '.') }} €</td>
                                         </tr></table>
                                     </div>
@@ -383,7 +383,7 @@
                                 @if((float)$document->total_irpf > 0)
                                     <div class="totals-row">
                                         <table><tr>
-                                            <td class="label">Retención IRPF</td>
+                                            <td class="label">{{ __('pdf.irpf_withholding') }}</td>
                                             <td class="value" style="color: #dc2626;">-{{ number_format((float)$document->total_irpf, 2, ',', '.') }} €</td>
                                         </tr></table>
                                     </div>
@@ -404,14 +404,14 @@
         {{-- Notes --}}
         @if($document->notes)
             <div class="notes-section">
-                <div class="notes-title">Observaciones</div>
+                <div class="notes-title">{{ __('pdf.notes') }}</div>
                 {{ $document->notes }}
             </div>
         @endif
 
         @if($document->footer_text)
             <div class="notes-section" style="background-color: #f9fafb; border-color: #e5e7eb;">
-                <div class="notes-title" style="color: #374151;">Condiciones</div>
+                <div class="notes-title" style="color: #374151;">{{ __('pdf.conditions') }}</div>
                 {{ $document->footer_text }}
             </div>
         @endif
@@ -427,8 +427,8 @@
                         <td style="padding-left: 10px;">
                             <div class="qr-label">VERI*FACTU</div>
                             <div class="qr-text">
-                                Factura verificable conforme al RD 1007/2023.<br>
-                                Escanee el código QR para verificar esta factura en la Agencia Tributaria.
+                                {{ __('pdf.qr_description') }}<br>
+                                {{ __('pdf.qr_scan_short') }}
                             </div>
                         </td>
                     </tr>
@@ -439,7 +439,7 @@
         {{-- Legal text --}}
         <div class="legal-text">
             @if(in_array($document->document_type, ['invoice', 'rectificative']))
-                Factura generada por sistema informático conforme al Reglamento VERI*FACTU (RD 1007/2023).
+                {{ __('pdf.legal_verifactu') }}
                 @if($company?->software_name)
                     Software: {{ $company->software_name }} v{{ $company->software_version ?? '1.0' }}.
                 @endif

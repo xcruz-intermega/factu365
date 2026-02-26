@@ -12,10 +12,9 @@
                     <td>
                         @if($showLegalText)
                             <div class="qr-text" style="padding-left: 0; padding-right: 10px;">
-                                <strong>Código QR VERI*FACTU</strong><br>
-                                Factura verificable conforme al RD 1007/2023.<br>
-                                Escanee el código QR para verificar la autenticidad de esta factura<br>
-                                en la Agencia Tributaria.
+                                <strong>{{ __('pdf.qr_title') }}</strong><br>
+                                {{ __('pdf.qr_description') }}<br>
+                                {{ __('pdf.qr_scan') }}
                             </div>
                         @endif
                     </td>
@@ -29,10 +28,9 @@
                     <td>
                         @if($showLegalText)
                             <div class="qr-text">
-                                <strong>Código QR VERI*FACTU</strong><br>
-                                Factura verificable conforme al RD 1007/2023.<br>
-                                Escanee el código QR para verificar la autenticidad de esta factura<br>
-                                en la Agencia Tributaria.
+                                <strong>{{ __('pdf.qr_title') }}</strong><br>
+                                {{ __('pdf.qr_description') }}<br>
+                                {{ __('pdf.qr_scan') }}
                             </div>
                         @endif
                     </td>

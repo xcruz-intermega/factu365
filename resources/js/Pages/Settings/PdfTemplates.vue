@@ -78,7 +78,7 @@ const exportTemplate = (tpl: Template) => {
         <template #header>
             <div class="flex items-center justify-between">
                 <h1 class="text-lg font-semibold text-gray-900">{{ $t('settings.pdf_title') }}</h1>
-                <div class="flex gap-2">
+                <div class="flex items-center gap-3">
                     <button
                         @click="showImportModal = true"
                         class="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"

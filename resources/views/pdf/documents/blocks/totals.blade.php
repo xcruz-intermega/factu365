@@ -10,32 +10,32 @@
             <td style="width: 45%; vertical-align: top;">
                 <table class="totals-table">
                     <tr>
-                        <td class="label">Subtotal</td>
+                        <td class="label">{{ __('pdf.subtotal') }}</td>
                         <td class="value">{{ number_format((float)$document->subtotal, 2, ',', '.') }} €</td>
                     </tr>
                     @if((float)$document->total_discount > 0)
                         <tr>
-                            <td class="label">Descuento</td>
+                            <td class="label">{{ __('pdf.discount') }}</td>
                             <td class="value">-{{ number_format((float)$document->total_discount, 2, ',', '.') }} €</td>
                         </tr>
                     @endif
                     <tr class="subtotal-row">
-                        <td class="label">Base imponible</td>
+                        <td class="label">{{ __('pdf.tax_base') }}</td>
                         <td class="value">{{ number_format((float)$document->tax_base, 2, ',', '.') }} €</td>
                     </tr>
                     <tr>
-                        <td class="label">IVA</td>
+                        <td class="label">{{ __('pdf.vat') }}</td>
                         <td class="value">{{ number_format((float)$document->total_vat, 2, ',', '.') }} €</td>
                     </tr>
                     @if((float)$document->total_surcharge > 0)
                         <tr>
-                            <td class="label">Recargo equivalencia</td>
+                            <td class="label">{{ __('pdf.equivalence_surcharge') }}</td>
                             <td class="value">{{ number_format((float)$document->total_surcharge, 2, ',', '.') }} €</td>
                         </tr>
                     @endif
                     @if((float)$document->total_irpf > 0)
                         <tr>
-                            <td class="label">Retención IRPF</td>
+                            <td class="label">{{ __('pdf.irpf_withholding') }}</td>
                             <td class="value" style="color: #dc2626;">-{{ number_format((float)$document->total_irpf, 2, ',', '.') }} €</td>
                         </tr>
                     @endif

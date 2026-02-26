@@ -14,13 +14,13 @@
     ];
 
     $colHeaders = [
-        'concept' => 'Concepto',
-        'qty' => 'Cantidad',
-        'price' => 'Precio ud.',
-        'discount' => 'Dto.',
-        'vat' => 'IVA',
-        'amount' => 'Importe',
-        'unit' => 'Unidad',
+        'concept' => __('pdf.concept'),
+        'qty' => __('pdf.quantity'),
+        'price' => __('pdf.unit_price'),
+        'discount' => __('pdf.discount_short'),
+        'vat' => __('pdf.vat'),
+        'amount' => __('pdf.amount'),
+        'unit' => __('pdf.unit'),
     ];
 @endphp
 <table class="lines-table">
