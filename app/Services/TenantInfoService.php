@@ -63,8 +63,8 @@ class TenantInfoService
             // DB might not exist or be corrupted
         }
 
-        // Disk usage
-        $storagePath = base_path("storage/app/private/tenant{$tenant->id}");
+        // Disk usage — tenancy uses storage/tenant{uuid}/ (suffix_storage_path)
+        $storagePath = base_path("storage/tenant{$tenant->id}");
         if (File::isDirectory($storagePath)) {
             $size = $this->getDirectorySize($storagePath);
             $data['disk_usage'] = $size;
