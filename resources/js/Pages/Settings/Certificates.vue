@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import { Head, useForm, Link, router } from '@inertiajs/vue3';
 import { trans } from 'laravel-vue-i18n';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import SettingsNav from './Partials/SettingsNav.vue';
+
 import Badge from '@/Components/Badge.vue';
 import ConfirmDialog from '@/Components/ConfirmDialog.vue';
 
@@ -79,8 +79,6 @@ const executeDelete = () => {
         <template #header>
             <h1 class="text-lg font-semibold text-gray-900">{{ $t('settings.certificates_title') }}</h1>
         </template>
-
-        <SettingsNav current="certificates" />
 
         <div class="mb-4 flex justify-end">
             <button @click="showUpload = !showUpload" class="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500">

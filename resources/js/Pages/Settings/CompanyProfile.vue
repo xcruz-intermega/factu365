@@ -2,7 +2,7 @@
 import { Head, useForm, Link, router } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import SettingsNav from './Partials/SettingsNav.vue';
+
 import ConfirmDialog from '@/Components/ConfirmDialog.vue';
 
 interface Company {
@@ -114,8 +114,6 @@ const seedDemoData = () => {
         <template #header>
             <h1 class="text-lg font-semibold text-gray-900">{{ $t('settings.company_title') }}</h1>
         </template>
-
-        <SettingsNav current="company" />
 
         <form @submit.prevent="submit" class="space-y-6">
             <!-- Identity -->

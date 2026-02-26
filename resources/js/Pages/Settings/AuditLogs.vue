@@ -3,7 +3,7 @@ import { Head, router } from '@inertiajs/vue3';
 import { ref, computed, watch } from 'vue';
 import { trans } from 'laravel-vue-i18n';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import SettingsNav from './Partials/SettingsNav.vue';
+
 import ReportToolbar from '@/Components/ReportToolbar.vue';
 
 interface AuditLogEntry {
@@ -152,8 +152,6 @@ const hasActiveFilters = computed(() => {
                 <ReportToolbar :csvUrl="csvUrl" :showPrint="true" />
             </div>
         </template>
-
-        <SettingsNav current="audit-logs" />
 
         <p class="mb-4 text-sm text-gray-500">{{ $t('audit.description') }}</p>
 

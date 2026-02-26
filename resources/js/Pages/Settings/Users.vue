@@ -3,7 +3,7 @@ import { ref, computed } from 'vue';
 import { Head, useForm, Link, router, usePage } from '@inertiajs/vue3';
 import { trans } from 'laravel-vue-i18n';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import SettingsNav from './Partials/SettingsNav.vue';
+
 import ConfirmDialog from '@/Components/ConfirmDialog.vue';
 interface User {
     id: number;
@@ -138,8 +138,6 @@ const availableRoles = (user?: User) => {
         <template #header>
             <h1 class="text-lg font-semibold text-gray-900">{{ $t('settings.users_title') }}</h1>
         </template>
-
-        <SettingsNav current="users" />
 
         <!-- Add user button -->
         <div class="mb-4 flex justify-end">

@@ -27,6 +27,10 @@ return [
     'payment_templates' => 'Due dates',
     'pdf_templates' => 'PDF Templates',
     'company_settings' => 'Company',
+    'certificates' => 'Certificates',
+    'users' => 'Users',
+    'backups' => 'Backups',
+    'audit_logs' => 'Audit log',
     'expense_categories' => 'Categories',
     'company' => 'Company',
 ];

@@ -3,7 +3,7 @@ import { ref, computed } from 'vue';
 import { Head, router, useForm, usePage } from '@inertiajs/vue3';
 import { trans } from 'laravel-vue-i18n';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import SettingsNav from './Partials/SettingsNav.vue';
+
 import ConfirmDialog from '@/Components/ConfirmDialog.vue';
 
 interface BackupTenant {
@@ -146,8 +146,6 @@ const typeLabels = computed<Record<string, string>>(() => ({
         <template #header>
             <h1 class="text-lg font-semibold text-gray-900">{{ $t('settings.backups_title') }}</h1>
         </template>
-
-        <SettingsNav current="backups" />
 
         <!-- Create backup section -->
         <div class="mb-6 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">

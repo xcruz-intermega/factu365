@@ -27,6 +27,10 @@ return [
     'payment_templates' => 'Venciments',
     'pdf_templates' => 'Plantilles PDF',
     'company_settings' => 'Empresa',
+    'certificates' => 'Certificats',
+    'users' => 'Usuaris',
+    'backups' => 'Còpies de seguretat',
+    'audit_logs' => 'Auditoria',
     'expense_categories' => 'Categories',
     'company' => 'Empresa',
 ];
