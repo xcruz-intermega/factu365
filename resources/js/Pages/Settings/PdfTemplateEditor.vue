@@ -258,14 +258,14 @@ const pageTitle = computed(() =>
                             <div>
                                 <label class="block text-xs font-medium text-gray-600 mb-1">{{ $t('settings.pdf_primary_color') }}</label>
                                 <div class="flex items-center gap-2">
-                                    <input type="color" v-model="layout.global.primary_color" class="h-8 w-8 cursor-pointer rounded border border-gray-300" />
+                                    <input type="color" v-model="layout.global.primary_color" class="h-8 w-8 shrink-0 cursor-pointer appearance-none rounded border border-gray-300 p-0" />
                                     <input type="text" v-model="layout.global.primary_color" class="flex-1 rounded-md border-gray-300 text-xs" />
                                 </div>
                             </div>
                             <div>
                                 <label class="block text-xs font-medium text-gray-600 mb-1">{{ $t('settings.pdf_accent_color') }}</label>
                                 <div class="flex items-center gap-2">
-                                    <input type="color" v-model="layout.global.accent_color" class="h-8 w-8 cursor-pointer rounded border border-gray-300" />
+                                    <input type="color" v-model="layout.global.accent_color" class="h-8 w-8 shrink-0 cursor-pointer appearance-none rounded border border-gray-300 p-0" />
                                     <input type="text" v-model="layout.global.accent_color" class="flex-1 rounded-md border-gray-300 text-xs" />
                                 </div>
                             </div>
@@ -339,14 +339,14 @@ const pageTitle = computed(() =>
                                         <div>
                                             <label class="block text-xs text-gray-600 mb-1">{{ $t('settings.pdf_opt_bg_color') }}</label>
                                             <div class="flex items-center gap-1">
-                                                <input type="color" v-model="block.options.background_color" class="h-6 w-6 rounded border" />
+                                                <input type="color" v-model="block.options.background_color" class="h-6 w-6 shrink-0 cursor-pointer appearance-none rounded border border-gray-300 p-0" />
                                                 <input type="text" v-model="block.options.background_color" class="flex-1 rounded-md border-gray-300 text-xs" :placeholder="layout.global.accent_color" />
                                             </div>
                                         </div>
                                         <div>
                                             <label class="block text-xs text-gray-600 mb-1">{{ $t('settings.pdf_opt_text_color') }}</label>
                                             <div class="flex items-center gap-1">
-                                                <input type="color" v-model="block.options.text_color" class="h-6 w-6 rounded border" />
+                                                <input type="color" v-model="block.options.text_color" class="h-6 w-6 shrink-0 cursor-pointer appearance-none rounded border border-gray-300 p-0" />
                                                 <input type="text" v-model="block.options.text_color" class="flex-1 rounded-md border-gray-300 text-xs" placeholder="#ffffff" />
                                             </div>
                                         </div>
@@ -391,7 +391,7 @@ const pageTitle = computed(() =>
                                     <div>
                                         <label class="block text-xs text-gray-600 mb-1">{{ $t('settings.pdf_opt_highlight_color') }}</label>
                                         <div class="flex items-center gap-2">
-                                            <input type="color" v-model="block.options.highlight_color" class="h-6 w-6 rounded border" />
+                                            <input type="color" v-model="block.options.highlight_color" class="h-6 w-6 shrink-0 cursor-pointer appearance-none rounded border border-gray-300 p-0" />
                                             <input type="text" v-model="block.options.highlight_color" class="flex-1 rounded-md border-gray-300 text-xs" :placeholder="layout.global.accent_color" />
                                         </div>
                                     </div>
@@ -469,3 +469,17 @@ const pageTitle = computed(() =>
         </div>
     </AppLayout>
 </template>
+
+<style scoped>
+input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+input[type="color"]::-webkit-color-swatch {
+    border: none;
+    border-radius: 4px;
+}
+input[type="color"]::-moz-color-swatch {
+    border: none;
+    border-radius: 4px;
+}
+</style>
