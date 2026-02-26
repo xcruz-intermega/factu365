@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class ExpenseRequest extends FormRequest
 {
@@ -25,6 +26,7 @@ class ExpenseRequest extends FormRequest
             'subtotal' => ['required', 'numeric', 'min:0'],
             'vat_rate' => ['required', 'numeric', 'min:0', 'max:100'],
             'irpf_rate' => ['nullable', 'numeric', 'min:0', 'max:100'],
+            'irpf_type' => [Rule::requiredIf(fn () => (float) $this->input('irpf_rate', 0) > 0), 'nullable', 'in:professional,rental,other'],
             'payment_status' => ['nullable', 'in:pending,paid'],
             'payment_date' => ['nullable', 'date', 'required_if:payment_status,paid'],
             'payment_method' => ['nullable', 'string', 'max:50'],

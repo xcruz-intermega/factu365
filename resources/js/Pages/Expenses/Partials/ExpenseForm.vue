@@ -192,6 +192,22 @@ const handleFileChange = (e: Event) => {
                     />
                 </div>
 
+                <!-- IRPF type (visible when IRPF rate > 0) -->
+                <div v-if="parseFloat(form.irpf_rate) > 0">
+                    <label class="block text-sm font-medium text-gray-700">{{ $t('expenses.irpf_type') }}</label>
+                    <select
+                        v-model="form.irpf_type"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                        :class="{ 'border-red-500': form.errors.irpf_type }"
+                    >
+                        <option :value="null" disabled>{{ $t('common.select') }}</option>
+                        <option value="professional">{{ $t('expenses.irpf_type_professional') }}</option>
+                        <option value="rental">{{ $t('expenses.irpf_type_rental') }}</option>
+                        <option value="other">{{ $t('expenses.irpf_type_other') }}</option>
+                    </select>
+                    <p v-if="form.errors.irpf_type" class="mt-1 text-sm text-red-600">{{ form.errors.irpf_type }}</p>
+                </div>
+
                 <!-- Calculated total -->
                 <div class="flex flex-col justify-end">
                     <div class="rounded-md bg-gray-50 p-3 text-right">

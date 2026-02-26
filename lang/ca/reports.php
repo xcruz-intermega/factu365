@@ -77,6 +77,45 @@ return [
     'col_difference' => 'Diferència',
     'annual_result' => 'Resultat anual',
 
+    // Modelo 303 enhanced
+    'casilla_exempt' => '[13] Operacions exemptes',
+    'casilla_surcharge' => 'Recàrrec d\'equivalència',
+    'col_surcharge' => 'Rec. equiv.',
+
+    // Modelo 111
+    'modelo_111' => 'Model 111',
+    'modelo_111_full' => 'Model 111 - Retencions professionals',
+    'section_professional' => 'Retencions per activitats professionals',
+    'casilla_04_recipients' => '[04] Nre. de perceptors',
+    'casilla_05_base' => '[05] Base retencions i ingressos a compte',
+    'casilla_06_withheld' => '[06] Retencions i ingressos a compte',
+    'result_to_pay' => 'Resultat a ingressar',
+    'no_retentions' => 'Sense retencions en el període.',
+
+    // Modelo 115
+    'modelo_115' => 'Model 115',
+    'modelo_115_full' => 'Model 115 - Retencions lloguers',
+    'section_rental' => 'Rendes procedents de l\'arrendament',
+    'casilla_01_landlords' => '[01] Nre. d\'arrendadors',
+    'casilla_02_base' => '[02] Base retencions i ingressos a compte',
+    'casilla_03_withheld' => '[03] Retencions i ingressos a compte',
+
+    // Modelo 347
+    'modelo_347' => 'Model 347',
+    'modelo_347_full' => 'Model 347 - Operacions amb tercers',
+    'section_sales' => 'A) Vendes i cobraments',
+    'section_purchases' => 'B) Compres i pagaments',
+    'col_province' => 'Província',
+    'col_annual_total' => 'Total anual',
+    'col_q1' => '1T',
+    'col_q2' => '2T',
+    'col_q3' => '3T',
+    'col_q4' => '4T',
+    'threshold_notice' => 'Es mostren operacions que superen 3.005,06 € anuals per NIF.',
+    'missing_nif_warning' => 'Algunes despeses sense NIF de proveïdor s\'han exclòs.',
+    'no_operations_347' => 'Sense operacions que superin el llindar.',
+    'total_section' => 'Total secció',
+
     // PDF
     'generated_on' => 'Generat el',
     'pdf_period_label' => 'Període: :from a :to',

@@ -12,6 +12,8 @@ class Expense extends Model
     public const STATUS_PENDING = 'pending';
     public const STATUS_PAID = 'paid';
 
+    public const IRPF_TYPES = ['professional', 'rental', 'other'];
+
     protected $fillable = [
         'category_id',
         'supplier_client_id',
@@ -26,6 +28,7 @@ class Expense extends Model
         'vat_amount',
         'irpf_rate',
         'irpf_amount',
+        'irpf_type',
         'total',
         'payment_status',
         'payment_date',

@@ -5,10 +5,13 @@ declare(strict_types=1);
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\EInvoiceController;
 use App\Http\Controllers\ExpenseController;
+use App\Http\Controllers\FiscalDeclarationController;
 use App\Http\Controllers\GlobalSearchController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RegisterBookController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\PaymentTemplateController;
 use App\Http\Controllers\ExpenseCategoryController;
@@ -64,6 +67,13 @@ Route::prefix('/{tenant}')->middleware([
         Route::put('/product-families/{family}', [ProductFamilyController::class, 'update'])->name('product-families.update');
         Route::delete('/product-families/{family}', [ProductFamilyController::class, 'destroy'])->name('product-families.destroy');
 
+        // E-Invoice import (must be before documents/{type}/{document} to avoid capture)
+        Route::prefix('documents/{type}')->name('documents.')->group(function () {
+            Route::get('/import', [EInvoiceController::class, 'create'])->name('import');
+            Route::post('/import/preview', [EInvoiceController::class, 'preview'])->name('import.preview');
+            Route::post('/import/store', [EInvoiceController::class, 'store'])->name('import.store');
+        });
+
         // Documents (type-prefixed routes)
         Route::prefix('documents/{type}')->name('documents.')->group(function () {
             Route::get('/', [DocumentController::class, 'index'])->name('index');
@@ -104,14 +114,37 @@ Route::prefix('/{tenant}')->middleware([
             Route::get('/sales/by-client/pdf', [ReportController::class, 'exportSalesByClientPdf'])->name('sales.by-client.pdf');
             Route::get('/sales/by-product/pdf', [ReportController::class, 'exportSalesByProductPdf'])->name('sales.by-product.pdf');
             Route::get('/sales/by-period/pdf', [ReportController::class, 'exportSalesByPeriodPdf'])->name('sales.by-period.pdf');
+            // Register Books
+            Route::get('/books/ventas', [RegisterBookController::class, 'libroVentas'])->name('books.ventas');
+            Route::get('/books/ventas/pdf', [RegisterBookController::class, 'exportLibroVentasPdf'])->name('books.ventas.pdf');
+            Route::get('/books/ventas/csv', [RegisterBookController::class, 'exportLibroVentasCsv'])->name('books.ventas.csv');
+            Route::get('/books/compras', [RegisterBookController::class, 'libroCompras'])->name('books.compras');
+            Route::get('/books/compras/pdf', [RegisterBookController::class, 'exportLibroComprasPdf'])->name('books.compras.pdf');
+            Route::get('/books/compras/csv', [RegisterBookController::class, 'exportLibroComprasCsv'])->name('books.compras.csv');
+            Route::get('/books/expedidas', [RegisterBookController::class, 'libroExpedidas'])->name('books.expedidas');
+            Route::get('/books/expedidas/pdf', [RegisterBookController::class, 'exportLibroExpedidasPdf'])->name('books.expedidas.pdf');
+            Route::get('/books/expedidas/csv', [RegisterBookController::class, 'exportLibroExpedidasCsv'])->name('books.expedidas.csv');
+            Route::get('/books/recibidas', [RegisterBookController::class, 'libroRecibidas'])->name('books.recibidas');
+            Route::get('/books/recibidas/pdf', [RegisterBookController::class, 'exportLibroRecibidasPdf'])->name('books.recibidas.pdf');
+            Route::get('/books/recibidas/csv', [RegisterBookController::class, 'exportLibroRecibidasCsv'])->name('books.recibidas.csv');
+
             Route::get('/fiscal/modelo-303', [ReportController::class, 'modelo303'])->name('fiscal.modelo-303');
+            Route::get('/fiscal/modelo-111', [FiscalDeclarationController::class, 'modelo111'])->name('fiscal.modelo-111');
+            Route::get('/fiscal/modelo-115', [FiscalDeclarationController::class, 'modelo115'])->name('fiscal.modelo-115');
             Route::get('/fiscal/modelo-130', [ReportController::class, 'modelo130'])->name('fiscal.modelo-130');
+            Route::get('/fiscal/modelo-347', [FiscalDeclarationController::class, 'modelo347'])->name('fiscal.modelo-347');
             Route::get('/fiscal/modelo-390', [ReportController::class, 'modelo390'])->name('fiscal.modelo-390');
             Route::get('/fiscal/modelo-303/pdf', [ReportController::class, 'exportModelo303Pdf'])->name('fiscal.modelo-303.pdf');
+            Route::get('/fiscal/modelo-111/pdf', [FiscalDeclarationController::class, 'exportModelo111Pdf'])->name('fiscal.modelo-111.pdf');
+            Route::get('/fiscal/modelo-115/pdf', [FiscalDeclarationController::class, 'exportModelo115Pdf'])->name('fiscal.modelo-115.pdf');
             Route::get('/fiscal/modelo-130/pdf', [ReportController::class, 'exportModelo130Pdf'])->name('fiscal.modelo-130.pdf');
+            Route::get('/fiscal/modelo-347/pdf', [FiscalDeclarationController::class, 'exportModelo347Pdf'])->name('fiscal.modelo-347.pdf');
             Route::get('/fiscal/modelo-390/pdf', [ReportController::class, 'exportModelo390Pdf'])->name('fiscal.modelo-390.pdf');
             Route::get('/fiscal/modelo-303/csv', [ReportController::class, 'exportModelo303Csv'])->name('fiscal.modelo-303.csv');
+            Route::get('/fiscal/modelo-111/csv', [FiscalDeclarationController::class, 'exportModelo111Csv'])->name('fiscal.modelo-111.csv');
+            Route::get('/fiscal/modelo-115/csv', [FiscalDeclarationController::class, 'exportModelo115Csv'])->name('fiscal.modelo-115.csv');
             Route::get('/fiscal/modelo-130/csv', [ReportController::class, 'exportModelo130Csv'])->name('fiscal.modelo-130.csv');
+            Route::get('/fiscal/modelo-347/csv', [FiscalDeclarationController::class, 'exportModelo347Csv'])->name('fiscal.modelo-347.csv');
             Route::get('/fiscal/modelo-390/csv', [ReportController::class, 'exportModelo390Csv'])->name('fiscal.modelo-390.csv');
         });
 

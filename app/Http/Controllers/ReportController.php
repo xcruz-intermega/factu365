@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\CompanyProfile;
 use App\Models\Document;
+use App\Models\Client;
 use App\Models\DocumentLine;
 use App\Models\Expense;
 use App\Services\ReportPdfService;
@@ -492,17 +493,37 @@ class ReportController extends Controller
 
         $vatReceived = $this->mergeVatBreakdowns($vatReceivedDocs, $vatExpenses);
 
+        // Exempt operations (casilla 13)
+        $exemptBase = (float) DocumentLine::whereHas('document', function ($q) use ($dateFrom, $dateTo) {
+            $q->issued()
+              ->whereIn('document_type', [Document::TYPE_INVOICE, Document::TYPE_RECTIFICATIVE])
+              ->where('status', '!=', Document::STATUS_DRAFT)
+              ->whereBetween('issue_date', [$dateFrom, $dateTo]);
+        })
+            ->whereNotNull('exemption_code')
+            ->sum('line_subtotal');
+
+        // Surcharge (recargo de equivalencia)
+        $totalSurcharge = (float) Document::issued()
+            ->whereIn('document_type', [Document::TYPE_INVOICE, Document::TYPE_RECTIFICATIVE])
+            ->where('status', '!=', Document::STATUS_DRAFT)
+            ->whereBetween('issue_date', [$dateFrom, $dateTo])
+            ->sum('total_surcharge');
+
         $totalVatIssued = round($vatIssued->sum('vat'), 2);
         $totalVatReceived = round(collect($vatReceived)->sum('vat'), 2);
-        $difference = round($totalVatIssued - $totalVatReceived, 2);
+        $difference = round($totalVatIssued + round($totalSurcharge, 2) - $totalVatReceived, 2);
 
         return [
             'company' => $company,
             'vatIssued' => $vatIssued,
             'vatReceived' => $vatReceived,
+            'exemptBase' => round($exemptBase, 2),
+            'totalSurcharge' => round($totalSurcharge, 2),
             'summary' => [
                 'total_vat_issued' => $totalVatIssued,
                 'total_vat_received' => $totalVatReceived,
+                'total_surcharge' => round($totalSurcharge, 2),
                 'difference' => $difference,
             ],
             'filters' => [

@@ -15,9 +15,12 @@ const props = defineProps<{
     company: { legal_name: string; nif: string } | null;
     vatIssued: VatRow[];
     vatReceived: VatRow[];
+    exemptBase: number;
+    totalSurcharge: number;
     summary: {
         total_vat_issued: number;
         total_vat_received: number;
+        total_surcharge: number;
         difference: number;
     };
     filters: {
@@ -127,6 +130,18 @@ const csvUrl = () => route('reports.fiscal.modelo-303.csv', {
                         </tr>
                     </tfoot>
                 </table>
+
+                <!-- Exempt operations & surcharge -->
+                <div class="border-t border-gray-100 px-4 py-3 space-y-2">
+                    <div v-if="exemptBase > 0" class="flex justify-between text-sm">
+                        <span class="text-gray-600">{{ $t('reports.casilla_exempt') }}</span>
+                        <span class="font-medium text-gray-900">{{ formatCurrency(exemptBase) }}</span>
+                    </div>
+                    <div v-if="totalSurcharge > 0" class="flex justify-between text-sm">
+                        <span class="text-gray-600">{{ $t('reports.casilla_surcharge') }}</span>
+                        <span class="font-medium text-gray-900">{{ formatCurrency(totalSurcharge) }}</span>
+                    </div>
+                </div>
             </div>
 
             <!-- IVA Deducible (Soportado) -->
@@ -170,6 +185,10 @@ const csvUrl = () => route('reports.fiscal.modelo-303.csv', {
                 <div class="flex justify-between">
                     <span class="text-gray-600">{{ $t('reports.total_vat_charged') }}</span>
                     <span class="font-medium">{{ formatCurrency(summary.total_vat_issued) }}</span>
+                </div>
+                <div v-if="summary.total_surcharge > 0" class="flex justify-between">
+                    <span class="text-gray-600">{{ $t('reports.casilla_surcharge') }}</span>
+                    <span class="font-medium">+ {{ formatCurrency(summary.total_surcharge) }}</span>
                 </div>
                 <div class="flex justify-between">
                     <span class="text-gray-600">{{ $t('reports.total_vat_deductible') }}</span>

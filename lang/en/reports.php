@@ -77,6 +77,45 @@ return [
     'col_difference' => 'Difference',
     'annual_result' => 'Annual result',
 
+    // Modelo 303 enhanced
+    'casilla_exempt' => '[13] Exempt operations',
+    'casilla_surcharge' => 'Equivalence surcharge',
+    'col_surcharge' => 'Surcharge',
+
+    // Modelo 111
+    'modelo_111' => 'Modelo 111',
+    'modelo_111_full' => 'Modelo 111 - Professional withholdings',
+    'section_professional' => 'Withholdings for professional activities',
+    'casilla_04_recipients' => '[04] No. of recipients',
+    'casilla_05_base' => '[05] Withholding base',
+    'casilla_06_withheld' => '[06] Withholdings and payments on account',
+    'result_to_pay' => 'Amount payable',
+    'no_retentions' => 'No withholdings in the period.',
+
+    // Modelo 115
+    'modelo_115' => 'Modelo 115',
+    'modelo_115_full' => 'Modelo 115 - Rental withholdings',
+    'section_rental' => 'Income from leasing/rental',
+    'casilla_01_landlords' => '[01] No. of landlords',
+    'casilla_02_base' => '[02] Withholding base',
+    'casilla_03_withheld' => '[03] Withholdings and payments on account',
+
+    // Modelo 347
+    'modelo_347' => 'Modelo 347',
+    'modelo_347_full' => 'Modelo 347 - Third-party operations',
+    'section_sales' => 'A) Sales and receipts',
+    'section_purchases' => 'B) Purchases and payments',
+    'col_province' => 'Province',
+    'col_annual_total' => 'Annual total',
+    'col_q1' => 'Q1',
+    'col_q2' => 'Q2',
+    'col_q3' => 'Q3',
+    'col_q4' => 'Q4',
+    'threshold_notice' => 'Showing operations exceeding €3,005.06 per year per Tax ID.',
+    'missing_nif_warning' => 'Some expenses without supplier Tax ID were excluded.',
+    'no_operations_347' => 'No operations exceeding the threshold.',
+    'total_section' => 'Section total',
+
     // PDF
     'generated_on' => 'Generated on',
     'pdf_period_label' => 'Period: :from to :to',
