@@ -164,14 +164,14 @@ function itemHref(item: NavItem): string {
             ]"
         >
             <div class="flex grow flex-col overflow-y-auto border-r border-gray-200 bg-white">
-                <!-- Logo bar (blue) -->
-                <div class="flex h-16 shrink-0 items-center gap-2 bg-indigo-600" :class="collapsed ? 'justify-center px-3' : 'px-6'">
+                <!-- Logo bar -->
+                <div class="flex h-16 shrink-0 items-center gap-2 border-b border-gray-200 bg-white" :class="collapsed ? 'justify-center px-3' : 'px-6'">
                     <img src="/images/logo.svg" alt="Factu365" class="h-10 w-10 object-contain" />
-                    <span v-if="!collapsed" class="font-brand text-[30px] font-extrabold text-white">Factu365</span>
+                    <span v-if="!collapsed" class="font-brand text-[30px] font-extrabold text-indigo-600">Factu365</span>
                     <!-- Mobile close button -->
                     <button
                         type="button"
-                        class="ml-auto -mr-2 p-1.5 text-white/80 hover:text-white lg:hidden"
+                        class="ml-auto -mr-2 p-1.5 text-gray-400 hover:text-gray-600 lg:hidden"
                         @click="sidebarOpen = false"
                     >
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
