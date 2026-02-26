@@ -17,6 +17,7 @@ use App\Services\NumberingService;
 use App\Services\PdfGeneratorService;
 use App\Services\StockService;
 use App\Services\TaxCalculatorService;
+use App\Services\TreasuryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -29,6 +30,7 @@ class DocumentController extends Controller
         private NumberingService $numberingService,
         private PdfGeneratorService $pdfGenerator,
         private StockService $stockService,
+        private TreasuryService $treasuryService,
     ) {}
 
     public function index(Request $request, string $type)
@@ -639,6 +641,13 @@ class DocumentController extends Controller
             'payment_status' => $wasPaid ? 'pending' : 'paid',
             'payment_date' => $wasPaid ? null : now()->toDateString(),
         ]);
+
+        // Treasury entry
+        if ($dueDate->isPaid()) {
+            $this->treasuryService->onDueDatePaid($dueDate);
+        } else {
+            $this->treasuryService->onDueDateUnpaid($dueDate);
+        }
 
         AuditLog::record($document, AuditLog::ACTION_MARKED_PAID, null,
             ['due_date_id' => $dueDate->id, 'payment_status' => $dueDate->payment_status],

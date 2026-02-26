@@ -7,6 +7,7 @@ use App\Models\Client;
 use App\Models\Expense;
 use App\Models\ExpenseCategory;
 use Illuminate\Http\Request;
+use App\Services\TreasuryService;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
@@ -162,6 +163,8 @@ class ExpenseController extends Controller
             'payment_date' => $validated['payment_date'],
             'payment_method' => $validated['payment_method'] ?? null,
         ]);
+
+        app(TreasuryService::class)->onExpensePaid($expense);
 
         return back()->with('success', __('expenses.flash_paid'));
     }

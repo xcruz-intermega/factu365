@@ -41,4 +41,9 @@ return [
     'import_einvoice' => 'Import e-invoice',
     'expense_categories' => 'Categories',
     'company' => 'Company',
+    'treasury' => 'Treasury',
+    'treasury_overview' => 'Treasury',
+    'collections_forecast' => 'Collections forecast',
+    'payments_forecast' => 'Payments forecast',
+    'bank_accounts' => 'Bank accounts',
 ];

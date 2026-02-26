@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Traits\Auditable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Expense extends Model
 {
@@ -74,6 +75,11 @@ class Expense extends Model
         }
 
         return $this->supplier_name ?? '—';
+    }
+
+    public function treasuryEntry(): HasOne
+    {
+        return $this->hasOne(TreasuryEntry::class);
     }
 
     public function scopeSearch($query, ?string $search)

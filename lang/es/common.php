@@ -12,6 +12,7 @@ return [
     'create' => 'Crear',
     'confirm' => 'Confirmar',
     'close' => 'Cerrar',
+    'clear' => 'Limpiar',
     'add' => 'Añadir',
     'back' => 'Volver',
     'search' => 'Buscar',

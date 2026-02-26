@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Traits\Auditable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class DocumentDueDate extends Model
 {
@@ -43,5 +44,10 @@ class DocumentDueDate extends Model
     public function isPending(): bool
     {
         return $this->payment_status === 'pending';
+    }
+
+    public function treasuryEntry(): HasOne
+    {
+        return $this->hasOne(TreasuryEntry::class);
     }
 }

@@ -78,6 +78,14 @@ const sections = computed<NavSection[]>(() => [
         ],
     },
     {
+        title: trans('nav.treasury'),
+        items: [
+            { name: trans('nav.treasury_overview'), href: 'treasury.overview', routeMatch: 'treasury.overview', icon: 'M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z' },
+            { name: trans('nav.collections_forecast'), href: 'treasury.collections', routeMatch: 'treasury.collections', activeUrls: ['/treasury/collections'], icon: 'M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941' },
+            { name: trans('nav.payments_forecast'), href: 'treasury.payments', routeMatch: 'treasury.payments', activeUrls: ['/treasury/payments'], icon: 'M2.25 6L9 12.75l4.286-4.286a11.948 11.948 0 014.306 6.43l.776 2.898m0 0l3.182-5.511m-3.182 5.51l-5.511-3.181' },
+        ],
+    },
+    {
         title: trans('nav.reports'),
         items: [
             { name: trans('nav.sales_by_client'), href: 'reports.sales.by-client', routeMatch: 'reports.sales.by-client', icon: 'M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z' },
@@ -111,6 +119,7 @@ const sections = computed<NavSection[]>(() => [
             { name: trans('nav.series'), href: 'settings.series', routeMatch: 'settings.series*', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
             { name: trans('nav.payment_templates'), href: 'settings.payment-templates', routeMatch: 'settings.payment-templates*', icon: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z' },
             { name: trans('nav.pdf_templates'), href: 'settings.pdf-templates', routeMatch: 'settings.pdf-templates*', icon: 'M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z' },
+            { name: trans('nav.bank_accounts'), href: 'settings.bank-accounts', routeMatch: 'settings.bank-accounts*', icon: 'M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z' },
         ],
     },
     {

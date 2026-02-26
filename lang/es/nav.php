@@ -41,4 +41,9 @@ return [
     'import_einvoice' => 'Importar factura-e',
     'expense_categories' => 'Categorías',
     'company' => 'Empresa',
+    'treasury' => 'Tesorería',
+    'treasury_overview' => 'Tesorería',
+    'collections_forecast' => 'Previsión cobros',
+    'payments_forecast' => 'Previsión pagos',
+    'bank_accounts' => 'Cuentas bancarias',
 ];

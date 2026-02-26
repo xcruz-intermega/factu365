@@ -14,6 +14,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RegisterBookController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\PaymentTemplateController;
+use App\Http\Controllers\BankAccountController;
+use App\Http\Controllers\TreasuryController;
 use App\Http\Controllers\ExpenseCategoryController;
 use App\Http\Controllers\ProductFamilyController;
 use App\Http\Controllers\AuditLogController;
@@ -105,6 +107,16 @@ Route::prefix('/{tenant}')->middleware([
         Route::put('/expense-categories/{category}', [ExpenseCategoryController::class, 'update'])->name('expense-categories.update');
         Route::delete('/expense-categories/{category}', [ExpenseCategoryController::class, 'destroy'])->name('expense-categories.destroy');
 
+        // Treasury
+        Route::prefix('treasury')->name('treasury.')->group(function () {
+            Route::get('/', [TreasuryController::class, 'overview'])->name('overview');
+            Route::get('/collections', [TreasuryController::class, 'collections'])->name('collections');
+            Route::get('/payments', [TreasuryController::class, 'payments'])->name('payments');
+            Route::post('/entries', [TreasuryController::class, 'storeEntry'])->name('entries.store');
+            Route::put('/entries/{entry}', [TreasuryController::class, 'updateEntry'])->name('entries.update');
+            Route::delete('/entries/{entry}', [TreasuryController::class, 'destroyEntry'])->name('entries.destroy');
+        });
+
         // Reports
         Route::prefix('reports')->name('reports.')->group(function () {
             Route::get('/sales/by-client', [ReportController::class, 'salesByClient'])->name('sales.by-client');
@@ -178,6 +190,11 @@ Route::prefix('/{tenant}')->middleware([
 
                 Route::post('/demo-data', [SettingsController::class, 'seedDemoData'])->name('demo-data');
 
+
+                Route::get('/bank-accounts', [BankAccountController::class, 'index'])->name('bank-accounts');
+                Route::post('/bank-accounts', [BankAccountController::class, 'store'])->name('bank-accounts.store');
+                Route::put('/bank-accounts/{account}', [BankAccountController::class, 'update'])->name('bank-accounts.update');
+                Route::delete('/bank-accounts/{account}', [BankAccountController::class, 'destroy'])->name('bank-accounts.destroy');
 
                 Route::get('/payment-templates', [PaymentTemplateController::class, 'index'])->name('payment-templates');
                 Route::post('/payment-templates', [PaymentTemplateController::class, 'store'])->name('payment-templates.store');
