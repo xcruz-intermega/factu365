@@ -76,7 +76,7 @@ const exportTemplate = (tpl: Template) => {
 
     <AppLayout>
         <template #header>
-            <div class="flex items-center justify-between">
+            <div class="flex flex-1 items-center justify-between">
                 <h1 class="text-lg font-semibold text-gray-900">{{ $t('settings.pdf_title') }}</h1>
                 <div class="flex items-center gap-3">
                     <button
@@ -126,7 +126,7 @@ const exportTemplate = (tpl: Template) => {
                         <div v-if="tpl.settings?.primary_color" class="h-4 w-4 rounded-full border border-gray-200" :style="{ backgroundColor: tpl.settings.primary_color }"></div>
                         <div v-if="tpl.settings?.accent_color" class="h-4 w-4 rounded-full border border-gray-200" :style="{ backgroundColor: tpl.settings.accent_color }"></div>
                         <span v-if="tpl.layout_json" class="text-xs text-indigo-500 font-medium">{{ $t('settings.pdf_custom') }}</span>
-                        <span v-else class="text-xs text-gray-400">{{ tpl.blade_view }}</span>
+                        <span v-else class="text-xs text-gray-400">{{ $t('pdf.' + tpl.blade_view) }}</span>
                     </div>
 
                     <!-- Actions -->

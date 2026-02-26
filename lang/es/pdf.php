@@ -49,6 +49,12 @@ return [
     'irpf_withholding' => 'Retención IRPF',
     'total' => 'TOTAL',
 
+    // Template names
+    'documents' => [
+        'default' => 'Clásica',
+        'modern'  => 'Moderna',
+    ],
+
     // QR VeriFactu (legal text stays in Spanish per regulation)
     'qr_title' => 'Código QR VERI*FACTU',
     'qr_description' => 'Factura verificable conforme al RD 1007/2023.',
