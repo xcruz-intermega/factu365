@@ -15,3 +15,5 @@ Route::middleware('guest')->group(function () {
     Route::post('/register', [RegisteredTenantController::class, 'store']);
     Route::post('/login', [CentralLoginController::class, 'store'])->name('central.login');
 });
+
+require __DIR__.'/admin.php';

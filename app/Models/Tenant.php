@@ -20,6 +20,7 @@ class Tenant extends BaseTenant implements TenantWithDatabase
             'email',
             'plan_id',
             'trial_ends_at',
+            'suspended_at',
         ];
     }
 
@@ -27,6 +28,7 @@ class Tenant extends BaseTenant implements TenantWithDatabase
     {
         return [
             'trial_ends_at' => 'datetime',
+            'suspended_at' => 'datetime',
         ];
     }
 }

@@ -30,6 +30,23 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        // Admin routes get minimal props (no tenant context)
+        if ($request->is('admin/*') || $request->is('admin')) {
+            return [
+                ...parent::share($request),
+                'admin_email' => fn () => $request->session()->get('admin_email'),
+                'flash' => [
+                    'success' => fn () => $request->session()->get('success'),
+                    'error' => fn () => $request->session()->get('error'),
+                    'info' => fn () => $request->session()->get('info'),
+                    'warning' => fn () => $request->session()->get('warning'),
+                ],
+                'locale' => app()->getLocale(),
+                'available_locales' => ['es', 'en', 'ca'],
+                'app_version' => config('app.version'),
+            ];
+        }
+
         $tenant = tenant();
 
         return [

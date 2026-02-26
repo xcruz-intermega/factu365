@@ -21,6 +21,10 @@ class SlugTenantResolver extends PathTenantResolver
             $route->forgetParameter(static::$tenantParameterName);
 
             if ($tenant = Tenant::where('slug', $slug)->first()) {
+                if ($tenant->suspended_at) {
+                    abort(403, 'Esta cuenta ha sido suspendida. Contacte con el administrador.');
+                }
+
                 return $tenant;
             }
         }
