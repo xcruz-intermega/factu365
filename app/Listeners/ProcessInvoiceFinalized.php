@@ -4,6 +4,7 @@ namespace App\Listeners;
 
 use App\Events\InvoiceFinalized;
 use App\Jobs\SubmitInvoiceToAeat;
+use App\Models\AuditLog;
 use App\Models\CompanyProfile;
 use App\Services\VeriFactu\HashChainService;
 use App\Services\VeriFactu\QrCodeService;
@@ -56,6 +57,10 @@ class ProcessInvoiceFinalized
 
             // 4. Dispatch async job for AEAT submission
             SubmitInvoiceToAeat::dispatch($record->id);
+
+            AuditLog::record($document, AuditLog::ACTION_SENT_TO_AEAT, null,
+                ['record_id' => $record->id, 'hash' => $record->hash],
+                "Document '{$document->number}' queued for AEAT submission");
 
             Log::info('VeriFactu: Invoice finalized and queued for AEAT submission.', [
                 'document_id' => $document->id,

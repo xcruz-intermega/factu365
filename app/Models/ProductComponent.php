@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\Auditable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ProductComponent extends Model
 {
+    use Auditable;
     protected $fillable = [
         'parent_product_id',
         'component_product_id',

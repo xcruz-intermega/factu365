@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\Auditable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PaymentTemplateLine extends Model
 {
+    use Auditable;
     protected $fillable = [
         'payment_template_id',
         'days_from_issue',

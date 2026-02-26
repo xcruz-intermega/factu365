@@ -255,6 +255,7 @@ return [
 
     // Backups
     'tab_backups' => 'Còpies de seguretat',
+    'tab_audit_logs' => "Registre d'auditoria",
     'backups_title' => 'Còpies de seguretat',
     'backup_create_section' => 'Crear còpia de seguretat',
     'backup_create_description' => 'Genera un fitxer amb la base de dades i fitxers de la teva empresa per poder restaurar-los en cas de necessitat.',

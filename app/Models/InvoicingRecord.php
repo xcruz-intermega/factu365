@@ -2,12 +2,19 @@
 
 namespace App\Models;
 
+use App\Traits\Auditable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class InvoicingRecord extends Model
 {
+    use Auditable;
+
+    public function auditExclude(): array
+    {
+        return ['password', 'remember_token', 'xml_content'];
+    }
     public const TYPE_ALTA = 'alta';
     public const TYPE_ANULACION = 'anulacion';
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\InvoiceFinalized;
 use App\Http\Requests\DocumentRequest;
+use App\Models\AuditLog;
 use App\Models\Client;
 use App\Models\Document;
 use App\Models\DocumentDueDate;
@@ -359,6 +360,9 @@ class DocumentController extends Controller
                 ]));
         }
 
+        AuditLog::record($document, AuditLog::ACTION_FINALIZED, null, null,
+            "Document '{$document->number}' finalized");
+
         // Dispatch VeriFactu event for invoices and rectificatives
         InvoiceFinalized::dispatch($document->fresh());
 
@@ -467,6 +471,10 @@ class DocumentController extends Controller
             }
         }
 
+        AuditLog::record($document, AuditLog::ACTION_CONVERTED, null,
+            ['target_type' => $newType, 'new_document_id' => $newDocument->id],
+            "Document '{$document->number}' converted to {$newType}");
+
         return redirect()->route('documents.edit', [$newType, $newDocument])
             ->with('success', __('documents.flash_converted', ['type' => Document::documentTypeLabel($newType)]));
     }
@@ -540,7 +548,13 @@ class DocumentController extends Controller
             return back()->with('error', __('documents.error_invalid_status'));
         }
 
+        $oldStatus = $document->status;
         $document->update(['status' => $validated['status']]);
+
+        AuditLog::record($document, AuditLog::ACTION_STATUS_CHANGED,
+            ['status' => $oldStatus],
+            ['status' => $validated['status']],
+            "Document '{$document->number}' status changed from {$oldStatus} to {$validated['status']}");
 
         return back()->with('success', __('documents.flash_status_updated', ['status' => Document::statusLabel($validated['status'])]));
     }
@@ -618,10 +632,15 @@ class DocumentController extends Controller
             abort(404);
         }
 
+        $wasPaid = $dueDate->isPaid();
         $dueDate->update([
-            'payment_status' => $dueDate->isPaid() ? 'pending' : 'paid',
-            'payment_date' => $dueDate->isPaid() ? null : now()->toDateString(),
+            'payment_status' => $wasPaid ? 'pending' : 'paid',
+            'payment_date' => $wasPaid ? null : now()->toDateString(),
         ]);
+
+        AuditLog::record($document, AuditLog::ACTION_MARKED_PAID, null,
+            ['due_date_id' => $dueDate->id, 'payment_status' => $dueDate->payment_status],
+            "Document '{$document->number}' due date " . ($wasPaid ? 'unmarked' : 'marked') . ' as paid');
 
         // Auto-update document status based on due dates
         $allDueDates = $document->dueDates()->get();

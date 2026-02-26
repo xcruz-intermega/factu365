@@ -13,6 +13,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\PaymentTemplateController;
 use App\Http\Controllers\ExpenseCategoryController;
 use App\Http\Controllers\ProductFamilyController;
+use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\BackupController;
 use App\Http\Controllers\PdfTemplateController;
 use App\Http\Controllers\SettingsController;
@@ -161,6 +162,10 @@ Route::prefix('/{tenant}')->middleware([
                 Route::get('/backups/{filename}/download', [BackupController::class, 'download'])->name('backups.download')->where('filename', '.*');
                 Route::post('/backups/restore', [BackupController::class, 'restore'])->name('backups.restore');
                 Route::delete('/backups/{filename}', [BackupController::class, 'destroy'])->name('backups.destroy')->where('filename', '.*');
+
+                // Audit Logs
+                Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-logs');
+                Route::get('/audit-logs/export-csv', [AuditLogController::class, 'exportCsv'])->name('audit-logs.export-csv');
             });
         });
     });

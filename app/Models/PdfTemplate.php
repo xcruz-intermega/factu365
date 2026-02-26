@@ -2,10 +2,17 @@
 
 namespace App\Models;
 
+use App\Traits\Auditable;
 use Illuminate\Database\Eloquent\Model;
 
 class PdfTemplate extends Model
 {
+    use Auditable;
+
+    public function auditExclude(): array
+    {
+        return ['password', 'remember_token', 'layout_json'];
+    }
     protected $fillable = [
         'name',
         'blade_view',

@@ -2,11 +2,18 @@
 
 namespace App\Models;
 
+use App\Traits\Auditable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class AeatSubmission extends Model
 {
+    use Auditable;
+
+    public function auditExclude(): array
+    {
+        return ['password', 'remember_token', 'request_xml', 'response_xml'];
+    }
     public const STATUS_PENDING = 'pending';
     public const STATUS_ACCEPTED = 'accepted';
     public const STATUS_PARTIALLY_ACCEPTED = 'partially_accepted';

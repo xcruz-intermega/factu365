@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\Auditable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class DocumentDueDate extends Model
 {
+    use Auditable;
     protected $fillable = [
         'document_id',
         'due_date',

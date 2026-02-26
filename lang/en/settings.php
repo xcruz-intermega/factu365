@@ -255,6 +255,7 @@ return [
 
     // Backups
     'tab_backups' => 'Backups',
+    'tab_audit_logs' => 'Audit log',
     'backups_title' => 'Backups',
     'backup_create_section' => 'Create backup',
     'backup_create_description' => 'Generate a file with the database and files of your company so you can restore them if needed.',

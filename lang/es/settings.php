@@ -255,6 +255,7 @@ return [
 
     // Backups
     'tab_backups' => 'Copias de seguridad',
+    'tab_audit_logs' => 'Auditoría',
     'backups_title' => 'Copias de seguridad',
     'backup_create_section' => 'Crear copia de seguridad',
     'backup_create_description' => 'Genera un archivo con la base de datos y ficheros de tu empresa para poder restaurarlos en caso de necesidad.',

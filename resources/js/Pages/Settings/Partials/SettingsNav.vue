@@ -15,6 +15,7 @@ const tabs = computed(() => [
     { key: 'pdf-templates', label: trans('settings.tab_pdf_templates'), route: 'settings.pdf-templates' },
     { key: 'users', label: trans('settings.tab_users'), route: 'settings.users' },
     { key: 'backups', label: trans('settings.tab_backups'), route: 'settings.backups' },
+    { key: 'audit-logs', label: trans('settings.tab_audit_logs'), route: 'settings.audit-logs' },
 ]);
 </script>
 

@@ -2,10 +2,17 @@
 
 namespace App\Models;
 
+use App\Traits\Auditable;
 use Illuminate\Database\Eloquent\Model;
 
 class Certificate extends Model
 {
+    use Auditable;
+
+    public function auditExclude(): array
+    {
+        return ['password', 'remember_token', 'pfx_path', 'pfx_password'];
+    }
     protected $fillable = [
         'name',
         'pfx_path',
