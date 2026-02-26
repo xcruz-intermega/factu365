@@ -34,9 +34,31 @@ return [
     // Monthly subtotals
     'monthly_subtotal' => 'Subtotal :month',
 
+    // Libro Recibidas (AEAT format)
+    'col_reception_number' => 'Nº Recep.',
+    'col_operation_date' => 'Fecha operación',
+    'col_regime_key' => 'Clave régimen',
+
     // Invoice types (AEAT)
     'invoice_type_F1' => 'F1 - Factura',
+    'invoice_type_F2' => 'F2 - Factura simplificada',
+    'invoice_type_F3' => 'F3 - Factura emitida sustitutiva de simplificada',
     'invoice_type_R1' => 'R1 - Rectificativa',
+    'invoice_type_R2' => 'R2 - Rectificativa (art. 80.3)',
+    'invoice_type_R3' => 'R3 - Rectificativa (art. 80.4)',
+    'invoice_type_R4' => 'R4 - Rectificativa (otros)',
+    'invoice_type_R5' => 'R5 - Rectificativa simplificada',
+
+    // Regime keys (AEAT)
+    'regime_01' => '01 - Régimen general',
+    'regime_02' => '02 - Exportaciones',
+    'regime_03' => '03 - Bienes usados',
+    'regime_05' => '05 - Régimen especial agencias viaje',
+    'regime_07' => '07 - Régimen especial criterio de caja',
+
+    // AEAT export
+    'export_aeat_csv' => 'CSV AEAT',
+    'aeat_csv_tooltip' => 'Formato oficial AEAT (1 fila por tipo IVA)',
 
     // Totals
     'total' => 'Total',

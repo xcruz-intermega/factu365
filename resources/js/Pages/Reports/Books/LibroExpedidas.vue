@@ -13,12 +13,17 @@ interface VatBreakdownRow {
 interface Row {
     id: number;
     issue_date: string;
+    issue_date_raw: string;
+    operation_date: string | null;
+    operation_date_raw: string | null;
     number: string;
     series_name: string | null;
     client_name: string;
     client_nif: string;
     invoice_type: string;
     invoice_type_label: string;
+    regime_key: string;
+    regime_label: string;
     tax_base: number;
     total_vat: number;
     total_surcharge: number;
@@ -51,6 +56,7 @@ const applyFilters = () => {
 
 const pdfUrl = () => route('reports.books.expedidas.pdf', { date_from: dateFrom.value, date_to: dateTo.value });
 const csvUrl = () => route('reports.books.expedidas.csv', { date_from: dateFrom.value, date_to: dateTo.value });
+const aeatCsvUrl = () => route('reports.books.expedidas.aeat-csv', { date_from: dateFrom.value, date_to: dateTo.value });
 
 // Track expanded rows for VAT breakdown
 const expandedRows = ref(new Set<number>());
@@ -78,7 +84,7 @@ const toggleExpand = (id: number) => {
                 <label class="block text-xs font-medium text-gray-500">{{ $t('common.to_date') }}</label>
                 <input type="date" v-model="dateTo" @change="applyFilters" class="mt-1 rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
             </div>
-            <ReportToolbar :pdfUrl="pdfUrl()" :csvUrl="csvUrl()" />
+            <ReportToolbar :pdfUrl="pdfUrl()" :csvUrl="csvUrl()" :aeatCsvUrl="aeatCsvUrl()" />
         </div>
 
         <div class="overflow-hidden rounded-lg bg-white shadow">
@@ -88,9 +94,11 @@ const toggleExpand = (id: number) => {
                         <th class="px-3 py-3 text-left text-xs font-medium uppercase text-gray-500">{{ $t('books.col_series') }}</th>
                         <th class="px-3 py-3 text-left text-xs font-medium uppercase text-gray-500">{{ $t('books.col_number') }}</th>
                         <th class="px-3 py-3 text-left text-xs font-medium uppercase text-gray-500">{{ $t('books.col_date') }}</th>
+                        <th class="px-3 py-3 text-left text-xs font-medium uppercase text-gray-500">{{ $t('books.col_operation_date') }}</th>
                         <th class="px-3 py-3 text-left text-xs font-medium uppercase text-gray-500">{{ $t('books.col_nif') }}</th>
                         <th class="px-3 py-3 text-left text-xs font-medium uppercase text-gray-500">{{ $t('books.col_name') }}</th>
                         <th class="px-3 py-3 text-left text-xs font-medium uppercase text-gray-500">{{ $t('books.col_invoice_type') }}</th>
+                        <th class="px-3 py-3 text-left text-xs font-medium uppercase text-gray-500">{{ $t('books.col_regime_key') }}</th>
                         <th class="px-3 py-3 text-right text-xs font-medium uppercase text-gray-500">{{ $t('books.col_base') }}</th>
                         <th class="px-3 py-3 text-right text-xs font-medium uppercase text-gray-500">{{ $t('books.col_vat') }}</th>
                         <th class="px-3 py-3 text-right text-xs font-medium uppercase text-gray-500">{{ $t('books.col_surcharge') }}</th>
@@ -103,9 +111,11 @@ const toggleExpand = (id: number) => {
                             <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">{{ row.series_name || '' }}</td>
                             <td class="whitespace-nowrap px-3 py-2 text-sm font-medium text-gray-900">{{ row.number }}</td>
                             <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-700">{{ row.issue_date }}</td>
+                            <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">{{ row.operation_date || '' }}</td>
                             <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">{{ row.client_nif }}</td>
                             <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-700">{{ row.client_name }}</td>
                             <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-600">{{ row.invoice_type_label }}</td>
+                            <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">{{ row.regime_key }}</td>
                             <td class="whitespace-nowrap px-3 py-2 text-right text-sm text-gray-700">{{ formatCurrency(row.tax_base) }}</td>
                             <td class="whitespace-nowrap px-3 py-2 text-right text-sm text-gray-700">{{ formatCurrency(row.total_vat) }}</td>
                             <td class="whitespace-nowrap px-3 py-2 text-right text-sm text-gray-500">{{ formatCurrency(row.total_surcharge) }}</td>
@@ -113,7 +123,7 @@ const toggleExpand = (id: number) => {
                         </tr>
                         <!-- VAT breakdown sub-row -->
                         <tr v-if="expandedRows.has(row.id) && row.vat_breakdown.length > 0" class="bg-indigo-50/50">
-                            <td colspan="10" class="px-6 py-2">
+                            <td colspan="12" class="px-6 py-2">
                                 <div class="text-xs font-medium text-gray-500 mb-1">{{ $t('books.vat_breakdown') }}</div>
                                 <div class="flex gap-6">
                                     <div v-for="vb in row.vat_breakdown" :key="vb.vat_rate" class="text-xs text-gray-600">
@@ -126,12 +136,12 @@ const toggleExpand = (id: number) => {
                         </tr>
                     </template>
                     <tr v-if="data.length === 0">
-                        <td colspan="10" class="px-4 py-8 text-center text-sm text-gray-400">{{ $t('books.no_data') }}</td>
+                        <td colspan="12" class="px-4 py-8 text-center text-sm text-gray-400">{{ $t('books.no_data') }}</td>
                     </tr>
                 </tbody>
                 <tfoot v-if="data.length > 0" class="bg-gray-50 font-semibold">
                     <tr>
-                        <td class="px-3 py-3 text-sm text-gray-900" colspan="6">{{ $t('books.total_period') }}</td>
+                        <td class="px-3 py-3 text-sm text-gray-900" colspan="8">{{ $t('books.total_period') }}</td>
                         <td class="px-3 py-3 text-right text-sm text-gray-900">{{ formatCurrency(totals.tax_base) }}</td>
                         <td class="px-3 py-3 text-right text-sm text-gray-900">{{ formatCurrency(totals.total_vat) }}</td>
                         <td class="px-3 py-3 text-right text-sm text-gray-900">{{ formatCurrency(totals.total_surcharge) }}</td>

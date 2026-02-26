@@ -34,9 +34,31 @@ return [
     // Monthly subtotals
     'monthly_subtotal' => ':month subtotal',
 
+    // Libro Recibidas (AEAT format)
+    'col_reception_number' => 'Recep. no.',
+    'col_operation_date' => 'Operation date',
+    'col_regime_key' => 'Regime key',
+
     // Invoice types (AEAT)
     'invoice_type_F1' => 'F1 - Invoice',
+    'invoice_type_F2' => 'F2 - Simplified invoice',
+    'invoice_type_F3' => 'F3 - Invoice replacing simplified',
     'invoice_type_R1' => 'R1 - Credit note',
+    'invoice_type_R2' => 'R2 - Credit note (art. 80.3)',
+    'invoice_type_R3' => 'R3 - Credit note (art. 80.4)',
+    'invoice_type_R4' => 'R4 - Credit note (other)',
+    'invoice_type_R5' => 'R5 - Simplified credit note',
+
+    // Regime keys (AEAT)
+    'regime_01' => '01 - General regime',
+    'regime_02' => '02 - Exports',
+    'regime_03' => '03 - Used goods',
+    'regime_05' => '05 - Travel agencies special regime',
+    'regime_07' => '07 - Cash accounting special regime',
+
+    // AEAT export
+    'export_aeat_csv' => 'AEAT CSV',
+    'aeat_csv_tooltip' => 'Official AEAT format (1 row per VAT type)',
 
     // Totals
     'total' => 'Total',

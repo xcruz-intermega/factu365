@@ -230,6 +230,134 @@ class RegisterBookController extends Controller
         ]);
     }
 
+    // ─── AEAT CSV Exports ───
+
+    public function libroExpedidasAeatCsv(Request $request)
+    {
+        $data = $this->getLibroExpedidasData($request);
+        $company = CompanyProfile::first();
+        $emitterNif = $company?->nif ?? '';
+
+        return new StreamedResponse(function () use ($data, $emitterNif) {
+            $handle = fopen('php://output', 'w');
+            fwrite($handle, "\xEF\xBB\xBF");
+            fputcsv($handle, [
+                'Periodo', 'Ejercicio', 'NIF Emisor',
+                'Tipo NIF Destinatario', 'NIF Destinatario', 'Nombre Destinatario',
+                'Clave Regimen', 'Tipo Factura', 'Serie-Numero',
+                'Fecha Expedicion', 'Fecha Operacion',
+                'Base Imponible', 'Tipo IVA', 'Cuota IVA',
+                'Tipo RE', 'Cuota RE', 'Total Factura',
+            ], ';');
+
+            foreach ($data['data'] as $row) {
+                $vatRows = $row['vat_breakdown'];
+                if (empty($vatRows)) {
+                    $vatRows = [['vat_rate' => 0, 'base' => $row['tax_base'], 'vat' => 0]];
+                }
+
+                $issueDate = $row['issue_date_raw'];
+                $period = $this->aeatPeriod($issueDate);
+                $year = substr($issueDate, 0, 4);
+                $serieNumber = trim(($row['series_name'] ?? '') . '-' . $row['number'], '-');
+                $nifType = $this->resolveNifType($row['client_nif']);
+
+                foreach ($vatRows as $i => $vb) {
+                    fputcsv($handle, [
+                        $period,
+                        $year,
+                        $emitterNif,
+                        $nifType,
+                        $row['client_nif'],
+                        $row['client_name'],
+                        $row['regime_key'] ?? '01',
+                        $row['invoice_type'],
+                        $serieNumber,
+                        $this->aeatDate($issueDate),
+                        $row['operation_date_raw'] ? $this->aeatDate($row['operation_date_raw']) : '',
+                        $this->aeatDecimal($vb['base']),
+                        $this->aeatDecimal($vb['vat_rate']),
+                        $this->aeatDecimal($vb['vat']),
+                        $this->aeatDecimal(0),
+                        $this->aeatDecimal(0),
+                        $i === 0 ? $this->aeatDecimal($row['total']) : $this->aeatDecimal(0),
+                    ], ';');
+                }
+            }
+
+            fclose($handle);
+        }, 200, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="libro_expedidas_AEAT_' . now()->format('Y-m-d') . '.csv"',
+        ]);
+    }
+
+    public function libroRecibidasAeatCsv(Request $request)
+    {
+        $data = $this->getLibroRecibidasData($request);
+        $company = CompanyProfile::first();
+        $receiverNif = $company?->nif ?? '';
+
+        return new StreamedResponse(function () use ($data, $receiverNif) {
+            $handle = fopen('php://output', 'w');
+            fwrite($handle, "\xEF\xBB\xBF");
+            fputcsv($handle, [
+                'Periodo', 'Ejercicio', 'NIF Receptor', 'N Recepcion',
+                'Tipo NIF Emisor', 'NIF Emisor', 'Nombre Emisor',
+                'Clave Regimen', 'Tipo Factura', 'Serie-Numero',
+                'Fecha Expedicion', 'Fecha Operacion',
+                'Base Imponible', 'Tipo IVA', 'Cuota IVA',
+                'Tipo RE', 'Cuota RE',
+                'Base IRPF', 'Tipo IRPF', 'Cuota IRPF',
+                'Total Factura',
+            ], ';');
+
+            foreach ($data['data'] as $row) {
+                $vatRows = $row['vat_breakdown'];
+                if (empty($vatRows)) {
+                    $vatRows = [['vat_rate' => 0, 'base' => $row['tax_base'], 'vat' => 0]];
+                }
+
+                $dateRaw = $row['date_raw'];
+                $period = $this->aeatPeriod($dateRaw);
+                $year = substr($dateRaw, 0, 4);
+                $nifType = $this->resolveNifType($row['supplier_nif']);
+                $invoiceType = $row['origin_key'] === 'expense' ? 'F1' : 'F1';
+
+                foreach ($vatRows as $i => $vb) {
+                    fputcsv($handle, [
+                        $period,
+                        $year,
+                        $receiverNif,
+                        $row['reception_number'],
+                        $nifType,
+                        $row['supplier_nif'],
+                        $row['supplier_name'],
+                        '01',
+                        $invoiceType,
+                        $row['invoice_number'],
+                        $this->aeatDate($dateRaw),
+                        $row['operation_date_raw'] ? $this->aeatDate($row['operation_date_raw']) : '',
+                        $this->aeatDecimal($vb['base']),
+                        $this->aeatDecimal($vb['vat_rate']),
+                        $this->aeatDecimal($vb['vat']),
+                        $this->aeatDecimal(0),
+                        $this->aeatDecimal(0),
+                        $i === 0 ? $this->aeatDecimal($row['irpf_amount'] > 0 ? $row['tax_base'] : 0) : $this->aeatDecimal(0),
+                        $i === 0 ? $this->aeatDecimal($row['irpf_rate']) : $this->aeatDecimal(0),
+                        $i === 0 ? $this->aeatDecimal($row['irpf_amount']) : $this->aeatDecimal(0),
+                        $i === 0 ? $this->aeatDecimal($row['total']) : $this->aeatDecimal(0),
+                    ], ';');
+                }
+            }
+
+            fclose($handle);
+        }, 200, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="libro_recibidas_AEAT_' . now()->format('Y-m-d') . '.csv"',
+        ]);
+    }
+
     // ─── Data Helpers ───
 
     private function getLibroVentasData(Request $request): array
@@ -366,16 +494,21 @@ class RegisterBookController extends Controller
         $data = $documents->map(function ($doc) {
             $vatBreakdown = $doc->lines->groupBy('vat_rate')->map(fn ($lines, $rate) => [
                 'vat_rate' => (float) $rate,
-                'base' => round($lines->sum('line_subtotal'), 2),
+                'base' => round($lines->sum('line_total'), 2),
                 'vat' => round($lines->sum('vat_amount'), 2),
             ])->sortKeys()->values()->toArray();
 
-            $invoiceType = $doc->document_type === Document::TYPE_RECTIFICATIVE ? 'R1' : 'F1';
+            $invoiceType = $doc->invoice_type
+                ?? ($doc->document_type === Document::TYPE_RECTIFICATIVE ? 'R1' : 'F1');
+
+            $regimeKey = $doc->regime_key ?? '01';
 
             return [
                 'id' => $doc->id,
                 'issue_date' => $doc->issue_date->format('d/m/Y'),
                 'issue_date_raw' => $doc->issue_date->format('Y-m-d'),
+                'operation_date' => $doc->operation_date?->format('d/m/Y'),
+                'operation_date_raw' => $doc->operation_date?->format('Y-m-d'),
                 'month_key' => $doc->issue_date->format('Y-m'),
                 'month_label' => $doc->issue_date->translatedFormat('F Y'),
                 'number' => $doc->number,
@@ -384,6 +517,8 @@ class RegisterBookController extends Controller
                 'client_nif' => $doc->client?->nif ?? '',
                 'invoice_type' => $invoiceType,
                 'invoice_type_label' => __("books.invoice_type_{$invoiceType}"),
+                'regime_key' => $regimeKey,
+                'regime_label' => __("books.regime_{$regimeKey}"),
                 'tax_base' => (float) $doc->tax_base,
                 'total_vat' => (float) $doc->total_vat,
                 'total_surcharge' => (float) $doc->total_surcharge,
@@ -413,6 +548,8 @@ class RegisterBookController extends Controller
     {
         [$dateFrom, $dateTo] = $this->resolveDateRange($request);
 
+        $receptionCounter = 1;
+
         // Purchase invoices with VAT breakdown
         $purchaseDocs = Document::received()
             ->ofType(Document::TYPE_PURCHASE_INVOICE)
@@ -422,16 +559,19 @@ class RegisterBookController extends Controller
             ->orderBy('issue_date')
             ->orderBy('number')
             ->get()
-            ->map(function ($doc) {
+            ->map(function ($doc) use (&$receptionCounter) {
                 $vatBreakdown = $doc->lines->groupBy('vat_rate')->map(fn ($lines, $rate) => [
                     'vat_rate' => (float) $rate,
-                    'base' => round($lines->sum('line_subtotal'), 2),
+                    'base' => round($lines->sum('line_total'), 2),
                     'vat' => round($lines->sum('vat_amount'), 2),
                 ])->sortKeys()->values()->toArray();
 
                 return [
+                    'reception_number' => $receptionCounter++,
                     'date' => $doc->issue_date->format('d/m/Y'),
                     'date_raw' => $doc->issue_date->format('Y-m-d'),
+                    'operation_date' => $doc->operation_date?->format('d/m/Y'),
+                    'operation_date_raw' => $doc->operation_date?->format('Y-m-d'),
                     'month_key' => $doc->issue_date->format('Y-m'),
                     'month_label' => $doc->issue_date->translatedFormat('F Y'),
                     'invoice_number' => $doc->number,
@@ -439,7 +579,10 @@ class RegisterBookController extends Controller
                     'supplier_nif' => $doc->client?->nif ?? '',
                     'tax_base' => (float) $doc->tax_base,
                     'total_vat' => (float) $doc->total_vat,
+                    'total_surcharge' => (float) ($doc->total_surcharge ?? 0),
                     'total' => (float) $doc->total,
+                    'irpf_rate' => 0,
+                    'irpf_amount' => 0,
                     'origin' => __('books.origin_document'),
                     'origin_key' => 'document',
                     'vat_breakdown' => $vatBreakdown,
@@ -451,7 +594,7 @@ class RegisterBookController extends Controller
             ->with(['supplier:id,legal_name,trade_name,nif'])
             ->orderBy('expense_date')
             ->get()
-            ->map(function ($exp) {
+            ->map(function ($exp) use (&$receptionCounter) {
                 $vatBreakdown = [];
                 if ((float) $exp->vat_rate > 0 || (float) $exp->subtotal > 0) {
                     $vatBreakdown[] = [
@@ -462,8 +605,11 @@ class RegisterBookController extends Controller
                 }
 
                 return [
+                    'reception_number' => $receptionCounter++,
                     'date' => $exp->expense_date->format('d/m/Y'),
                     'date_raw' => $exp->expense_date->format('Y-m-d'),
+                    'operation_date' => null,
+                    'operation_date_raw' => null,
                     'month_key' => $exp->expense_date->format('Y-m'),
                     'month_label' => $exp->expense_date->translatedFormat('F Y'),
                     'invoice_number' => $exp->invoice_number ?? $exp->concept,
@@ -471,7 +617,10 @@ class RegisterBookController extends Controller
                     'supplier_nif' => $exp->supplier?->nif ?? '',
                     'tax_base' => (float) $exp->subtotal,
                     'total_vat' => (float) $exp->vat_amount,
+                    'total_surcharge' => 0,
                     'total' => (float) $exp->total,
+                    'irpf_rate' => (float) ($exp->irpf_rate ?? 0),
+                    'irpf_amount' => (float) ($exp->irpf_amount ?? 0),
                     'origin' => __('books.origin_expense'),
                     'origin_key' => 'expense',
                     'vat_breakdown' => $vatBreakdown,
@@ -483,9 +632,16 @@ class RegisterBookController extends Controller
             ->values()
             ->toArray();
 
+        // Re-assign reception numbers after merge+sort
+        foreach ($data as $i => &$row) {
+            $row['reception_number'] = $i + 1;
+        }
+        unset($row);
+
         $totals = [
             'tax_base' => round(array_sum(array_column($data, 'tax_base')), 2),
             'total_vat' => round(array_sum(array_column($data, 'total_vat')), 2),
+            'total_surcharge' => round(array_sum(array_column($data, 'total_surcharge')), 2),
             'total' => round(array_sum(array_column($data, 'total')), 2),
         ];
 
@@ -512,5 +668,49 @@ class RegisterBookController extends Controller
             : Carbon::now()->endOfDay();
 
         return [$dateFrom, $dateTo];
+    }
+
+    private function aeatPeriod(string $dateYmd): string
+    {
+        $month = (int) substr($dateYmd, 5, 2);
+
+        return match (true) {
+            $month <= 3 => '1T',
+            $month <= 6 => '2T',
+            $month <= 9 => '3T',
+            default => '4T',
+        };
+    }
+
+    private function aeatDate(string $dateYmd): string
+    {
+        // Y-m-d → dd/mm/yyyy
+        return Carbon::parse($dateYmd)->format('d/m/Y');
+    }
+
+    private function aeatDecimal(float|int $value): string
+    {
+        return number_format((float) $value, 2, ',', '');
+    }
+
+    private function resolveNifType(string $nif): string
+    {
+        $nif = strtoupper(trim($nif));
+
+        if ($nif === '') {
+            return '04';
+        }
+
+        // NIE: starts with X, Y, Z
+        if (preg_match('/^[XYZ]/', $nif)) {
+            return '06';
+        }
+
+        // Spanish NIF/CIF: starts with digit or A-H,J,N,P-S,U,V,W
+        if (preg_match('/^[0-9A-HJNP-SUVW]/', $nif)) {
+            return '02';
+        }
+
+        return '04';
     }
 }

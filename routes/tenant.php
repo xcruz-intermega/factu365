@@ -136,9 +136,11 @@ Route::prefix('/{tenant}')->middleware([
             Route::get('/books/expedidas', [RegisterBookController::class, 'libroExpedidas'])->name('books.expedidas');
             Route::get('/books/expedidas/pdf', [RegisterBookController::class, 'exportLibroExpedidasPdf'])->name('books.expedidas.pdf');
             Route::get('/books/expedidas/csv', [RegisterBookController::class, 'exportLibroExpedidasCsv'])->name('books.expedidas.csv');
+            Route::get('/books/expedidas/aeat-csv', [RegisterBookController::class, 'libroExpedidasAeatCsv'])->name('books.expedidas.aeat-csv');
             Route::get('/books/recibidas', [RegisterBookController::class, 'libroRecibidas'])->name('books.recibidas');
             Route::get('/books/recibidas/pdf', [RegisterBookController::class, 'exportLibroRecibidasPdf'])->name('books.recibidas.pdf');
             Route::get('/books/recibidas/csv', [RegisterBookController::class, 'exportLibroRecibidasCsv'])->name('books.recibidas.csv');
+            Route::get('/books/recibidas/aeat-csv', [RegisterBookController::class, 'libroRecibidasAeatCsv'])->name('books.recibidas.aeat-csv');
 
             Route::get('/fiscal/modelo-303', [ReportController::class, 'modelo303'])->name('fiscal.modelo-303');
             Route::get('/fiscal/modelo-111', [FiscalDeclarationController::class, 'modelo111'])->name('fiscal.modelo-111');
