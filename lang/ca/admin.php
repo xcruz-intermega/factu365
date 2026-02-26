@@ -84,10 +84,20 @@ return [
     'revenue_this_year' => "Facturació d'enguany",
     'last_document' => 'Últim document',
 
-    // Storage
+    // Storage & Backups
     'disk_usage' => 'Espai en disc',
     'last_backup' => 'Última còpia',
-    'no_backup' => 'Sense còpies',
+    'no_backup' => 'Sense còpies de seguretat',
+    'col_backups' => 'Còpies',
+    'backups_count' => 'Còpies de seguretat',
+    'backups_total_size' => 'Mida total còpies',
+    'backups_list' => 'Còpies de seguretat',
+    'backup_file' => 'Arxiu',
+    'backup_date' => 'Data',
+    'backup_type' => 'Tipus',
+    'backup_size' => 'Mida',
+    'backup_type_full' => 'Completa',
+    'backup_type_tenant' => 'Empresa',
 
     // Roles
     'role_owner' => 'Propietari',

@@ -84,10 +84,20 @@ return [
     'revenue_this_year' => 'Revenue this year',
     'last_document' => 'Last document',
 
-    // Storage
+    // Storage & Backups
     'disk_usage' => 'Disk usage',
     'last_backup' => 'Last backup',
     'no_backup' => 'No backups',
+    'col_backups' => 'Backups',
+    'backups_count' => 'Backups',
+    'backups_total_size' => 'Total backup size',
+    'backups_list' => 'Backups',
+    'backup_file' => 'File',
+    'backup_date' => 'Date',
+    'backup_type' => 'Type',
+    'backup_size' => 'Size',
+    'backup_type_full' => 'Full',
+    'backup_type_tenant' => 'Tenant',
 
     // Roles
     'role_owner' => 'Owner',

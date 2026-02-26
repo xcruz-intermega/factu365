@@ -49,6 +49,16 @@ interface TenantDetail {
     disk_usage: number;
     disk_usage_human: string;
     last_backup_date: string | null;
+    backups_count: number;
+    backups_total_size: number;
+    backups_total_size_human: string;
+    backups: Array<{
+        filename: string;
+        date: string | null;
+        size: number;
+        size_human: string;
+        type: string;
+    }>;
     clients_count: number;
     products_count: number;
     expenses_count: number;
@@ -357,16 +367,55 @@ const toggleSuspend = () => {
                 </dl>
             </div>
 
-            <!-- Section 5: Storage -->
+            <!-- Section 5: Storage & Backups -->
             <div class="rounded-lg bg-white p-6 shadow">
                 <h2 class="mb-4 text-lg font-semibold text-gray-900">{{ $t('admin.section_storage') }}</h2>
                 <dl class="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
                     <dt class="text-gray-500">{{ $t('admin.disk_usage') }}</dt>
                     <dd class="font-semibold text-gray-900">{{ tenant.disk_usage_human }}</dd>
 
+                    <dt class="text-gray-500">{{ $t('admin.backups_count') }}</dt>
+                    <dd class="text-gray-900">{{ tenant.backups_count }}</dd>
+
+                    <dt class="text-gray-500">{{ $t('admin.backups_total_size') }}</dt>
+                    <dd class="text-gray-900">{{ tenant.backups_total_size_human }}</dd>
+
                     <dt class="text-gray-500">{{ $t('admin.last_backup') }}</dt>
                     <dd class="text-gray-900">{{ tenant.last_backup_date ? formatDate(tenant.last_backup_date) : $t('admin.no_backup') }}</dd>
                 </dl>
+
+                <!-- Backups table -->
+                <div v-if="tenant.backups.length > 0" class="mt-4">
+                    <h3 class="mb-2 text-sm font-medium text-gray-700">{{ $t('admin.backups_list') }}</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-3 py-2 text-left text-xs font-medium uppercase text-gray-500">{{ $t('admin.backup_file') }}</th>
+                                    <th class="px-3 py-2 text-left text-xs font-medium uppercase text-gray-500">{{ $t('admin.backup_date') }}</th>
+                                    <th class="px-3 py-2 text-left text-xs font-medium uppercase text-gray-500">{{ $t('admin.backup_type') }}</th>
+                                    <th class="px-3 py-2 text-right text-xs font-medium uppercase text-gray-500">{{ $t('admin.backup_size') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <tr v-for="backup in tenant.backups" :key="backup.filename">
+                                    <td class="whitespace-nowrap px-3 py-2 text-xs font-mono text-gray-700">{{ backup.filename }}</td>
+                                    <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">{{ formatDate(backup.date) }}</td>
+                                    <td class="whitespace-nowrap px-3 py-2 text-sm">
+                                        <span
+                                            class="inline-flex rounded-full px-2 py-0.5 text-xs font-semibold"
+                                            :class="backup.type === 'full' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'"
+                                        >
+                                            {{ backup.type === 'full' ? $t('admin.backup_type_full') : $t('admin.backup_type_tenant') }}
+                                        </span>
+                                    </td>
+                                    <td class="whitespace-nowrap px-3 py-2 text-right text-sm text-gray-500">{{ backup.size_human }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <p v-else class="mt-3 text-sm text-gray-400">{{ $t('admin.no_backup') }}</p>
             </div>
         </div>
 

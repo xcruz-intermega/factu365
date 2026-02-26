@@ -84,10 +84,20 @@ return [
     'revenue_this_year' => 'Facturación este año',
     'last_document' => 'Último documento',
 
-    // Storage
+    // Storage & Backups
     'disk_usage' => 'Espacio en disco',
     'last_backup' => 'Última copia',
-    'no_backup' => 'Sin copias',
+    'no_backup' => 'Sin copias de seguridad',
+    'col_backups' => 'Copias',
+    'backups_count' => 'Copias de seguridad',
+    'backups_total_size' => 'Tamaño total copias',
+    'backups_list' => 'Copias de seguridad',
+    'backup_file' => 'Archivo',
+    'backup_date' => 'Fecha',
+    'backup_type' => 'Tipo',
+    'backup_size' => 'Tamaño',
+    'backup_type_full' => 'Completa',
+    'backup_type_tenant' => 'Empresa',
 
     // Roles
     'role_owner' => 'Propietario',

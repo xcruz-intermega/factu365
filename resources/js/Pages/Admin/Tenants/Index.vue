@@ -32,6 +32,9 @@ interface TenantSummary {
     disk_usage: number;
     disk_usage_human: string;
     last_backup_date: string | null;
+    backups_count: number;
+    backups_total_size: number;
+    backups_total_size_human: string;
 }
 
 const props = defineProps<{
@@ -152,6 +155,7 @@ const formatDate = (dateStr: string | null): string => {
                             <th class="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-gray-500">{{ $t('admin.col_users') }}</th>
                             <th class="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-gray-500">{{ $t('admin.col_invoices') }}</th>
                             <th class="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">{{ $t('admin.col_disk') }}</th>
+                            <th class="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-gray-500">{{ $t('admin.col_backups') }}</th>
                             <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">{{ $t('admin.col_created') }}</th>
                             <th class="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-gray-500">{{ $t('admin.col_status') }}</th>
                             <th class="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">{{ $t('common.actions') }}</th>
@@ -188,6 +192,13 @@ const formatDate = (dateStr: string | null): string => {
                             </td>
                             <td class="whitespace-nowrap px-4 py-3 text-right text-sm text-gray-500">
                                 {{ tenant.disk_usage_human }}
+                            </td>
+                            <td class="whitespace-nowrap px-4 py-3 text-center text-sm">
+                                <span v-if="tenant.backups_count > 0" class="text-gray-700">
+                                    {{ tenant.backups_count }}
+                                    <span class="text-xs text-gray-400">({{ tenant.backups_total_size_human }})</span>
+                                </span>
+                                <span v-else class="text-gray-400">-</span>
                             </td>
                             <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-500">
                                 {{ formatDate(tenant.created_at) }}
@@ -249,7 +260,7 @@ const formatDate = (dateStr: string | null): string => {
                             </td>
                         </tr>
                         <tr v-if="filteredTenants.length === 0">
-                            <td colspan="10" class="px-4 py-8 text-center text-sm text-gray-500">
+                            <td colspan="11" class="px-4 py-8 text-center text-sm text-gray-500">
                                 {{ $t('common.no_records') }}
                             </td>
                         </tr>

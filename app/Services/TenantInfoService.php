@@ -26,6 +26,9 @@ class TenantInfoService
             'disk_usage' => 0,
             'disk_usage_human' => '0 B',
             'last_backup_date' => null,
+            'backups_count' => 0,
+            'backups_total_size' => 0,
+            'backups_total_size_human' => '0 B',
         ];
 
         try {
@@ -71,8 +74,12 @@ class TenantInfoService
             $data['disk_usage_human'] = $this->humanFileSize($size);
         }
 
-        // Last backup
-        $data['last_backup_date'] = $this->getLastBackupDate($tenant->id);
+        // Backups
+        $backupInfo = $this->getBackupInfo($tenant->id);
+        $data['last_backup_date'] = $backupInfo['last_date'];
+        $data['backups_count'] = $backupInfo['count'];
+        $data['backups_total_size'] = $backupInfo['total_size'];
+        $data['backups_total_size_human'] = $this->humanFileSize($backupInfo['total_size']);
 
         return $data;
     }
@@ -89,6 +96,7 @@ class TenantInfoService
         $data['users'] = [];
         $data['last_document_date'] = null;
         $data['company_full'] = null;
+        $data['backups'] = $this->getBackupInfo($tenant->id)['list'];
 
         try {
             $tenant->run(function () use (&$data) {
@@ -192,15 +200,20 @@ class TenantInfoService
         return round($bytes / pow(1024, $i), 1).' '.$units[$i];
     }
 
-    private function getLastBackupDate(string $tenantId): ?string
+    private function getBackupInfo(string $tenantId): array
     {
+        $result = [
+            'count' => 0,
+            'total_size' => 0,
+            'last_date' => null,
+            'list' => [],
+        ];
+
         $backupDir = base_path('storage/app/backups');
 
         if (! File::isDirectory($backupDir)) {
-            return null;
+            return $result;
         }
-
-        $latest = null;
 
         foreach (File::files($backupDir) as $file) {
             if ($file->getExtension() !== 'gz') {
@@ -209,17 +222,34 @@ class TenantInfoService
 
             try {
                 $phar = new \PharData($file->getPathname());
-                if (isset($phar['manifest.json'])) {
-                    $manifest = json_decode($phar['manifest.json']->getContent(), true);
-                    $tenants = $manifest['tenants'] ?? [];
+                if (! isset($phar['manifest.json'])) {
+                    continue;
+                }
 
-                    foreach ($tenants as $t) {
-                        if (($t['id'] ?? '') === $tenantId) {
-                            $date = $manifest['created_at'] ?? null;
-                            if ($date && (! $latest || $date > $latest)) {
-                                $latest = $date;
-                            }
+                $manifest = json_decode($phar['manifest.json']->getContent(), true);
+                $tenants = $manifest['tenants'] ?? [];
+
+                foreach ($tenants as $t) {
+                    if (($t['id'] ?? '') === $tenantId) {
+                        $date = $manifest['created_at'] ?? null;
+                        $fileSize = $file->getSize();
+
+                        $result['count']++;
+                        $result['total_size'] += $fileSize;
+
+                        if ($date && (! $result['last_date'] || $date > $result['last_date'])) {
+                            $result['last_date'] = $date;
                         }
+
+                        $result['list'][] = [
+                            'filename' => $file->getFilename(),
+                            'date' => $date,
+                            'size' => $fileSize,
+                            'size_human' => $this->humanFileSize($fileSize),
+                            'type' => $manifest['type'] ?? 'unknown',
+                        ];
+
+                        break;
                     }
                 }
             } catch (\Exception) {
@@ -227,6 +257,9 @@ class TenantInfoService
             }
         }
 
-        return $latest;
+        // Sort list by date descending
+        usort($result['list'], fn ($a, $b) => strcmp($b['date'] ?? '', $a['date'] ?? ''));
+
+        return $result;
     }
 }
