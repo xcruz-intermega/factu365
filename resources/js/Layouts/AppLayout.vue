@@ -201,7 +201,7 @@ function itemHref(item: NavItem): string {
                             <div v-else-if="section.title && collapsed" class="mt-2 mb-1 border-t border-gray-200"></div>
 
                             <!-- Section items -->
-                            <ul v-show="!section.title || !collapsedSections.has(sIdx)" class="flex flex-col gap-y-0.5">
+                            <ul v-show="!section.title || collapsed || !collapsedSections.has(sIdx)" class="flex flex-col gap-y-0.5">
                                 <li v-for="item in section.items" :key="item.name + (item.routeParams?.type || '') + (item.queryParams?.type || '')">
                                     <Link
                                         :href="itemHref(item)"
