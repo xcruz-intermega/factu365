@@ -2,7 +2,7 @@
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import SettingsNav from './Partials/SettingsNav.vue';
+import BillingNav from './Partials/BillingNav.vue';
 import Badge from '@/Components/Badge.vue';
 import Modal from '@/Components/Modal.vue';
 
@@ -93,7 +93,7 @@ const exportTemplate = (tpl: Template) => {
             </div>
         </template>
 
-        <SettingsNav current="pdf-templates" />
+        <BillingNav current="pdf-templates" />
 
         <!-- Templates grid -->
         <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">

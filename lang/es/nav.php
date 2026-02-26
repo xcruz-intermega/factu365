@@ -22,7 +22,9 @@ return [
     'suppliers' => 'Proveedores',
     'products' => 'Productos',
     'product_families' => 'Familias',
-    'settings' => 'Configuración',
+    'billing' => 'Facturación',
+    'series' => 'Series',
+    'company_settings' => 'Empresa',
     'expense_categories' => 'Categorías',
     'company' => 'Empresa',
 ];

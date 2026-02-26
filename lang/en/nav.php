@@ -22,7 +22,9 @@ return [
     'suppliers' => 'Suppliers',
     'products' => 'Products',
     'product_families' => 'Families',
-    'settings' => 'Settings',
+    'billing' => 'Billing',
+    'series' => 'Series',
+    'company_settings' => 'Company',
     'expense_categories' => 'Categories',
     'company' => 'Company',
 ];

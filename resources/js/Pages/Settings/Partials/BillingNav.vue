@@ -14,11 +14,9 @@ interface Tab {
 }
 
 const tabs = computed<Tab[]>(() => [
-    { key: 'company', label: trans('settings.tab_company'), route: 'settings.company' },
-    { key: 'certificates', label: trans('settings.tab_certificates'), route: 'settings.certificates' },
-    { key: 'users', label: trans('settings.tab_users'), route: 'settings.users' },
-    { key: 'backups', label: trans('settings.tab_backups'), route: 'settings.backups' },
-    { key: 'audit-logs', label: trans('settings.tab_audit_logs'), route: 'settings.audit-logs' },
+    { key: 'series', label: trans('settings.tab_series'), route: 'settings.series' },
+    { key: 'payment-templates', label: trans('settings.tab_payment_templates'), route: 'settings.payment-templates' },
+    { key: 'pdf-templates', label: trans('settings.tab_pdf_templates'), route: 'settings.pdf-templates' },
 ]);
 </script>
 

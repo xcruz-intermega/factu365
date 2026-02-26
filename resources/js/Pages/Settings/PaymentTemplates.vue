@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import { Head, router, useForm } from '@inertiajs/vue3';
 import { trans } from 'laravel-vue-i18n';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import SettingsNav from './Partials/SettingsNav.vue';
+import BillingNav from './Partials/BillingNav.vue';
 import ConfirmDialog from '@/Components/ConfirmDialog.vue';
 
 interface TemplateLine {
@@ -115,7 +115,7 @@ const totalPercentage = (lines: TemplateLine[]) => {
             <h1 class="text-lg font-semibold text-gray-900">{{ $t('settings.templates_title') }}</h1>
         </template>
 
-        <SettingsNav current="payment-templates" />
+        <BillingNav current="payment-templates" />
 
         <div class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
             <div class="mb-4 flex items-center justify-between">
