@@ -4,14 +4,20 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
+use App\Models\BankAccount;
 use App\Models\Client;
 use App\Models\CompanyProfile;
 use App\Models\Document;
+use App\Models\DocumentDueDate;
 use App\Models\DocumentLine;
 use App\Models\DocumentSeries;
 use App\Models\Expense;
 use App\Models\ExpenseCategory;
+use App\Models\PaymentTemplate;
+use App\Models\PaymentTemplateLine;
 use App\Models\Product;
+use App\Models\StockMovement;
+use App\Models\TreasuryEntry;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 
@@ -170,10 +176,12 @@ class DemoDataSeeder extends Seeder
     public function run(): void
     {
         $this->seedCompanyProfile();
+        $this->seedPaymentTemplates();
+        $bankAccount = $this->seedBankAccounts();
         $customers = $this->seedClients();
         $products = $this->seedProducts();
-        $this->seedDocuments($customers, $products);
-        $this->seedExpenses();
+        $this->seedDocuments($customers, $products, $bankAccount);
+        $this->seedExpenses($bankAccount);
 
         $this->command?->info('Demo data seeded successfully!');
     }
@@ -197,6 +205,96 @@ class DemoDataSeeder extends Seeder
         ]);
 
         $this->command?->info('Company profile created.');
+    }
+
+    private function seedPaymentTemplates(): void
+    {
+        // Skip if templates already exist (e.g. from TenantSeeder)
+        if (PaymentTemplate::count() > 0) {
+            $this->command?->info('Payment templates already exist, skipping.');
+            return;
+        }
+
+        // 1. Contado (immediate, default)
+        $contado = PaymentTemplate::create(['name' => 'Contado', 'is_default' => true]);
+        PaymentTemplateLine::create([
+            'payment_template_id' => $contado->id,
+            'days_from_issue' => 0,
+            'percentage' => 100.00,
+            'sort_order' => 1,
+        ]);
+
+        // 2. 30 días
+        $t30 = PaymentTemplate::create(['name' => '30 días', 'is_default' => false]);
+        PaymentTemplateLine::create([
+            'payment_template_id' => $t30->id,
+            'days_from_issue' => 30,
+            'percentage' => 100.00,
+            'sort_order' => 1,
+        ]);
+
+        // 3. 30/60 días (50% each)
+        $t3060 = PaymentTemplate::create(['name' => '30/60 días', 'is_default' => false]);
+        PaymentTemplateLine::create([
+            'payment_template_id' => $t3060->id,
+            'days_from_issue' => 30,
+            'percentage' => 50.00,
+            'sort_order' => 1,
+        ]);
+        PaymentTemplateLine::create([
+            'payment_template_id' => $t3060->id,
+            'days_from_issue' => 60,
+            'percentage' => 50.00,
+            'sort_order' => 2,
+        ]);
+
+        // 4. 30/60/90 días (thirds)
+        $t306090 = PaymentTemplate::create(['name' => '30/60/90 días', 'is_default' => false]);
+        PaymentTemplateLine::create([
+            'payment_template_id' => $t306090->id,
+            'days_from_issue' => 30,
+            'percentage' => 33.34,
+            'sort_order' => 1,
+        ]);
+        PaymentTemplateLine::create([
+            'payment_template_id' => $t306090->id,
+            'days_from_issue' => 60,
+            'percentage' => 33.33,
+            'sort_order' => 2,
+        ]);
+        PaymentTemplateLine::create([
+            'payment_template_id' => $t306090->id,
+            'days_from_issue' => 90,
+            'percentage' => 33.33,
+            'sort_order' => 3,
+        ]);
+
+        $this->command?->info('4 payment templates created.');
+    }
+
+    private function seedBankAccounts(): ?BankAccount
+    {
+        $main = BankAccount::create([
+            'name' => 'Cuenta corriente CaixaBank',
+            'iban' => 'ES78 2100 5678 01 0123456789',
+            'initial_balance' => 15000.00,
+            'opening_date' => Carbon::now()->subMonths(14)->startOfMonth()->format('Y-m-d'),
+            'is_default' => true,
+            'is_active' => true,
+        ]);
+
+        BankAccount::create([
+            'name' => 'Cuenta operativa BBVA',
+            'iban' => 'ES91 0182 3456 71 0987654321',
+            'initial_balance' => 5000.00,
+            'opening_date' => Carbon::now()->subMonths(8)->startOfMonth()->format('Y-m-d'),
+            'is_default' => false,
+            'is_active' => true,
+        ]);
+
+        $this->command?->info('2 bank accounts created.');
+
+        return $main;
     }
 
     private function seedClients(): array
@@ -253,8 +351,13 @@ class DemoDataSeeder extends Seeder
     private function seedProducts(): array
     {
         $products = [];
-        foreach ($this->productNames as $p) {
-            $products[] = Product::create([
+        foreach ($this->productNames as $i => $p) {
+            $isPhysical = $p['type'] === 'product';
+            $trackStock = $isPhysical && ($i % 5 !== 0); // ~80% of physical products track stock
+            $stockQty = $trackStock ? rand(10, 200) : 0;
+            $minStock = $trackStock ? rand(5, 20) : 0;
+
+            $product = Product::create([
                 'type' => $p['type'],
                 'reference' => $p['ref'],
                 'name' => $p['name'],
@@ -262,15 +365,32 @@ class DemoDataSeeder extends Seeder
                 'vat_rate' => $p['vat'],
                 'irpf_applicable' => $p['type'] === 'service' && rand(0, 3) === 0,
                 'unit' => $p['unit'] ?? ($p['type'] === 'service' ? 'unit' : 'unit'),
+                'track_stock' => $trackStock,
+                'stock_quantity' => $stockQty,
+                'minimum_stock' => $minStock,
             ]);
+
+            if ($trackStock) {
+                StockMovement::create([
+                    'product_id' => $product->id,
+                    'type' => 'initial',
+                    'quantity' => $stockQty,
+                    'stock_before' => 0,
+                    'stock_after' => $stockQty,
+                    'notes' => 'Stock inicial demo',
+                ]);
+            }
+
+            $products[] = $product;
         }
 
-        $this->command?->info(count($products) . ' products created.');
+        $trackCount = collect($products)->where('track_stock', true)->count();
+        $this->command?->info(count($products) . " products created ({$trackCount} with stock tracking).");
 
         return $products;
     }
 
-    private function seedDocuments(array $clients, array $products): void
+    private function seedDocuments(array $clients, array $products, ?BankAccount $bankAccount): void
     {
         $customers = array_filter($clients, fn ($c) => $c->type === 'customer');
         $suppliers = array_filter($clients, fn ($c) => $c->type === 'supplier');
@@ -287,7 +407,7 @@ class DemoDataSeeder extends Seeder
             $status = $this->weightedRandom(['finalized' => 15, 'sent' => 25, 'paid' => 40, 'partial' => 5, 'overdue' => 10, 'draft' => 5]);
             $dueDate = (clone $issueDate)->addDays($customer->payment_terms_days);
 
-            $doc = $this->createDocumentWithLines(
+            $this->createDocumentWithLines(
                 type: 'invoice',
                 direction: 'issued',
                 series: $series['invoice'] ?? null,
@@ -299,6 +419,7 @@ class DemoDataSeeder extends Seeder
                 invoiceType: 'F1',
                 lineCount: rand(1, 6),
                 number: $i + 1,
+                bankAccount: $bankAccount,
             );
             $invoiceCount++;
         }
@@ -367,6 +488,7 @@ class DemoDataSeeder extends Seeder
                 status: $status,
                 lineCount: rand(1, 5),
                 number: $i + 1,
+                bankAccount: $bankAccount,
             );
             $purchaseCount++;
         }
@@ -385,6 +507,7 @@ class DemoDataSeeder extends Seeder
         int $lineCount,
         int $number,
         ?string $invoiceType = null,
+        ?BankAccount $bankAccount = null,
     ): Document {
         $prefix = $series?->prefix ?? strtoupper(substr($type, 0, 4)) . '-2026-';
         $formattedNumber = $prefix . str_pad((string) $number, 5, '0', STR_PAD_LEFT);
@@ -450,9 +573,6 @@ class DemoDataSeeder extends Seeder
             $totalIrpf += $irpfAmt;
         }
 
-        $taxBase = round($subtotal - ($subtotal - array_sum(
-            DocumentLine::where('document_id', $doc->id)->pluck('line_total')->toArray()
-        )), 2);
         $taxBase = round(array_sum(
             DocumentLine::where('document_id', $doc->id)->pluck('line_total')->toArray()
         ), 2);
@@ -471,10 +591,122 @@ class DemoDataSeeder extends Seeder
             $series->update(['next_number' => max($series->next_number, $number + 1)]);
         }
 
+        // Create DocumentDueDates + TreasuryEntries for invoices (not quotes/delivery_notes)
+        if ($status !== 'draft' && in_array($type, ['invoice', 'purchase_invoice'])) {
+            $this->createDueDatesAndTreasury($doc, $dueDate ?? $issueDate->copy()->addDays(30), $total, $status, $direction, $formattedNumber, $bankAccount);
+        }
+
         return $doc;
     }
 
-    private function seedExpenses(): void
+    private function createDueDatesAndTreasury(
+        Document $doc,
+        Carbon $dueDate,
+        float $total,
+        string $status,
+        string $direction,
+        string $formattedNumber,
+        ?BankAccount $bankAccount,
+    ): void {
+        $isPaid = $status === 'paid';
+        $isPartial = $status === 'partial';
+        $isOverdue = $status === 'overdue';
+
+        // Most invoices get a single due date; ~20% get 2 due dates (split payment)
+        $splitPayment = rand(1, 5) === 1 && abs($total) > 100;
+
+        if ($splitPayment) {
+            $amount1 = round($total / 2, 2);
+            $amount2 = round($total - $amount1, 2);
+            $dueDate2 = $dueDate->copy()->addDays(30);
+
+            // First due date
+            $dd1PaymentStatus = ($isPaid || $isPartial) ? 'paid' : 'pending';
+            $dd1PaymentDate = $dd1PaymentStatus === 'paid'
+                ? $dueDate->copy()->subDays(rand(0, 5))->format('Y-m-d')
+                : null;
+
+            $dd1 = DocumentDueDate::create([
+                'document_id' => $doc->id,
+                'due_date' => $dueDate->format('Y-m-d'),
+                'amount' => $amount1,
+                'percentage' => 50.00,
+                'payment_status' => $dd1PaymentStatus,
+                'payment_date' => $dd1PaymentDate,
+                'sort_order' => 1,
+            ]);
+
+            // Second due date
+            $dd2PaymentStatus = $isPaid ? 'paid' : 'pending';
+            $dd2PaymentDate = $dd2PaymentStatus === 'paid'
+                ? $dueDate2->copy()->subDays(rand(0, 5))->format('Y-m-d')
+                : null;
+
+            $dd2 = DocumentDueDate::create([
+                'document_id' => $doc->id,
+                'due_date' => $dueDate2->format('Y-m-d'),
+                'amount' => $amount2,
+                'percentage' => 50.00,
+                'payment_status' => $dd2PaymentStatus,
+                'payment_date' => $dd2PaymentDate,
+                'sort_order' => 2,
+            ]);
+
+            // Treasury entries for paid due dates
+            if ($bankAccount) {
+                if ($dd1PaymentStatus === 'paid') {
+                    $this->createTreasuryEntryForDueDate($dd1, $amount1, $direction, $formattedNumber, $bankAccount);
+                }
+                if ($dd2PaymentStatus === 'paid') {
+                    $this->createTreasuryEntryForDueDate($dd2, $amount2, $direction, $formattedNumber, $bankAccount);
+                }
+            }
+        } else {
+            // Single due date
+            $paymentStatus = $isPaid ? 'paid' : 'pending';
+            $paymentDate = $isPaid
+                ? $dueDate->copy()->subDays(rand(0, 10))->format('Y-m-d')
+                : null;
+
+            $dd = DocumentDueDate::create([
+                'document_id' => $doc->id,
+                'due_date' => $dueDate->format('Y-m-d'),
+                'amount' => $total,
+                'percentage' => 100.00,
+                'payment_status' => $paymentStatus,
+                'payment_date' => $paymentDate,
+                'sort_order' => 1,
+            ]);
+
+            // Treasury entry for paid due date
+            if ($bankAccount && $paymentStatus === 'paid') {
+                $this->createTreasuryEntryForDueDate($dd, $total, $direction, $formattedNumber, $bankAccount);
+            }
+        }
+    }
+
+    private function createTreasuryEntryForDueDate(
+        DocumentDueDate $dueDate,
+        float $amount,
+        string $direction,
+        string $formattedNumber,
+        BankAccount $bankAccount,
+    ): void {
+        $isCollection = $direction === 'issued';
+
+        TreasuryEntry::create([
+            'bank_account_id' => $bankAccount->id,
+            'entry_date' => $dueDate->payment_date,
+            'concept' => $isCollection
+                ? "Cobro factura {$formattedNumber}"
+                : "Pago factura compra {$formattedNumber}",
+            'amount' => $isCollection ? abs($amount) : -abs($amount),
+            'entry_type' => $isCollection ? TreasuryEntry::TYPE_COLLECTION : TreasuryEntry::TYPE_PAYMENT,
+            'document_due_date_id' => $dueDate->id,
+        ]);
+    }
+
+    private function seedExpenses(?BankAccount $bankAccount): void
     {
         // Ensure expense categories exist (tenant may have been created before the seeder added them)
         if (ExpenseCategory::count() === 0) {
@@ -533,8 +765,9 @@ class DemoDataSeeder extends Seeder
             $irpfAmount = round($subtotal * $irpfRate / 100, 2);
             $total = round($subtotal + $vatAmount - $irpfAmount, 2);
             $isPaid = rand(0, 100) < 65;
+            $paymentDate = $isPaid ? (clone $expenseDate)->addDays(rand(0, 30)) : null;
 
-            Expense::create([
+            $expense = Expense::create([
                 'category_id' => $category->id,
                 'supplier_client_id' => $supplier?->id,
                 'supplier_name' => !$supplier ? 'Proveedor ' . rand(1, 50) : null,
@@ -549,9 +782,21 @@ class DemoDataSeeder extends Seeder
                 'irpf_amount' => $irpfAmount,
                 'total' => $total,
                 'payment_status' => $isPaid ? 'paid' : 'pending',
-                'payment_date' => $isPaid ? (clone $expenseDate)->addDays(rand(0, 30))->format('Y-m-d') : null,
+                'payment_date' => $paymentDate?->format('Y-m-d'),
                 'payment_method' => $isPaid ? ['transfer', 'card', 'cash'][array_rand(['transfer', 'card', 'cash'])] : null,
             ]);
+
+            // Treasury entry for paid expenses
+            if ($isPaid && $bankAccount) {
+                TreasuryEntry::create([
+                    'bank_account_id' => $bankAccount->id,
+                    'entry_date' => $paymentDate->format('Y-m-d'),
+                    'concept' => "Pago gasto - {$expense->concept}",
+                    'amount' => -abs($total),
+                    'entry_type' => TreasuryEntry::TYPE_PAYMENT,
+                    'expense_id' => $expense->id,
+                ]);
+            }
         }
 
         $this->command?->info('100 expenses created.');
