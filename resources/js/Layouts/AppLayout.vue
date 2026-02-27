@@ -6,6 +6,10 @@ import FlashMessage from '@/Components/FlashMessage.vue';
 import GlobalSearch from '@/Components/GlobalSearch.vue';
 import LanguageSwitcher from '@/Components/LanguageSwitcher.vue';
 
+defineProps<{
+    fullWidth?: boolean;
+}>();
+
 const sidebarOpen = ref(false);
 const collapsed = ref(false);
 const collapsedSections = ref(new Set<number>());
@@ -339,7 +343,7 @@ function itemHref(item: NavItem): string {
 
             <!-- Page Content -->
             <main class="py-6">
-                <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div :class="fullWidth ? 'px-4 sm:px-6 lg:px-8' : 'mx-auto max-w-7xl px-4 sm:px-6 lg:px-8'">
                     <slot />
                 </div>
             </main>

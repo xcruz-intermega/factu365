@@ -69,7 +69,7 @@ const toggleExpand = (idx: number) => {
 <template>
     <Head :title="$t('books.libro_recibidas')" />
 
-    <AppLayout>
+    <AppLayout :full-width="true">
         <template #header>
             <h1 class="text-lg font-semibold text-gray-900">{{ $t('books.libro_recibidas') }}</h1>
         </template>
@@ -90,35 +90,35 @@ const toggleExpand = (idx: number) => {
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-3 py-3 text-left text-xs font-medium uppercase text-gray-500">{{ $t('books.col_reception_number') }}</th>
-                        <th class="px-3 py-3 text-left text-xs font-medium uppercase text-gray-500">{{ $t('books.col_invoice_number') }}</th>
-                        <th class="px-3 py-3 text-left text-xs font-medium uppercase text-gray-500">{{ $t('books.col_date') }}</th>
-                        <th class="px-3 py-3 text-left text-xs font-medium uppercase text-gray-500">{{ $t('books.col_operation_date') }}</th>
-                        <th class="px-3 py-3 text-left text-xs font-medium uppercase text-gray-500">{{ $t('books.col_nif') }}</th>
-                        <th class="px-3 py-3 text-left text-xs font-medium uppercase text-gray-500">{{ $t('books.col_name') }}</th>
-                        <th class="px-3 py-3 text-right text-xs font-medium uppercase text-gray-500">{{ $t('books.col_base') }}</th>
-                        <th class="px-3 py-3 text-right text-xs font-medium uppercase text-gray-500">{{ $t('books.col_vat') }}</th>
-                        <th class="px-3 py-3 text-right text-xs font-medium uppercase text-gray-500">{{ $t('books.col_surcharge') }}</th>
-                        <th class="px-3 py-3 text-right text-xs font-medium uppercase text-gray-500">{{ $t('books.col_irpf') }}</th>
-                        <th class="px-3 py-3 text-right text-xs font-medium uppercase text-gray-500">{{ $t('books.col_total') }}</th>
-                        <th class="px-3 py-3 text-left text-xs font-medium uppercase text-gray-500">{{ $t('books.col_origin') }}</th>
+                        <th class="px-2 py-2 text-left text-xs font-medium uppercase text-gray-500">{{ $t('books.col_reception_number') }}</th>
+                        <th class="px-2 py-2 text-left text-xs font-medium uppercase text-gray-500">{{ $t('books.col_invoice_number') }}</th>
+                        <th class="px-2 py-2 text-left text-xs font-medium uppercase text-gray-500">{{ $t('books.col_date') }}</th>
+                        <th class="px-2 py-2 text-left text-xs font-medium uppercase text-gray-500">{{ $t('books.col_operation_date') }}</th>
+                        <th class="px-2 py-2 text-left text-xs font-medium uppercase text-gray-500">{{ $t('books.col_nif') }}</th>
+                        <th class="px-2 py-2 text-left text-xs font-medium uppercase text-gray-500">{{ $t('books.col_name') }}</th>
+                        <th class="px-2 py-2 text-right text-xs font-medium uppercase text-gray-500">{{ $t('books.col_base') }}</th>
+                        <th class="px-2 py-2 text-right text-xs font-medium uppercase text-gray-500">{{ $t('books.col_vat') }}</th>
+                        <th class="px-2 py-2 text-right text-xs font-medium uppercase text-gray-500">{{ $t('books.col_surcharge') }}</th>
+                        <th class="px-2 py-2 text-right text-xs font-medium uppercase text-gray-500">{{ $t('books.col_irpf') }}</th>
+                        <th class="px-2 py-2 text-right text-xs font-medium uppercase text-gray-500">{{ $t('books.col_total') }}</th>
+                        <th class="px-2 py-2 text-left text-xs font-medium uppercase text-gray-500">{{ $t('books.col_origin') }}</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
                     <template v-for="(row, idx) in data" :key="idx">
                         <tr class="cursor-pointer hover:bg-gray-50" @click="toggleExpand(idx)">
-                            <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">{{ row.reception_number }}</td>
-                            <td class="whitespace-nowrap px-3 py-2 text-sm font-medium text-gray-900">{{ row.invoice_number }}</td>
-                            <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-700">{{ row.date }}</td>
-                            <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">{{ row.operation_date || '' }}</td>
-                            <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">{{ row.supplier_nif }}</td>
-                            <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-700">{{ row.supplier_name }}</td>
+                            <td class="whitespace-nowrap px-2 py-1.5 text-xs text-gray-500">{{ row.reception_number }}</td>
+                            <td class="whitespace-nowrap px-2 py-1.5 text-xs font-medium text-gray-900">{{ row.invoice_number }}</td>
+                            <td class="whitespace-nowrap px-2 py-1.5 text-xs text-gray-700">{{ row.date }}</td>
+                            <td class="whitespace-nowrap px-2 py-1.5 text-xs text-gray-500">{{ row.operation_date || '' }}</td>
+                            <td class="whitespace-nowrap px-2 py-1.5 text-xs text-gray-500">{{ row.supplier_nif }}</td>
+                            <td class="whitespace-nowrap px-2 py-1.5 text-xs text-gray-700">{{ row.supplier_name }}</td>
                             <td class="whitespace-nowrap px-3 py-2 text-right text-sm text-gray-700">{{ formatCurrency(row.tax_base) }}</td>
                             <td class="whitespace-nowrap px-3 py-2 text-right text-sm text-gray-700">{{ formatCurrency(row.total_vat) }}</td>
                             <td class="whitespace-nowrap px-3 py-2 text-right text-sm text-gray-500">{{ formatCurrency(row.total_surcharge) }}</td>
                             <td class="whitespace-nowrap px-3 py-2 text-right text-sm text-gray-500">{{ row.irpf_amount ? formatCurrency(row.irpf_amount) : '' }}</td>
                             <td class="whitespace-nowrap px-3 py-2 text-right text-sm font-semibold text-gray-900">{{ formatCurrency(row.total) }}</td>
-                            <td class="whitespace-nowrap px-3 py-2 text-sm">
+                            <td class="whitespace-nowrap px-2 py-1.5 text-xs">
                                 <span :class="row.origin_key === 'expense' ? 'text-amber-600' : 'text-blue-600'" class="text-xs font-medium">{{ row.origin }}</span>
                             </td>
                         </tr>
@@ -137,17 +137,17 @@ const toggleExpand = (idx: number) => {
                         </tr>
                     </template>
                     <tr v-if="data.length === 0">
-                        <td colspan="12" class="px-4 py-8 text-center text-sm text-gray-400">{{ $t('books.no_data') }}</td>
+                        <td colspan="12" class="px-2 py-8 text-center text-xs text-gray-400">{{ $t('books.no_data') }}</td>
                     </tr>
                 </tbody>
                 <tfoot v-if="data.length > 0" class="bg-gray-50 font-semibold">
                     <tr>
-                        <td class="px-3 py-3 text-sm text-gray-900" colspan="6">{{ $t('books.total_period') }}</td>
-                        <td class="px-3 py-3 text-right text-sm text-gray-900">{{ formatCurrency(totals.tax_base) }}</td>
-                        <td class="px-3 py-3 text-right text-sm text-gray-900">{{ formatCurrency(totals.total_vat) }}</td>
-                        <td class="px-3 py-3 text-right text-sm text-gray-900">{{ formatCurrency(totals.total_surcharge) }}</td>
+                        <td class="px-2 py-2 text-xs text-gray-900" colspan="6">{{ $t('books.total_period') }}</td>
+                        <td class="px-2 py-2 text-right text-xs text-gray-900">{{ formatCurrency(totals.tax_base) }}</td>
+                        <td class="px-2 py-2 text-right text-xs text-gray-900">{{ formatCurrency(totals.total_vat) }}</td>
+                        <td class="px-2 py-2 text-right text-xs text-gray-900">{{ formatCurrency(totals.total_surcharge) }}</td>
                         <td></td>
-                        <td class="px-3 py-3 text-right text-sm text-gray-900">{{ formatCurrency(totals.total) }}</td>
+                        <td class="px-2 py-2 text-right text-xs text-gray-900">{{ formatCurrency(totals.total) }}</td>
                         <td></td>
                     </tr>
                 </tfoot>
