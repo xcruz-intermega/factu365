@@ -149,7 +149,7 @@ const sendingEmail = ref(false);
 const openEmailDialog = () => {
     emailForm.email = doc.client?.email || '';
     emailForm.subject = `${props.documentTypeLabel} ${doc.number}`;
-    emailForm.message = `Estimado cliente,\n\nAdjunto encontrará el documento ${props.documentTypeLabel} ${doc.number}.\n\nUn saludo.`;
+    emailForm.message = trans('documents.email_default_message', { type: props.documentTypeLabel, number: doc.number });
     emailForm.attachments = 'pdf';
     emailDialog.value = true;
 };

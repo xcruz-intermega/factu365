@@ -63,6 +63,7 @@ return [
     'email_to_placeholder' => 'email@ejemplo.com',
     'email_subject' => 'Asunto',
     'email_message' => 'Mensaje',
+    'email_default_message' => "Estimado cliente,\n\nAdjunto encontrará el documento :type :number.\n\nUn saludo.",
     'email_attachments' => 'Adjuntos',
     'email_attach_pdf' => 'PDF',
     'email_attach_facturae' => 'FacturaE (XML)',

@@ -63,6 +63,7 @@ return [
     'email_to_placeholder' => 'email@example.com',
     'email_subject' => 'Subject',
     'email_message' => 'Message',
+    'email_default_message' => "Dear customer,\n\nPlease find attached the document :type :number.\n\nKind regards.",
     'email_attachments' => 'Attachments',
     'email_attach_pdf' => 'PDF',
     'email_attach_facturae' => 'FacturaE (XML)',
