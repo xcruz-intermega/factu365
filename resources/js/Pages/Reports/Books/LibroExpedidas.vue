@@ -87,7 +87,7 @@ const toggleExpand = (id: number) => {
             <ReportToolbar :pdfUrl="pdfUrl()" :csvUrl="csvUrl()" :aeatCsvUrl="aeatCsvUrl()" />
         </div>
 
-        <div class="overflow-hidden rounded-lg bg-white shadow">
+        <div class="overflow-x-auto rounded-lg bg-white shadow">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
