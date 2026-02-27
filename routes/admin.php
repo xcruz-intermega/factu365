@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminAuthController;
+use App\Http\Controllers\Admin\AdminMailController;
 use App\Http\Controllers\Admin\AdminTenantController;
 use Illuminate\Support\Facades\Route;
 
@@ -18,5 +19,10 @@ Route::prefix('admin')->group(function () {
         Route::post('/tenants/{tenant}/unsuspend', [AdminTenantController::class, 'unsuspend'])->name('admin.tenants.unsuspend');
         Route::post('/tenants/{tenant}/reset-password', [AdminTenantController::class, 'resetPassword'])->name('admin.tenants.reset-password');
         Route::delete('/tenants/{tenant}', [AdminTenantController::class, 'destroy'])->name('admin.tenants.destroy');
+
+        // Mail settings
+        Route::get('/settings/mail', [AdminMailController::class, 'show'])->name('admin.settings.mail');
+        Route::put('/settings/mail', [AdminMailController::class, 'update'])->name('admin.settings.mail.update');
+        Route::post('/settings/mail/test', [AdminMailController::class, 'test'])->name('admin.settings.mail.test');
     });
 });

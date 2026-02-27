@@ -29,6 +29,10 @@ class PasswordResetLinkController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        if (!app(\App\Services\MailConfigService::class)->isActive()) {
+            return back()->with('error', trans('common.mail_not_configured'));
+        }
+
         $request->validate([
             'email' => 'required|email',
         ]);

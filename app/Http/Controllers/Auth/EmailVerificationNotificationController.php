@@ -13,6 +13,10 @@ class EmailVerificationNotificationController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        if (!app(\App\Services\MailConfigService::class)->isActive()) {
+            return back()->with('status', trans('common.mail_not_configured'));
+        }
+
         if ($request->user()->hasVerifiedEmail()) {
             return redirect()->intended(route('dashboard', absolute: false));
         }

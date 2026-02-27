@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Models\Document;
 use App\Models\VatRate;
+use App\Services\MailConfigService;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -89,6 +90,13 @@ class HandleInertiaRequests extends Middleware
                 }
             },
             'app_version' => config('app.version'),
+            'mail_active' => function () {
+                try {
+                    return app(MailConfigService::class)->isActive();
+                } catch (\Throwable) {
+                    return false;
+                }
+            },
         ];
     }
 }

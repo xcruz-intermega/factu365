@@ -14,6 +14,7 @@ use App\Models\PdfTemplate;
 use App\Models\Product;
 use App\Exceptions\InsufficientStockException;
 use App\Services\EInvoice\FacturaEBuilderService;
+use App\Services\MailConfigService;
 use App\Services\NumberingService;
 use App\Services\PdfGeneratorService;
 use App\Services\StockService;
@@ -21,6 +22,7 @@ use App\Services\TaxCalculatorService;
 use App\Services\TreasuryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 
@@ -617,6 +619,10 @@ class DocumentController extends Controller
         $this->validateDocumentType($type);
         $this->ensureDocumentMatchesType($document, $type);
 
+        if (!app(MailConfigService::class)->isActive()) {
+            return back()->with('error', trans('common.mail_not_configured'));
+        }
+
         if ($document->isDraft()) {
             return back()->with('error', __('documents.error_draft_email'));
         }
@@ -638,11 +644,16 @@ class DocumentController extends Controller
         $emailSubject = $validated['subject'] ?? "{$typeLabel} {$document->number}";
         $emailBody = $validated['message'] ?? __('documents.flash_email_body', ['type' => $typeLabel, 'number' => $document->number]);
 
-        Mail::raw($emailBody, function ($mail) use ($validated, $emailSubject, $pdfContent, $filename) {
-            $mail->to($validated['email'])
-                ->subject($emailSubject)
-                ->attachData($pdfContent, $filename, ['mime' => 'application/pdf']);
-        });
+        try {
+            Mail::raw($emailBody, function ($mail) use ($validated, $emailSubject, $pdfContent, $filename) {
+                $mail->to($validated['email'])
+                    ->subject($emailSubject)
+                    ->attachData($pdfContent, $filename, ['mime' => 'application/pdf']);
+            });
+        } catch (\Exception $e) {
+            Log::error('Email send failed', ['error' => $e->getMessage(), 'to' => $validated['email']]);
+            return back()->with('error', trans('documents.error_email_failed'));
+        }
 
         // Update status to sent if finalized
         if ($document->status === Document::STATUS_FINALIZED) {

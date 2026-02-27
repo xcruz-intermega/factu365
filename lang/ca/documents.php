@@ -232,4 +232,5 @@ return [
     'export_no_results' => 'No hi ha documents que coincideixin amb els filtres',
     'export_error_empty' => 'No hi ha documents per exportar',
     'export_error_limit' => 'Màxim 500 documents per exportació',
+    'error_email_failed' => 'No s\'ha pogut enviar el correu. Torneu-ho a provar més tard.',
 ];

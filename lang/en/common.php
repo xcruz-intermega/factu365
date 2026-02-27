@@ -123,4 +123,5 @@ return [
     'always' => 'Always',
     'collapse' => 'Collapse',
     'logout' => 'Log out',
+    'mail_not_configured' => 'Email service is not configured. Contact the administrator.',
 ];

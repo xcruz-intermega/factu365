@@ -123,4 +123,5 @@ return [
     'always' => 'Sempre',
     'collapse' => 'Replegar',
     'logout' => 'Tancar sessió',
+    'mail_not_configured' => 'El servei de correu no està configurat. Contacteu amb l\'administrador.',
 ];

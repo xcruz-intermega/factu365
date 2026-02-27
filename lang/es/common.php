@@ -123,4 +123,5 @@ return [
     'always' => 'Siempre',
     'collapse' => 'Colapsar',
     'logout' => 'Cerrar sesión',
+    'mail_not_configured' => 'El servicio de email no está configurado. Contacte con el administrador.',
 ];

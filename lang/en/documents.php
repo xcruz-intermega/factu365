@@ -232,4 +232,5 @@ return [
     'export_no_results' => 'No documents match the filters',
     'export_error_empty' => 'No documents to export',
     'export_error_limit' => 'Maximum 500 documents per export',
+    'error_email_failed' => 'Could not send the email. Please try again later.',
 ];

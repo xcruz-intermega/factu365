@@ -19,13 +19,16 @@ const logout = () => {
         <nav class="bg-gray-900 shadow">
             <div class="mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex h-16 items-center justify-between">
-                    <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-4">
                         <a href="/admin/dashboard" class="font-brand text-xl font-extrabold text-white">
                             Factu365
                         </a>
                         <span class="rounded bg-red-600 px-2 py-0.5 text-xs font-bold uppercase text-white">
                             Admin
                         </span>
+                        <a href="/admin/settings/mail" class="text-sm text-gray-300 hover:text-white">
+                            {{ $t('admin.mail_settings_title') }}
+                        </a>
                     </div>
 
                     <div class="flex items-center gap-4">
