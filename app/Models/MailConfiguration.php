@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class MailConfiguration extends Model
@@ -41,14 +40,7 @@ class MailConfiguration extends Model
 
     public static function current(): ?static
     {
-        return Cache::remember('mail_config', 3600, function () {
-            return static::first();
-        });
-    }
-
-    public static function clearCache(): void
-    {
-        Cache::forget('mail_config');
+        return once(fn () => static::first());
     }
 
     public function isConfigured(): bool

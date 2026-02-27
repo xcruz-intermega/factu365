@@ -58,8 +58,6 @@ class AdminMailController extends Controller
             $validated,
         );
 
-        $config->clearCache();
-
         // Re-apply config at runtime
         $this->mailConfigService->applyConfig();
 
@@ -93,7 +91,6 @@ class AdminMailController extends Controller
             // Update tested_at on the saved config
             if ($existing) {
                 $existing->update(['tested_at' => now()]);
-                MailConfiguration::clearCache();
             }
 
             return back()->with('success', trans('admin.mail_settings_test_success'));
