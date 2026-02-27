@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import { Link, usePage } from '@inertiajs/vue3';
+import { Link, usePage, router } from '@inertiajs/vue3';
 import { trans } from 'laravel-vue-i18n';
 import FlashMessage from '@/Components/FlashMessage.vue';
 import GlobalSearch from '@/Components/GlobalSearch.vue';
@@ -12,21 +12,39 @@ defineProps<{
 
 const sidebarOpen = ref(false);
 const collapsed = ref(false);
-const collapsedSections = ref(new Set<number>());
+const expandedSection = ref<number | null>(null);
 
 const toggleSection = (idx: number) => {
-    const next = new Set(collapsedSections.value);
-    if (next.has(idx)) {
-        next.delete(idx);
-    } else {
-        next.add(idx);
-    }
-    collapsedSections.value = next;
+    expandedSection.value = expandedSection.value === idx ? null : idx;
+};
+
+const isSectionCollapsed = (sIdx: number) => {
+    // Dashboard section (no title) is always visible
+    const visibleSections = sections.value.filter(s => !s.hidden);
+    if (!visibleSections[sIdx]?.title) return false;
+    return expandedSection.value !== sIdx;
 };
 
 onMounted(() => {
     const stored = localStorage.getItem('sidebar-collapsed');
     if (stored === 'true') collapsed.value = true;
+
+    expandActiveSection();
+});
+
+function expandActiveSection() {
+    const visibleSections = sections.value.filter(s => !s.hidden);
+    for (let i = 0; i < visibleSections.length; i++) {
+        if (visibleSections[i].title && visibleSections[i].items.some(item => isActive(item))) {
+            expandedSection.value = i;
+            return;
+        }
+    }
+}
+
+// Auto-expand the correct section on navigation
+router.on('navigate', () => {
+    expandActiveSection();
 });
 
 const toggleCollapsed = () => {
@@ -214,7 +232,7 @@ function itemHref(item: NavItem): string {
                             >
                                 <svg
                                     class="h-3.5 w-3.5 shrink-0 transition-transform duration-200"
-                                    :class="collapsedSections.has(sIdx) ? '-rotate-90' : ''"
+                                    :class="isSectionCollapsed(sIdx) ? '-rotate-90' : ''"
                                     fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
                                 >
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
@@ -224,7 +242,7 @@ function itemHref(item: NavItem): string {
                             <div v-else-if="section.title && collapsed" class="mt-2 mb-1 border-t border-gray-200"></div>
 
                             <!-- Section items -->
-                            <ul v-show="!section.title || collapsed || !collapsedSections.has(sIdx)" class="flex flex-col gap-y-0.5">
+                            <ul v-show="!section.title || collapsed || !isSectionCollapsed(sIdx)" class="flex flex-col gap-y-0.5">
                                 <li v-for="item in section.items" :key="item.name + (item.routeParams?.type || '') + (item.queryParams?.type || '')">
                                     <Link
                                         :href="itemHref(item)"
