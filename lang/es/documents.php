@@ -63,6 +63,10 @@ return [
     'email_to_placeholder' => 'email@ejemplo.com',
     'email_subject' => 'Asunto',
     'email_message' => 'Mensaje',
+    'email_attachments' => 'Adjuntos',
+    'email_attach_pdf' => 'PDF',
+    'email_attach_facturae' => 'FacturaE (XML)',
+    'email_attach_both' => 'Ambos (PDF + FacturaE)',
 
     // Read-only summary
     'issue_date' => 'Fecha emisión',

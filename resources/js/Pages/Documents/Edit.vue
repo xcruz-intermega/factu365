@@ -142,6 +142,7 @@ const emailForm = useForm({
     email: doc.client?.email || '',
     subject: '',
     message: '',
+    attachments: 'pdf',
 });
 const sendingEmail = ref(false);
 
@@ -149,6 +150,7 @@ const openEmailDialog = () => {
     emailForm.email = doc.client?.email || '';
     emailForm.subject = `${props.documentTypeLabel} ${doc.number}`;
     emailForm.message = `Estimado cliente,\n\nAdjunto encontrará el documento ${props.documentTypeLabel} ${doc.number}.\n\nUn saludo.`;
+    emailForm.attachments = 'pdf';
     emailDialog.value = true;
 };
 
@@ -158,6 +160,7 @@ const doSendEmail = () => {
         email: emailForm.email,
         subject: emailForm.subject,
         message: emailForm.message,
+        attachments: emailForm.attachments,
     }, {
         onFinish: () => {
             sendingEmail.value = false;
@@ -528,6 +531,23 @@ const formatCurrency = (val: number | string) => {
                         rows="4"
                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm"
                     />
+                </div>
+                <div v-if="canExportFacturae">
+                    <label class="block text-sm font-medium text-gray-700">{{ $t('documents.email_attachments') }}</label>
+                    <div class="mt-1 flex items-center gap-4">
+                        <label class="inline-flex items-center gap-1.5 text-sm text-gray-700">
+                            <input type="radio" v-model="emailForm.attachments" value="pdf" class="text-indigo-600 focus:ring-indigo-500" />
+                            {{ $t('documents.email_attach_pdf') }}
+                        </label>
+                        <label class="inline-flex items-center gap-1.5 text-sm text-gray-700">
+                            <input type="radio" v-model="emailForm.attachments" value="facturae" class="text-indigo-600 focus:ring-indigo-500" />
+                            {{ $t('documents.email_attach_facturae') }}
+                        </label>
+                        <label class="inline-flex items-center gap-1.5 text-sm text-gray-700">
+                            <input type="radio" v-model="emailForm.attachments" value="both" class="text-indigo-600 focus:ring-indigo-500" />
+                            {{ $t('documents.email_attach_both') }}
+                        </label>
+                    </div>
                 </div>
             </div>
         </ConfirmDialog>

@@ -631,24 +631,48 @@ class DocumentController extends Controller
             'email' => ['required', 'email'],
             'subject' => ['nullable', 'string', 'max:255'],
             'message' => ['nullable', 'string', 'max:2000'],
+            'attachments' => ['nullable', 'in:pdf,facturae,both'],
         ]);
+
+        $attachmentMode = $validated['attachments'] ?? 'pdf';
+
+        // FacturaE only allowed for invoice/rectificative
+        if ($attachmentMode !== 'pdf' && ! in_array($type, [Document::TYPE_INVOICE, Document::TYPE_RECTIFICATIVE])) {
+            $attachmentMode = 'pdf';
+        }
 
         $template = $request->input('template_id')
             ? PdfTemplate::find($request->input('template_id'))
             : null;
 
-        $pdfContent = $this->pdfGenerator->content($document, $template);
         $typeLabel = Document::documentTypeLabel($document->document_type);
-        $filename = str_replace(' ', '_', $typeLabel) . '_' . str_replace(['/', '\\'], '-', $document->number ?? $document->id) . '.pdf';
+        $baseFilename = str_replace(' ', '_', $typeLabel) . '_' . str_replace(['/', '\\'], '-', $document->number ?? $document->id);
 
         $emailSubject = $validated['subject'] ?? "{$typeLabel} {$document->number}";
         $emailBody = $validated['message'] ?? __('documents.flash_email_body', ['type' => $typeLabel, 'number' => $document->number]);
 
+        // Build attachments
+        $attachments = [];
+
+        if (in_array($attachmentMode, ['pdf', 'both'])) {
+            $pdfContent = $this->pdfGenerator->content($document, $template);
+            $attachments[] = ['data' => $pdfContent, 'name' => $baseFilename . '.pdf', 'mime' => 'application/pdf'];
+        }
+
+        if (in_array($attachmentMode, ['facturae', 'both'])) {
+            $builder = app(FacturaEBuilderService::class);
+            $xml = $builder->generate($document);
+            $attachments[] = ['data' => $xml, 'name' => 'FacturaE_' . str_replace(['/', '\\'], '-', $document->number) . '.xml', 'mime' => 'application/xml'];
+        }
+
         try {
-            Mail::raw($emailBody, function ($mail) use ($validated, $emailSubject, $pdfContent, $filename) {
+            Mail::raw($emailBody, function ($mail) use ($validated, $emailSubject, $attachments) {
                 $mail->to($validated['email'])
-                    ->subject($emailSubject)
-                    ->attachData($pdfContent, $filename, ['mime' => 'application/pdf']);
+                    ->subject($emailSubject);
+
+                foreach ($attachments as $attachment) {
+                    $mail->attachData($attachment['data'], $attachment['name'], ['mime' => $attachment['mime']]);
+                }
             });
         } catch (\Exception $e) {
             Log::error('Email send failed', ['error' => $e->getMessage(), 'to' => $validated['email']]);
