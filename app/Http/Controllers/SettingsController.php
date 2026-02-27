@@ -6,9 +6,11 @@ use App\Models\Certificate;
 use App\Models\CompanyProfile;
 use App\Models\Document;
 use App\Models\DocumentSeries;
+use App\Models\VatRate;
 use App\Services\VeriFactu\CertificateManager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class SettingsController extends Controller
@@ -224,6 +226,72 @@ class SettingsController extends Controller
         $seeder->run();
 
         return back()->with('success', __('settings.flash_demo_generated'));
+    }
+
+    // ─── VAT Rates ───
+
+    public function vatRates()
+    {
+        return Inertia::render('Settings/VatRates', [
+            'vatRatesList' => VatRate::ordered()->get(),
+        ]);
+    }
+
+    public function storeVatRate(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:100'],
+            'rate' => ['required', 'numeric', 'min:0', 'max:100', Rule::unique('vat_rates', 'rate')],
+            'surcharge_rate' => ['required', 'numeric', 'min:0', 'max:100'],
+            'is_default' => ['boolean'],
+            'is_exempt' => ['boolean'],
+            'sort_order' => ['required', 'integer', 'min:0'],
+        ]);
+
+        if ($validated['is_default'] ?? false) {
+            VatRate::where('is_default', true)->update(['is_default' => false]);
+        }
+
+        VatRate::create($validated);
+
+        return back()->with('success', __('settings.flash_vat_rate_created'));
+    }
+
+    public function updateVatRate(Request $request, VatRate $vatRate)
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:100'],
+            'rate' => ['required', 'numeric', 'min:0', 'max:100', Rule::unique('vat_rates', 'rate')->ignore($vatRate->id)],
+            'surcharge_rate' => ['required', 'numeric', 'min:0', 'max:100'],
+            'is_default' => ['boolean'],
+            'is_exempt' => ['boolean'],
+            'sort_order' => ['required', 'integer', 'min:0'],
+        ]);
+
+        if ($validated['is_default'] ?? false) {
+            VatRate::where('id', '!=', $vatRate->id)
+                ->where('is_default', true)
+                ->update(['is_default' => false]);
+        }
+
+        $vatRate->update($validated);
+
+        return back()->with('success', __('settings.flash_vat_rate_updated'));
+    }
+
+    public function destroyVatRate(VatRate $vatRate)
+    {
+        if ($vatRate->is_default) {
+            return back()->with('error', __('settings.error_cannot_delete_default_vat_rate'));
+        }
+
+        if ($vatRate->isInUse()) {
+            return back()->with('error', __('settings.error_vat_rate_in_use'));
+        }
+
+        $vatRate->delete();
+
+        return back()->with('success', __('settings.flash_vat_rate_deleted'));
     }
 
     // ─── Helpers ───

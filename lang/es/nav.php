@@ -47,4 +47,5 @@ return [
     'payments_forecast' => 'Previsión pagos',
     'bank_accounts' => 'Cuentas bancarias',
     'export_facturae' => 'Exportar FacturaE',
+    'vat_rates' => 'Tipos de IVA',
 ];

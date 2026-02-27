@@ -199,6 +199,11 @@ Route::prefix('/{tenant}')->middleware([
                 Route::post('/demo-data', [SettingsController::class, 'seedDemoData'])->name('demo-data');
 
 
+                Route::get('/vat-rates', [SettingsController::class, 'vatRates'])->name('vat-rates');
+                Route::post('/vat-rates', [SettingsController::class, 'storeVatRate'])->name('vat-rates.store');
+                Route::put('/vat-rates/{vatRate}', [SettingsController::class, 'updateVatRate'])->name('vat-rates.update');
+                Route::delete('/vat-rates/{vatRate}', [SettingsController::class, 'destroyVatRate'])->name('vat-rates.destroy');
+
                 Route::get('/bank-accounts', [BankAccountController::class, 'index'])->name('bank-accounts');
                 Route::post('/bank-accounts', [BankAccountController::class, 'store'])->name('bank-accounts.store');
                 Route::put('/bank-accounts/{account}', [BankAccountController::class, 'update'])->name('bank-accounts.update');

@@ -2,15 +2,19 @@
 
 namespace App\Services;
 
+use App\Models\VatRate;
+
 class TaxCalculatorService
 {
-    // Surcharge rates (recargo de equivalencia) by VAT rate
-    private const SURCHARGE_RATES = [
+    // Fallback surcharge rates (used when DB is not available, e.g. tests/migrations)
+    private const FALLBACK_SURCHARGE_RATES = [
         '21.00' => 5.2,
         '10.00' => 1.4,
         '4.00' => 0.5,
         '0.00' => 0,
     ];
+
+    private static ?array $surchargeRatesCache = null;
 
     /**
      * Calculate a single line's amounts.
@@ -138,7 +142,29 @@ class TaxCalculatorService
     {
         $key = number_format($vatRate, 2, '.', '');
 
-        return self::SURCHARGE_RATES[$key] ?? 0;
+        return $this->getSurchargeRatesMap()[$key] ?? 0;
+    }
+
+    private function getSurchargeRatesMap(): array
+    {
+        if (self::$surchargeRatesCache !== null) {
+            return self::$surchargeRatesCache;
+        }
+
+        try {
+            $map = VatRate::pluck('surcharge_rate', 'rate')
+                ->mapWithKeys(fn ($surcharge, $rate) => [number_format((float) $rate, 2, '.', '') => (float) $surcharge])
+                ->toArray();
+
+            if (!empty($map)) {
+                self::$surchargeRatesCache = $map;
+                return $map;
+            }
+        } catch (\Throwable) {
+            // DB not available (tests, migrations)
+        }
+
+        return self::FALLBACK_SURCHARGE_RATES;
     }
 
     /**

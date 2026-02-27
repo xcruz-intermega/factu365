@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\VatRate;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ProductRequest extends FormRequest
@@ -20,7 +21,7 @@ class ProductRequest extends FormRequest
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:2000',
             'unit_price' => 'required|numeric|min:0|max:99999999.99',
-            'vat_rate' => 'required|numeric|in:0,4,10,21',
+            'vat_rate' => ['required', 'numeric', \Illuminate\Validation\Rule::in($this->allowedVatRates())],
             'exemption_code' => 'nullable|string|max:10|required_if:vat_rate,0',
             'irpf_applicable' => 'boolean',
             'unit' => 'nullable|string|max:20',
@@ -30,6 +31,15 @@ class ProductRequest extends FormRequest
             'allow_negative_stock' => 'boolean',
             'stock_mode' => 'nullable|in:self,components',
         ];
+    }
+
+    private function allowedVatRates(): array
+    {
+        try {
+            return VatRate::pluck('rate')->map(fn ($r) => (float) $r)->toArray();
+        } catch (\Throwable) {
+            return [0, 4, 10, 21];
+        }
     }
 
     public function messages(): array

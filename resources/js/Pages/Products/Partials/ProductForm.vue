@@ -9,8 +9,9 @@ import SecondaryButton from '@/Components/SecondaryButton.vue';
 import Checkbox from '@/Components/Checkbox.vue';
 import SearchSelect from '@/Components/SearchSelect.vue';
 import type { SearchSelectOption } from '@/Components/SearchSelect.vue';
-import { Link, router } from '@inertiajs/vue3';
+import { Link, router, usePage } from '@inertiajs/vue3';
 import type { InertiaForm } from '@inertiajs/vue3';
+import type { VatRate } from '@/types/vatRate';
 
 interface FamilyOption {
     id: number;
@@ -69,7 +70,11 @@ const emit = defineEmits<{
     submit: [];
 }>();
 
-const showExemption = computed(() => Number(props.form.vat_rate) === 0);
+const vatRates = computed(() => (usePage().props.vatRates || []) as VatRate[]);
+const showExemption = computed(() => {
+    const vr = vatRates.value.find(v => Number(v.rate) === Number(props.form.vat_rate));
+    return vr ? vr.is_exempt : Number(props.form.vat_rate) === 0;
+});
 
 // Escandallo state
 const newComponentId = ref<number | null>(null);
@@ -262,10 +267,7 @@ const units = computed(() => [
                         v-model="form.vat_rate"
                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                     >
-                        <option :value="21">{{ $t('common.vat_21_general') }}</option>
-                        <option :value="10">{{ $t('common.vat_10_reduced') }}</option>
-                        <option :value="4">{{ $t('common.vat_4_super_reduced') }}</option>
-                        <option :value="0">{{ $t('common.vat_0_exempt_label') }}</option>
+                        <option v-for="vr in vatRates" :key="vr.id" :value="Number(vr.rate)">{{ Number(vr.rate) }}% - {{ vr.name }}</option>
                     </select>
                     <InputError class="mt-2" :message="form.errors.vat_rate" />
                 </div>

@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\Document;
+use App\Models\VatRate;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -63,11 +64,20 @@ class DocumentRequest extends FormRequest
             'lines.*.unit_price' => ['required', 'numeric', 'min:0'],
             'lines.*.unit' => ['nullable', 'string', 'max:20'],
             'lines.*.discount_percent' => ['nullable', 'numeric', 'min:0', 'max:100'],
-            'lines.*.vat_rate' => ['required', 'numeric', Rule::in([0, 4, 10, 21])],
+            'lines.*.vat_rate' => ['required', 'numeric', Rule::in($this->allowedVatRates())],
             'lines.*.exemption_code' => ['nullable', 'string', 'required_if:lines.*.vat_rate,0'],
             'lines.*.irpf_rate' => ['nullable', 'numeric', 'min:0', 'max:100'],
             'lines.*.surcharge_rate' => ['nullable', 'numeric', 'min:0', 'max:100'],
         ];
+    }
+
+    private function allowedVatRates(): array
+    {
+        try {
+            return VatRate::pluck('rate')->map(fn ($r) => (float) $r)->toArray();
+        } catch (\Throwable) {
+            return [0, 4, 10, 21];
+        }
     }
 
     public function messages(): array

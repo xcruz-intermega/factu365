@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+import { usePage } from '@inertiajs/vue3';
 import type { InertiaForm } from '@inertiajs/vue3';
 import SearchSelect from '@/Components/SearchSelect.vue';
 import type { SearchSelectOption } from '@/Components/SearchSelect.vue';
+import type { VatRate } from '@/types/vatRate';
 
 interface Category {
     id: number;
@@ -28,6 +30,8 @@ const props = defineProps<{
 const emit = defineEmits<{
     submit: [];
 }>();
+
+const vatRates = computed(() => (usePage().props.vatRates || []) as VatRate[]);
 
 const vatAmount = computed(() => {
     const subtotal = parseFloat(props.form.subtotal) || 0;
@@ -172,10 +176,7 @@ const handleFileChange = (e: Event) => {
                         v-model="form.vat_rate"
                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                     >
-                        <option :value="21">{{ $t('common.vat_21') }}</option>
-                        <option :value="10">{{ $t('common.vat_10') }}</option>
-                        <option :value="4">{{ $t('common.vat_4') }}</option>
-                        <option :value="0">{{ $t('common.vat_0_exempt') }}</option>
+                        <option v-for="vr in vatRates" :key="vr.id" :value="Number(vr.rate)">{{ Number(vr.rate) }}% - {{ vr.name }}</option>
                     </select>
                 </div>
 

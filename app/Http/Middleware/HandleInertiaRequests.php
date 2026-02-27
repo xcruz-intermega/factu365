@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\Document;
+use App\Models\VatRate;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -80,6 +81,13 @@ class HandleInertiaRequests extends Middleware
             'locale' => app()->getLocale(),
             'available_locales' => ['es', 'en', 'ca'],
             'tenant' => $tenant ? ['slug' => $tenant->slug] : null,
+            'vatRates' => function () {
+                try {
+                    return VatRate::ordered()->get(['id', 'name', 'rate', 'surcharge_rate', 'is_default', 'is_exempt', 'sort_order']);
+                } catch (\Illuminate\Database\QueryException) {
+                    return [];
+                }
+            },
             'app_version' => config('app.version'),
         ];
     }

@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { trans } from 'laravel-vue-i18n';
+import { usePage } from '@inertiajs/vue3';
 import { calculateLine, getSurchargeRate, type LineInput, type CalculatedLine } from '@/composables/useTaxCalculator';
 import { resolveClientDiscount, type ClientDiscountData } from '@/composables/useClientDiscountResolver';
 import SearchSelect from '@/Components/SearchSelect.vue';
 import type { SearchSelectOption } from '@/Components/SearchSelect.vue';
+import type { VatRate } from '@/types/vatRate';
 
 interface ProductComponent {
     id: number;
@@ -52,6 +54,9 @@ const emit = defineEmits<{
     'update:lines': [lines: LineInput[]];
 }>();
 
+const vatRates = computed(() => (usePage().props.vatRates || []) as VatRate[]);
+const defaultVatRate = computed(() => vatRates.value.find(v => v.is_default)?.rate ?? 21);
+
 const calculatedLines = computed<CalculatedLine[]>(() => {
     return props.lines.map(line => calculateLine(line));
 });
@@ -69,7 +74,7 @@ const addLine = () => {
         unit_price: 0,
         unit: 'unidad',
         discount_percent: 0,
-        vat_rate: 21,
+        vat_rate: Number(defaultVatRate.value),
         exemption_code: '',
         irpf_rate: 0,
         surcharge_rate: 0,
@@ -419,13 +424,10 @@ const lineError = (index: number, field: string): string | undefined => {
                                 @change="onVatRateChange(index, Number(($event.target as HTMLSelectElement).value))"
                                 class="mt-0.5 block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                             >
-                                <option :value="21">{{ $t('common.vat_21') }}</option>
-                                <option :value="10">{{ $t('common.vat_10') }}</option>
-                                <option :value="4">{{ $t('common.vat_4') }}</option>
-                                <option :value="0">{{ $t('common.vat_0_exempt') }}</option>
+                                <option v-for="vr in vatRates" :key="vr.id" :value="Number(vr.rate)">{{ Number(vr.rate) }}% - {{ vr.name }}</option>
                             </select>
                         </div>
-                        <div v-if="line.vat_rate === 0" class="sm:col-span-3">
+                        <div v-if="vatRates.find(v => Number(v.rate) === Number(line.vat_rate))?.is_exempt" class="sm:col-span-3">
                             <label class="block text-xs font-medium text-gray-600">{{ $t('documents.exemption_required') }}</label>
                             <select
                                 :value="line.exemption_code"

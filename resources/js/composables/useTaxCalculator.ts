@@ -45,12 +45,24 @@ export interface DocumentTotals {
     vat_breakdown: VatBreakdownEntry[];
 }
 
-const SURCHARGE_RATES: Record<string, number> = {
+const FALLBACK_SURCHARGE_RATES: Record<string, number> = {
     '21.00': 5.2,
     '10.00': 1.4,
     '4.00': 0.5,
     '0.00': 0,
 };
+
+let surchargeRatesMap: Record<string, number> = { ...FALLBACK_SURCHARGE_RATES };
+
+export function initSurchargeMap(vatRates: { rate: number; surcharge_rate: number }[]): void {
+    if (vatRates && vatRates.length > 0) {
+        surchargeRatesMap = {};
+        for (const vr of vatRates) {
+            const key = Number(vr.rate).toFixed(2);
+            surchargeRatesMap[key] = Number(vr.surcharge_rate);
+        }
+    }
+}
 
 function round2(value: number): number {
     return Math.round((value + Number.EPSILON) * 100) / 100;
@@ -58,7 +70,7 @@ function round2(value: number): number {
 
 export function getSurchargeRate(vatRate: number): number {
     const key = vatRate.toFixed(2);
-    return SURCHARGE_RATES[key] ?? 0;
+    return surchargeRatesMap[key] ?? 0;
 }
 
 export function calculateLine(line: LineInput): CalculatedLine {

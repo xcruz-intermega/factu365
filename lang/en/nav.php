@@ -47,4 +47,5 @@ return [
     'payments_forecast' => 'Payments forecast',
     'bank_accounts' => 'Bank accounts',
     'export_facturae' => 'Export FacturaE',
+    'vat_rates' => 'VAT Rates',
 ];
