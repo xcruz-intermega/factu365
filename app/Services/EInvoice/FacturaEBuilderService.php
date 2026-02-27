@@ -350,14 +350,7 @@ class FacturaEBuilderService
         $this->addChild($totals, 'TotalTaxesWithheld', $this->amount($document->total_irpf));
         $this->addChild($totals, 'InvoiceTotal', $this->amount($document->total));
 
-        $totalOutstandingAmount = $this->el('TotalOutstandingAmount');
-        $this->addChild($totalOutstandingAmount, 'TotalAmount', $this->amount($document->total));
-        // No need for nested wrapper — FacturaE 3.2.2 uses direct value
         $this->addChild($totals, 'TotalFinancialExpenses', '0.00');
-
-        // Replace the nested element with direct value
-        $totals->removeChild($totalOutstandingAmount);
-
         $this->addChild($totals, 'TotalOutstandingAmount', $this->amount($document->total));
         $this->addChild($totals, 'TotalExecutableAmount', $this->amount($document->total));
 
