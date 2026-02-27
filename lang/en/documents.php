@@ -213,4 +213,23 @@ return [
     'flash_accounted' => 'Document marked as accounted.',
     'flash_unaccounted' => 'Document unmarked as accounted.',
     'error_not_accountable' => 'This document type does not support accounting status.',
+
+    // FacturaE export
+    'download_facturae' => 'Download FacturaE',
+    'error_facturae_type' => 'Only invoices and credit notes can be exported as FacturaE.',
+    'error_facturae_draft' => 'Finalise the document before exporting as FacturaE.',
+
+    // FacturaE bulk export
+    'export_facturae_title' => 'Export FacturaE',
+    'export_facturae_subtitle' => 'Bulk export in FacturaE 3.2.2 XML format',
+    'export_date_from' => 'Date from',
+    'export_date_to' => 'Date to',
+    'export_all_statuses' => 'All statuses',
+    'export_all_clients' => 'All clients',
+    'export_filter' => 'Filter',
+    'export_count' => ':count documents found',
+    'export_download_zip' => 'Download FacturaE ZIP (:count docs)',
+    'export_no_results' => 'No documents match the filters',
+    'export_error_empty' => 'No documents to export',
+    'export_error_limit' => 'Maximum 500 documents per export',
 ];

@@ -213,4 +213,23 @@ return [
     'flash_accounted' => 'Documento marcado como contabilizado.',
     'flash_unaccounted' => 'Documento desmarcado como contabilizado.',
     'error_not_accountable' => 'Este tipo de documento no admite contabilización.',
+
+    // FacturaE export
+    'download_facturae' => 'Descargar FacturaE',
+    'error_facturae_type' => 'Solo se pueden exportar facturas y rectificativas como FacturaE.',
+    'error_facturae_draft' => 'Finalice el documento antes de exportar como FacturaE.',
+
+    // FacturaE bulk export
+    'export_facturae_title' => 'Exportar FacturaE',
+    'export_facturae_subtitle' => 'Exportación masiva en formato FacturaE 3.2.2 XML',
+    'export_date_from' => 'Fecha desde',
+    'export_date_to' => 'Fecha hasta',
+    'export_all_statuses' => 'Todos los estados',
+    'export_all_clients' => 'Todos los clientes',
+    'export_filter' => 'Filtrar',
+    'export_count' => ':count documentos encontrados',
+    'export_download_zip' => 'Descargar ZIP FacturaE (:count docs)',
+    'export_no_results' => 'No hay documentos que coincidan con los filtros',
+    'export_error_empty' => 'No hay documentos para exportar',
+    'export_error_limit' => 'Máximo 500 documentos por exportación',
 ];

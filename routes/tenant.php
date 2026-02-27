@@ -6,6 +6,7 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\EInvoiceController;
+use App\Http\Controllers\FacturaEExportController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\FiscalDeclarationController;
 use App\Http\Controllers\GlobalSearchController;
@@ -69,6 +70,10 @@ Route::prefix('/{tenant}')->middleware([
         Route::put('/product-families/{family}', [ProductFamilyController::class, 'update'])->name('product-families.update');
         Route::delete('/product-families/{family}', [ProductFamilyController::class, 'destroy'])->name('product-families.destroy');
 
+        // FacturaE bulk export (must be before documents/{type} to avoid capture)
+        Route::get('/documents/export-facturae', [FacturaEExportController::class, 'index'])->name('documents.export-facturae');
+        Route::get('/documents/export-facturae/download', [FacturaEExportController::class, 'download'])->name('documents.export-facturae.download');
+
         // E-Invoice import (must be before documents/{type}/{document} to avoid capture)
         Route::prefix('documents/{type}')->name('documents.')->group(function () {
             Route::get('/import', [EInvoiceController::class, 'create'])->name('import');
@@ -89,6 +94,7 @@ Route::prefix('/{tenant}')->middleware([
             Route::patch('/{document}/status', [DocumentController::class, 'updateStatus'])->name('update-status');
             Route::get('/{document}/pdf', [DocumentController::class, 'downloadPdf'])->name('download-pdf');
             Route::get('/{document}/pdf/preview', [DocumentController::class, 'previewPdf'])->name('preview-pdf');
+            Route::get('/{document}/facturae', [DocumentController::class, 'downloadFacturae'])->name('download-facturae');
             Route::post('/{document}/send-email', [DocumentController::class, 'sendEmail'])->name('send-email');
             Route::post('/{document}/due-dates/{dueDate}/toggle-paid', [DocumentController::class, 'markDueDatePaid'])->name('due-date.toggle-paid');
             Route::post('/{document}/toggle-accounted', [DocumentController::class, 'toggleAccounted'])->name('toggle-accounted');

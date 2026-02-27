@@ -13,6 +13,7 @@ use App\Models\PaymentTemplate;
 use App\Models\PdfTemplate;
 use App\Models\Product;
 use App\Exceptions\InsufficientStockException;
+use App\Services\EInvoice\FacturaEBuilderService;
 use App\Services\NumberingService;
 use App\Services\PdfGeneratorService;
 use App\Services\StockService;
@@ -573,6 +574,30 @@ class DocumentController extends Controller
             : null;
 
         return $this->pdfGenerator->download($document, $template);
+    }
+
+    public function downloadFacturae(string $type, Document $document)
+    {
+        $this->validateDocumentType($type);
+        $this->ensureDocumentMatchesType($document, $type);
+
+        if (! in_array($type, [Document::TYPE_INVOICE, Document::TYPE_RECTIFICATIVE])) {
+            return back()->with('error', __('documents.error_facturae_type'));
+        }
+
+        if ($document->isDraft()) {
+            return back()->with('error', __('documents.error_facturae_draft'));
+        }
+
+        $builder = app(FacturaEBuilderService::class);
+        $xml = $builder->generate($document);
+
+        $filename = 'FacturaE_' . str_replace(['/', '\\'], '-', $document->number) . '.xml';
+
+        return response($xml, 200, [
+            'Content-Type' => 'application/xml',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ]);
     }
 
     public function previewPdf(Request $request, string $type, Document $document)

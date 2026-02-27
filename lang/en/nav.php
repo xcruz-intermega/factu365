@@ -46,4 +46,5 @@ return [
     'collections_forecast' => 'Collections forecast',
     'payments_forecast' => 'Payments forecast',
     'bank_accounts' => 'Bank accounts',
+    'export_facturae' => 'Export FacturaE',
 ];

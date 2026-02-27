@@ -127,6 +127,15 @@ const previewPdf = () => {
     window.open(route('documents.preview-pdf', { type: props.documentType, document: doc.id }), '_blank');
 };
 
+// FacturaE export
+const canExportFacturae = computed(() =>
+    ['invoice', 'rectificative'].includes(props.documentType) && doc.status !== 'draft'
+);
+
+const downloadFacturae = () => {
+    window.location.href = route('documents.download-facturae', { type: props.documentType, document: doc.id });
+};
+
 // Email dialog
 const emailDialog = ref(false);
 const emailForm = useForm({
@@ -336,6 +345,12 @@ const formatCurrency = (val: number | string) => {
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
                     {{ $t('common.preview') }}
+                </button>
+                <button v-if="canExportFacturae" @click="downloadFacturae" class="inline-flex items-center rounded-md bg-emerald-50 px-3 py-1.5 text-sm font-medium text-emerald-700 hover:bg-emerald-100">
+                    <svg class="-ml-0.5 mr-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5" />
+                    </svg>
+                    {{ $t('documents.download_facturae') }}
                 </button>
                 <button @click="openEmailDialog" class="inline-flex items-center rounded-md bg-blue-50 px-3 py-1.5 text-sm font-medium text-blue-700 hover:bg-blue-100">
                     <svg class="-ml-0.5 mr-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">

@@ -46,4 +46,5 @@ return [
     'collections_forecast' => 'Previsión cobros',
     'payments_forecast' => 'Previsión pagos',
     'bank_accounts' => 'Cuentas bancarias',
+    'export_facturae' => 'Exportar FacturaE',
 ];

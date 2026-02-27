@@ -213,4 +213,23 @@ return [
     'flash_accounted' => 'Document marcat com a comptabilitzat.',
     'flash_unaccounted' => 'Document desmarcat com a comptabilitzat.',
     'error_not_accountable' => 'Aquest tipus de document no admet comptabilització.',
+
+    // FacturaE export
+    'download_facturae' => 'Descarregar FacturaE',
+    'error_facturae_type' => 'Només es poden exportar factures i rectificatives com a FacturaE.',
+    'error_facturae_draft' => 'Finalitzeu el document abans d\'exportar com a FacturaE.',
+
+    // FacturaE bulk export
+    'export_facturae_title' => 'Exportar FacturaE',
+    'export_facturae_subtitle' => 'Exportació massiva en format FacturaE 3.2.2 XML',
+    'export_date_from' => 'Data des de',
+    'export_date_to' => 'Data fins a',
+    'export_all_statuses' => 'Tots els estats',
+    'export_all_clients' => 'Tots els clients',
+    'export_filter' => 'Filtrar',
+    'export_count' => ':count documents trobats',
+    'export_download_zip' => 'Descarregar ZIP FacturaE (:count docs)',
+    'export_no_results' => 'No hi ha documents que coincideixin amb els filtres',
+    'export_error_empty' => 'No hi ha documents per exportar',
+    'export_error_limit' => 'Màxim 500 documents per exportació',
 ];
