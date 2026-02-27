@@ -629,6 +629,8 @@ class DocumentController extends Controller
 
         $validated = $request->validate([
             'email' => ['required', 'email'],
+            'cc' => ['nullable', 'string', 'max:500'],
+            'bcc' => ['nullable', 'string', 'max:500'],
             'subject' => ['nullable', 'string', 'max:255'],
             'message' => ['nullable', 'string', 'max:2000'],
             'attachments' => ['nullable', 'in:pdf,facturae,both'],
@@ -669,6 +671,22 @@ class DocumentController extends Controller
             Mail::raw($emailBody, function ($mail) use ($validated, $emailSubject, $attachments) {
                 $mail->to($validated['email'])
                     ->subject($emailSubject);
+
+                if (! empty($validated['cc'])) {
+                    foreach (preg_split('/[\s,;]+/', $validated['cc'], -1, PREG_SPLIT_NO_EMPTY) as $cc) {
+                        if (filter_var(trim($cc), FILTER_VALIDATE_EMAIL)) {
+                            $mail->cc(trim($cc));
+                        }
+                    }
+                }
+
+                if (! empty($validated['bcc'])) {
+                    foreach (preg_split('/[\s,;]+/', $validated['bcc'], -1, PREG_SPLIT_NO_EMPTY) as $bcc) {
+                        if (filter_var(trim($bcc), FILTER_VALIDATE_EMAIL)) {
+                            $mail->bcc(trim($bcc));
+                        }
+                    }
+                }
 
                 foreach ($attachments as $attachment) {
                     $mail->attachData($attachment['data'], $attachment['name'], ['mime' => $attachment['mime']]);

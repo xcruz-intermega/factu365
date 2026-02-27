@@ -140,6 +140,8 @@ const downloadFacturae = () => {
 const emailDialog = ref(false);
 const emailForm = useForm({
     email: doc.client?.email || '',
+    cc: '',
+    bcc: '',
     subject: '',
     message: '',
     attachments: 'pdf',
@@ -148,6 +150,8 @@ const sendingEmail = ref(false);
 
 const openEmailDialog = () => {
     emailForm.email = doc.client?.email || '';
+    emailForm.cc = '';
+    emailForm.bcc = '';
     emailForm.subject = `${props.documentTypeLabel} ${doc.number}`;
     emailForm.message = trans('documents.email_default_message', { type: props.documentTypeLabel, number: doc.number });
     emailForm.attachments = 'pdf';
@@ -158,6 +162,8 @@ const doSendEmail = () => {
     sendingEmail.value = true;
     router.post(route('documents.send-email', { type: props.documentType, document: doc.id }), {
         email: emailForm.email,
+        cc: emailForm.cc || undefined,
+        bcc: emailForm.bcc || undefined,
         subject: emailForm.subject,
         message: emailForm.message,
         attachments: emailForm.attachments,
@@ -514,6 +520,24 @@ const formatCurrency = (val: number | string) => {
                         v-model="emailForm.email"
                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm"
                         :placeholder="$t('documents.email_to_placeholder')"
+                    />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">{{ $t('documents.email_cc') }}</label>
+                    <input
+                        type="text"
+                        v-model="emailForm.cc"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm"
+                        :placeholder="$t('documents.email_cc_placeholder')"
+                    />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">{{ $t('documents.email_bcc') }}</label>
+                    <input
+                        type="text"
+                        v-model="emailForm.bcc"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm"
+                        :placeholder="$t('documents.email_bcc_placeholder')"
                     />
                 </div>
                 <div>
