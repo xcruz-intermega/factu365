@@ -7,10 +7,12 @@ use App\Models\Document;
 use App\Models\DocumentDueDate;
 use App\Models\Expense;
 use App\Models\TreasuryEntry;
+use App\Services\ReportPdfService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class TreasuryController extends Controller
 {
@@ -75,6 +77,119 @@ class TreasuryController extends Controller
         $entry->delete();
 
         return back()->with('success', __('treasury.flash_entry_deleted'));
+    }
+
+    public function collectionsPdf(Request $request, ReportPdfService $pdfService)
+    {
+        $data = $this->getCollectionsData($request);
+
+        return $pdfService->stream(
+            'pdf.reports.treasury-collections',
+            $data,
+            'cobros_' . now()->format('Y-m-d') . '.pdf',
+        );
+    }
+
+    public function collectionsCsv(Request $request)
+    {
+        $data = $this->getCollectionsData($request);
+
+        return new StreamedResponse(function () use ($data) {
+            $handle = fopen('php://output', 'w');
+            fwrite($handle, "\xEF\xBB\xBF");
+            fputcsv($handle, [
+                __('treasury.due_date'),
+                __('treasury.document_number'),
+                __('treasury.client'),
+                __('treasury.nif'),
+                __('treasury.amount'),
+                __('treasury.days_overdue'),
+            ], ';');
+
+            foreach ($data['items'] as $item) {
+                fputcsv($handle, [
+                    Carbon::parse($item['due_date'])->format('d/m/Y'),
+                    $item['document_number'],
+                    $item['client_name'],
+                    $item['client_nif'],
+                    number_format($item['amount'], 2, ',', ''),
+                    $item['days_overdue'] > 0 ? $item['days_overdue'] : '',
+                ], ';');
+            }
+
+            fclose($handle);
+        }, 200, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="cobros_' . now()->format('Y-m-d') . '.csv"',
+        ]);
+    }
+
+    public function paymentsPdf(Request $request, ReportPdfService $pdfService)
+    {
+        $data = $this->getPaymentsData($request);
+
+        return $pdfService->stream(
+            'pdf.reports.treasury-payments',
+            $data,
+            'pagos_' . now()->format('Y-m-d') . '.pdf',
+        );
+    }
+
+    public function paymentsCsv(Request $request)
+    {
+        $data = $this->getPaymentsData($request);
+
+        return new StreamedResponse(function () use ($data) {
+            $handle = fopen('php://output', 'w');
+            fwrite($handle, "\xEF\xBB\xBF");
+
+            // Expenses section
+            fputcsv($handle, ['--- ' . __('treasury.pending_expenses') . ' ---'], ';');
+            fputcsv($handle, [
+                __('treasury.due_date'),
+                __('treasury.concept'),
+                __('treasury.supplier'),
+                __('treasury.amount'),
+                __('treasury.days_overdue'),
+            ], ';');
+
+            foreach ($data['expenseItems'] as $item) {
+                fputcsv($handle, [
+                    $item['due_date'] ? Carbon::parse($item['due_date'])->format('d/m/Y') : '',
+                    $item['concept'],
+                    $item['supplier_name'],
+                    number_format($item['amount'], 2, ',', ''),
+                    $item['days_overdue'] > 0 ? $item['days_overdue'] : '',
+                ], ';');
+            }
+
+            fputcsv($handle, [], ';');
+
+            // Purchase invoices section
+            fputcsv($handle, ['--- ' . __('treasury.pending_purchase_invoices') . ' ---'], ';');
+            fputcsv($handle, [
+                __('treasury.due_date'),
+                __('treasury.document_number'),
+                __('treasury.supplier'),
+                __('treasury.amount'),
+                __('treasury.days_overdue'),
+            ], ';');
+
+            foreach ($data['purchaseItems'] as $item) {
+                fputcsv($handle, [
+                    Carbon::parse($item['due_date'])->format('d/m/Y'),
+                    $item['document_number'],
+                    $item['supplier_name'],
+                    number_format($item['amount'], 2, ',', ''),
+                    $item['days_overdue'] > 0 ? $item['days_overdue'] : '',
+                ], ';');
+            }
+
+            fclose($handle);
+        }, 200, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="pagos_' . now()->format('Y-m-d') . '.csv"',
+        ]);
     }
 
     private function getOverviewData(): array

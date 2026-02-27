@@ -117,7 +117,11 @@ Route::prefix('/{tenant}')->middleware([
         Route::prefix('treasury')->name('treasury.')->group(function () {
             Route::get('/', [TreasuryController::class, 'overview'])->name('overview');
             Route::get('/collections', [TreasuryController::class, 'collections'])->name('collections');
+            Route::get('/collections/pdf', [TreasuryController::class, 'collectionsPdf'])->name('collections.pdf');
+            Route::get('/collections/csv', [TreasuryController::class, 'collectionsCsv'])->name('collections.csv');
             Route::get('/payments', [TreasuryController::class, 'payments'])->name('payments');
+            Route::get('/payments/pdf', [TreasuryController::class, 'paymentsPdf'])->name('payments.pdf');
+            Route::get('/payments/csv', [TreasuryController::class, 'paymentsCsv'])->name('payments.csv');
             Route::post('/entries', [TreasuryController::class, 'storeEntry'])->name('entries.store');
             Route::put('/entries/{entry}', [TreasuryController::class, 'updateEntry'])->name('entries.update');
             Route::delete('/entries/{entry}', [TreasuryController::class, 'destroyEntry'])->name('entries.destroy');
