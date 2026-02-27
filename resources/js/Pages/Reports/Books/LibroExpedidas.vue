@@ -91,39 +91,37 @@ const toggleExpand = (id: number) => {
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-2 py-2 text-left text-xs font-medium uppercase text-gray-500">{{ $t('books.col_series') }}</th>
-                        <th class="px-2 py-2 text-left text-xs font-medium uppercase text-gray-500">{{ $t('books.col_number') }}</th>
-                        <th class="px-2 py-2 text-left text-xs font-medium uppercase text-gray-500">{{ $t('books.col_date') }}</th>
-                        <th class="px-2 py-2 text-left text-xs font-medium uppercase text-gray-500">{{ $t('books.col_operation_date') }}</th>
-                        <th class="px-2 py-2 text-left text-xs font-medium uppercase text-gray-500">{{ $t('books.col_nif') }}</th>
-                        <th class="px-2 py-2 text-left text-xs font-medium uppercase text-gray-500">{{ $t('books.col_name') }}</th>
-                        <th class="px-2 py-2 text-left text-xs font-medium uppercase text-gray-500">{{ $t('books.col_invoice_type') }}</th>
-                        <th class="px-2 py-2 text-left text-xs font-medium uppercase text-gray-500">{{ $t('books.col_regime_key') }}</th>
-                        <th class="px-2 py-2 text-right text-xs font-medium uppercase text-gray-500">{{ $t('books.col_base') }}</th>
-                        <th class="px-2 py-2 text-right text-xs font-medium uppercase text-gray-500">{{ $t('books.col_vat') }}</th>
-                        <th class="px-2 py-2 text-right text-xs font-medium uppercase text-gray-500">{{ $t('books.col_surcharge') }}</th>
-                        <th class="px-2 py-2 text-right text-xs font-medium uppercase text-gray-500">{{ $t('books.col_total') }}</th>
+                        <th class="px-2 py-3 text-left text-xs font-medium uppercase text-gray-500">{{ $t('books.col_number') }}</th>
+                        <th class="px-2 py-3 text-left text-xs font-medium uppercase text-gray-500">{{ $t('books.col_date') }}</th>
+                        <th class="px-2 py-3 text-left text-xs font-medium uppercase text-gray-500">{{ $t('books.col_operation_date') }}</th>
+                        <th class="px-2 py-3 text-left text-xs font-medium uppercase text-gray-500">{{ $t('books.col_nif') }}</th>
+                        <th class="px-2 py-3 text-left text-xs font-medium uppercase text-gray-500">{{ $t('books.col_name') }}</th>
+                        <th class="px-2 py-3 text-left text-xs font-medium uppercase text-gray-500">{{ $t('books.col_invoice_type') }}</th>
+                        <th class="px-2 py-3 text-left text-xs font-medium uppercase text-gray-500">{{ $t('books.col_regime_key') }}</th>
+                        <th class="px-2 py-3 text-right text-xs font-medium uppercase text-gray-500">{{ $t('books.col_base') }}</th>
+                        <th class="px-2 py-3 text-right text-xs font-medium uppercase text-gray-500">{{ $t('books.col_vat') }}</th>
+                        <th class="px-2 py-3 text-right text-xs font-medium uppercase text-gray-500">{{ $t('books.col_surcharge') }}</th>
+                        <th class="px-2 py-3 text-right text-xs font-medium uppercase text-gray-500">{{ $t('books.col_total') }}</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
                     <template v-for="row in data" :key="row.id">
                         <tr class="cursor-pointer hover:bg-gray-50" @click="toggleExpand(row.id)">
-                            <td class="whitespace-nowrap px-2 py-1.5 text-xs text-gray-500">{{ row.series_name || '' }}</td>
-                            <td class="whitespace-nowrap px-2 py-1.5 text-xs font-medium text-gray-900">{{ row.number }}</td>
-                            <td class="whitespace-nowrap px-2 py-1.5 text-xs text-gray-700">{{ row.issue_date }}</td>
-                            <td class="whitespace-nowrap px-2 py-1.5 text-xs text-gray-500">{{ row.operation_date || '' }}</td>
-                            <td class="whitespace-nowrap px-2 py-1.5 text-xs text-gray-500">{{ row.client_nif }}</td>
-                            <td class="whitespace-nowrap px-2 py-1.5 text-xs text-gray-700">{{ row.client_name }}</td>
-                            <td class="whitespace-nowrap px-2 py-1.5 text-xs text-gray-600">{{ row.invoice_type_label }}</td>
-                            <td class="whitespace-nowrap px-2 py-1.5 text-xs text-gray-500">{{ row.regime_key }}</td>
-                            <td class="whitespace-nowrap px-3 py-2 text-right text-sm text-gray-700">{{ formatCurrency(row.tax_base) }}</td>
-                            <td class="whitespace-nowrap px-3 py-2 text-right text-sm text-gray-700">{{ formatCurrency(row.total_vat) }}</td>
-                            <td class="whitespace-nowrap px-3 py-2 text-right text-sm text-gray-500">{{ formatCurrency(row.total_surcharge) }}</td>
-                            <td class="whitespace-nowrap px-3 py-2 text-right text-sm font-semibold text-gray-900">{{ formatCurrency(row.total) }}</td>
+                            <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">{{ row.number }}</td>
+                            <td class="whitespace-nowrap px-2 py-2 text-sm text-gray-700">{{ row.issue_date }}</td>
+                            <td class="whitespace-nowrap px-2 py-2 text-sm text-gray-500">{{ row.operation_date || '' }}</td>
+                            <td class="whitespace-nowrap px-2 py-2 text-sm text-gray-500">{{ row.client_nif }}</td>
+                            <td class="whitespace-nowrap px-2 py-2 text-sm text-gray-700">{{ row.client_name }}</td>
+                            <td class="whitespace-nowrap px-2 py-2 text-sm text-gray-600">{{ row.invoice_type_label }}</td>
+                            <td class="whitespace-nowrap px-2 py-2 text-sm text-gray-500">{{ row.regime_key }}</td>
+                            <td class="whitespace-nowrap px-2 py-2 text-right text-sm text-gray-700">{{ formatCurrency(row.tax_base) }}</td>
+                            <td class="whitespace-nowrap px-2 py-2 text-right text-sm text-gray-700">{{ formatCurrency(row.total_vat) }}</td>
+                            <td class="whitespace-nowrap px-2 py-2 text-right text-sm text-gray-500">{{ formatCurrency(row.total_surcharge) }}</td>
+                            <td class="whitespace-nowrap px-2 py-2 text-right text-sm font-semibold text-gray-900">{{ formatCurrency(row.total) }}</td>
                         </tr>
                         <!-- VAT breakdown sub-row -->
                         <tr v-if="expandedRows.has(row.id) && row.vat_breakdown.length > 0" class="bg-indigo-50/50">
-                            <td colspan="12" class="px-6 py-2">
+                            <td colspan="11" class="px-6 py-2">
                                 <div class="text-xs font-medium text-gray-500 mb-1">{{ $t('books.vat_breakdown') }}</div>
                                 <div class="flex gap-6">
                                     <div v-for="vb in row.vat_breakdown" :key="vb.vat_rate" class="text-xs text-gray-600">
@@ -136,16 +134,16 @@ const toggleExpand = (id: number) => {
                         </tr>
                     </template>
                     <tr v-if="data.length === 0">
-                        <td colspan="12" class="px-2 py-8 text-center text-xs text-gray-400">{{ $t('books.no_data') }}</td>
+                        <td colspan="11" class="px-2 py-8 text-center text-sm text-gray-400">{{ $t('books.no_data') }}</td>
                     </tr>
                 </tbody>
                 <tfoot v-if="data.length > 0" class="bg-gray-50 font-semibold">
                     <tr>
-                        <td class="px-2 py-2 text-xs text-gray-900" colspan="8">{{ $t('books.total_period') }}</td>
-                        <td class="px-2 py-2 text-right text-xs text-gray-900">{{ formatCurrency(totals.tax_base) }}</td>
-                        <td class="px-2 py-2 text-right text-xs text-gray-900">{{ formatCurrency(totals.total_vat) }}</td>
-                        <td class="px-2 py-2 text-right text-xs text-gray-900">{{ formatCurrency(totals.total_surcharge) }}</td>
-                        <td class="px-2 py-2 text-right text-xs text-gray-900">{{ formatCurrency(totals.total) }}</td>
+                        <td class="px-2 py-3 text-sm text-gray-900" colspan="7">{{ $t('books.total_period') }}</td>
+                        <td class="px-2 py-3 text-right text-sm text-gray-900">{{ formatCurrency(totals.tax_base) }}</td>
+                        <td class="px-2 py-3 text-right text-sm text-gray-900">{{ formatCurrency(totals.total_vat) }}</td>
+                        <td class="px-2 py-3 text-right text-sm text-gray-900">{{ formatCurrency(totals.total_surcharge) }}</td>
+                        <td class="px-2 py-3 text-right text-sm text-gray-900">{{ formatCurrency(totals.total) }}</td>
                     </tr>
                 </tfoot>
             </table>

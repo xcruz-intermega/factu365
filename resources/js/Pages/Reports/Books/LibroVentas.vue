@@ -94,50 +94,48 @@ const monthGroups = () => {
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-2 py-2 text-left text-xs font-medium uppercase text-gray-500">{{ $t('books.col_date') }}</th>
-                        <th class="px-2 py-2 text-left text-xs font-medium uppercase text-gray-500">{{ $t('books.col_number') }}</th>
-                        <th class="px-2 py-2 text-left text-xs font-medium uppercase text-gray-500">{{ $t('books.col_series') }}</th>
-                        <th class="px-2 py-2 text-left text-xs font-medium uppercase text-gray-500">{{ $t('books.col_client') }}</th>
-                        <th class="px-2 py-2 text-left text-xs font-medium uppercase text-gray-500">{{ $t('books.col_nif') }}</th>
-                        <th class="px-2 py-2 text-right text-xs font-medium uppercase text-gray-500">{{ $t('books.col_base') }}</th>
-                        <th class="px-2 py-2 text-right text-xs font-medium uppercase text-gray-500">{{ $t('books.col_vat') }}</th>
-                        <th class="px-2 py-2 text-right text-xs font-medium uppercase text-gray-500">{{ $t('books.col_irpf') }}</th>
-                        <th class="px-2 py-2 text-right text-xs font-medium uppercase text-gray-500">{{ $t('books.col_total') }}</th>
+                        <th class="px-2 py-3 text-left text-xs font-medium uppercase text-gray-500">{{ $t('books.col_date') }}</th>
+                        <th class="px-2 py-3 text-left text-xs font-medium uppercase text-gray-500">{{ $t('books.col_number') }}</th>
+                        <th class="px-2 py-3 text-left text-xs font-medium uppercase text-gray-500">{{ $t('books.col_client') }}</th>
+                        <th class="px-2 py-3 text-left text-xs font-medium uppercase text-gray-500">{{ $t('books.col_nif') }}</th>
+                        <th class="px-2 py-3 text-right text-xs font-medium uppercase text-gray-500">{{ $t('books.col_base') }}</th>
+                        <th class="px-2 py-3 text-right text-xs font-medium uppercase text-gray-500">{{ $t('books.col_vat') }}</th>
+                        <th class="px-2 py-3 text-right text-xs font-medium uppercase text-gray-500">{{ $t('books.col_irpf') }}</th>
+                        <th class="px-2 py-3 text-right text-xs font-medium uppercase text-gray-500">{{ $t('books.col_total') }}</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
                     <template v-for="group in monthGroups()" :key="group.key">
                         <tr v-for="(row, i) in group.rows" :key="row.id" class="hover:bg-gray-50">
-                            <td class="whitespace-nowrap px-2 py-1.5 text-xs text-gray-700">{{ row.issue_date }}</td>
-                            <td class="whitespace-nowrap px-2 py-1.5 text-xs font-medium text-gray-900">{{ row.number }}</td>
-                            <td class="whitespace-nowrap px-2 py-1.5 text-xs text-gray-500">{{ row.series_name || '' }}</td>
-                            <td class="whitespace-nowrap px-2 py-1.5 text-xs text-gray-700">{{ row.client_name }}</td>
-                            <td class="whitespace-nowrap px-2 py-1.5 text-xs text-gray-500">{{ row.client_nif }}</td>
-                            <td class="whitespace-nowrap px-4 py-2 text-right text-sm text-gray-700">{{ formatCurrency(row.tax_base) }}</td>
-                            <td class="whitespace-nowrap px-4 py-2 text-right text-sm text-gray-700">{{ formatCurrency(row.total_vat) }}</td>
-                            <td class="whitespace-nowrap px-4 py-2 text-right text-sm text-red-600">{{ formatCurrency(row.total_irpf) }}</td>
-                            <td class="whitespace-nowrap px-4 py-2 text-right text-sm font-semibold text-gray-900">{{ formatCurrency(row.total) }}</td>
+                            <td class="whitespace-nowrap px-2 py-2 text-sm text-gray-700">{{ row.issue_date }}</td>
+                            <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">{{ row.number }}</td>
+                            <td class="whitespace-nowrap px-2 py-2 text-sm text-gray-700">{{ row.client_name }}</td>
+                            <td class="whitespace-nowrap px-2 py-2 text-sm text-gray-500">{{ row.client_nif }}</td>
+                            <td class="whitespace-nowrap px-2 py-2 text-right text-sm text-gray-700">{{ formatCurrency(row.tax_base) }}</td>
+                            <td class="whitespace-nowrap px-2 py-2 text-right text-sm text-gray-700">{{ formatCurrency(row.total_vat) }}</td>
+                            <td class="whitespace-nowrap px-2 py-2 text-right text-sm text-red-600">{{ formatCurrency(row.total_irpf) }}</td>
+                            <td class="whitespace-nowrap px-2 py-2 text-right text-sm font-semibold text-gray-900">{{ formatCurrency(row.total) }}</td>
                         </tr>
                         <!-- Monthly subtotal -->
                         <tr class="bg-blue-50">
-                            <td colspan="5" class="px-2 py-1.5 text-xs font-medium text-blue-800">{{ $t('books.monthly_subtotal', { month: group.label }) }}</td>
-                            <td class="px-4 py-2 text-right text-sm font-medium text-blue-800">{{ formatCurrency(group.totals.tax_base) }}</td>
-                            <td class="px-4 py-2 text-right text-sm font-medium text-blue-800">{{ formatCurrency(group.totals.total_vat) }}</td>
-                            <td class="px-2 py-1.5 text-right text-xs font-medium text-red-700">{{ formatCurrency(group.totals.total_irpf) }}</td>
-                            <td class="px-2 py-1.5 text-right text-xs font-bold text-blue-900">{{ formatCurrency(group.totals.total) }}</td>
+                            <td colspan="4" class="px-2 py-2 text-sm font-medium text-blue-800">{{ $t('books.monthly_subtotal', { month: group.label }) }}</td>
+                            <td class="px-2 py-2 text-right text-sm font-medium text-blue-800">{{ formatCurrency(group.totals.tax_base) }}</td>
+                            <td class="px-2 py-2 text-right text-sm font-medium text-blue-800">{{ formatCurrency(group.totals.total_vat) }}</td>
+                            <td class="px-2 py-2 text-right text-sm font-medium text-red-700">{{ formatCurrency(group.totals.total_irpf) }}</td>
+                            <td class="px-2 py-2 text-right text-sm font-bold text-blue-900">{{ formatCurrency(group.totals.total) }}</td>
                         </tr>
                     </template>
                     <tr v-if="data.length === 0">
-                        <td colspan="9" class="px-2 py-8 text-center text-xs text-gray-400">{{ $t('books.no_data') }}</td>
+                        <td colspan="8" class="px-2 py-8 text-center text-sm text-gray-400">{{ $t('books.no_data') }}</td>
                     </tr>
                 </tbody>
                 <tfoot v-if="data.length > 0" class="bg-gray-50 font-semibold">
                     <tr>
-                        <td class="px-2 py-2 text-xs text-gray-900" colspan="5">{{ $t('books.total_period') }}</td>
-                        <td class="px-2 py-2 text-right text-xs text-gray-900">{{ formatCurrency(totals.tax_base) }}</td>
-                        <td class="px-2 py-2 text-right text-xs text-gray-900">{{ formatCurrency(totals.total_vat) }}</td>
-                        <td class="px-2 py-2 text-right text-xs text-red-700">{{ formatCurrency(totals.total_irpf) }}</td>
-                        <td class="px-2 py-2 text-right text-xs text-gray-900">{{ formatCurrency(totals.total) }}</td>
+                        <td class="px-2 py-3 text-sm text-gray-900" colspan="4">{{ $t('books.total_period') }}</td>
+                        <td class="px-2 py-3 text-right text-sm text-gray-900">{{ formatCurrency(totals.tax_base) }}</td>
+                        <td class="px-2 py-3 text-right text-sm text-gray-900">{{ formatCurrency(totals.total_vat) }}</td>
+                        <td class="px-2 py-3 text-right text-sm text-red-700">{{ formatCurrency(totals.total_irpf) }}</td>
+                        <td class="px-2 py-3 text-right text-sm text-gray-900">{{ formatCurrency(totals.total) }}</td>
                     </tr>
                 </tfoot>
             </table>
