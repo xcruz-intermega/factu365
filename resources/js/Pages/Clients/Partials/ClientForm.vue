@@ -487,7 +487,7 @@ const provinces = [
                                     </select>
                                 </td>
                                 <td class="px-3 py-2">
-                                    <input type="number" v-model.number="editDiscount.discount_percent" min="0.01" max="100" step="0.01" class="block w-20 rounded-md border-gray-300 text-sm text-right shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+                                    <input type="number" v-model.number="editDiscount.discount_percent" min="0.01" max="100" step="0.1" class="block w-20 rounded-md border-gray-300 text-sm text-right shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
                                 </td>
                                 <td class="px-3 py-2">
                                     <select v-if="editDiscount.discount_type === 'type'" v-model="editDiscount.product_type" class="block w-full rounded-md border-gray-300 text-xs shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
@@ -539,7 +539,7 @@ const provinces = [
                     </div>
                     <div>
                         <label class="block text-xs font-medium text-gray-600">{{ $t('clients.discount_pct') }}</label>
-                        <input type="number" v-model.number="newDiscount.discount_percent" min="0.01" max="100" step="0.01" class="mt-0.5 block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+                        <input type="number" v-model.number="newDiscount.discount_percent" min="0.01" max="100" step="0.1" class="mt-0.5 block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
                     </div>
                     <div v-if="newDiscount.discount_type === 'type'">
                         <label class="block text-xs font-medium text-gray-600">{{ $t('clients.product_type') }}</label>

@@ -40,7 +40,7 @@ const formatCurrency = (val: number) => {
                         type="number"
                         :value="globalDiscountPercent"
                         @input="emit('update:globalDiscountPercent', Number(($event.target as HTMLInputElement).value))"
-                        step="0.01"
+                        step="0.1"
                         min="0"
                         max="100"
                         class="w-16 rounded border-gray-300 px-1.5 py-0.5 text-right text-xs shadow-sm focus:border-indigo-500 focus:ring-indigo-500"

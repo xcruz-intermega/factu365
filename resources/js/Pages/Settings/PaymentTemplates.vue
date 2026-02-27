@@ -159,7 +159,7 @@ const totalPercentage = (lines: TemplateLine[]) => {
                             </div>
                             <div>
                                 <label class="text-xs text-gray-500">{{ $t('settings.template_pct') }}</label>
-                                <input type="number" v-model.number="line.percentage" min="0" max="100" step="0.01" class="block w-24 rounded-md border-gray-300 text-sm" />
+                                <input type="number" v-model.number="line.percentage" min="0" max="100" step="0.1" class="block w-24 rounded-md border-gray-300 text-sm" />
                             </div>
                             <button v-if="newForm.lines.length > 1" type="button" @click="removeNewLine(i)" class="mt-4 text-red-500 hover:text-red-700">
                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
@@ -206,7 +206,7 @@ const totalPercentage = (lines: TemplateLine[]) => {
                                     </div>
                                     <div>
                                         <label class="text-xs text-gray-500">%</label>
-                                        <input type="number" v-model.number="line.percentage" min="0" max="100" step="0.01" class="block w-24 rounded-md border-gray-300 text-sm" />
+                                        <input type="number" v-model.number="line.percentage" min="0" max="100" step="0.1" class="block w-24 rounded-md border-gray-300 text-sm" />
                                     </div>
                                     <button v-if="editForm.lines.length > 1" type="button" @click="removeEditLine(i)" class="mt-4 text-red-500 hover:text-red-700">
                                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>

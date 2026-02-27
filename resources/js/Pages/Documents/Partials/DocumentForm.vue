@@ -332,7 +332,7 @@ const todayStr = new Date().toISOString().split('T')[0];
                                 <input type="date" v-model="dd.due_date" class="block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
                             </td>
                             <td class="px-3 py-2">
-                                <input type="number" v-model.number="dd.percentage" min="0" max="100" step="0.01" class="block w-20 rounded-md border-gray-300 text-sm text-right shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+                                <input type="number" v-model.number="dd.percentage" min="0" max="100" step="0.1" class="block w-20 rounded-md border-gray-300 text-sm text-right shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
                             </td>
                             <td class="px-3 py-2">
                                 <input type="number" v-model.number="dd.amount" min="0" step="0.01" class="block w-28 rounded-md border-gray-300 text-sm text-right shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />

@@ -185,7 +185,7 @@ const handleFileChange = (e: Event) => {
                     <input
                         type="number"
                         v-model="form.irpf_rate"
-                        step="0.01"
+                        step="0.1"
                         min="0"
                         max="100"
                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
