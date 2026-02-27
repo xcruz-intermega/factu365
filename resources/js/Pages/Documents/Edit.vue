@@ -25,29 +25,29 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const doc = props.document;
+const doc = computed(() => props.document);
 
 const form = useForm({
-    document_type: doc.document_type,
-    invoice_type: doc.invoice_type,
-    title: doc.title || '',
-    client_id: doc.client_id,
-    series_id: doc.series_id,
-    issue_date: doc.issue_date?.split('T')[0] ?? '',
-    due_date: doc.due_date?.split('T')[0] ?? '',
-    operation_date: doc.operation_date?.split('T')[0] ?? '',
-    global_discount_percent: Number(doc.global_discount_percent || 0),
-    regime_key: doc.regime_key || '01',
-    notes: doc.notes || '',
-    footer_text: doc.footer_text || '',
-    corrected_document_id: doc.corrected_document_id,
-    rectificative_type: doc.rectificative_type,
-    due_dates: (doc.due_dates || []).map((dd: any) => ({
+    document_type: props.document.document_type,
+    invoice_type: props.document.invoice_type,
+    title: props.document.title || '',
+    client_id: props.document.client_id,
+    series_id: props.document.series_id,
+    issue_date: props.document.issue_date?.split('T')[0] ?? '',
+    due_date: props.document.due_date?.split('T')[0] ?? '',
+    operation_date: props.document.operation_date?.split('T')[0] ?? '',
+    global_discount_percent: Number(props.document.global_discount_percent || 0),
+    regime_key: props.document.regime_key || '01',
+    notes: props.document.notes || '',
+    footer_text: props.document.footer_text || '',
+    corrected_document_id: props.document.corrected_document_id,
+    rectificative_type: props.document.rectificative_type,
+    due_dates: (props.document.due_dates || []).map((dd: any) => ({
         due_date: dd.due_date?.split('T')[0] ?? '',
         amount: Number(dd.amount),
         percentage: Number(dd.percentage),
     })),
-    lines: (doc.lines || []).map((l: any): LineInput => ({
+    lines: (props.document.lines || []).map((l: any): LineInput => ({
         product_id: l.product_id,
         concept: l.concept,
         description: l.description || '',
@@ -63,7 +63,7 @@ const form = useForm({
 });
 
 const submit = () => {
-    form.put(route('documents.update', { type: props.documentType, document: doc.id }));
+    form.put(route('documents.update', { type: props.documentType, document: doc.value.id }));
 };
 
 // Finalize
@@ -72,7 +72,7 @@ const finalizing = ref(false);
 
 const doFinalize = () => {
     finalizing.value = true;
-    router.post(route('documents.finalize', { type: props.documentType, document: doc.id }), {}, {
+    router.post(route('documents.finalize', { type: props.documentType, document: doc.value.id }), {}, {
         onFinish: () => {
             finalizing.value = false;
             finalizeDialog.value = false;
@@ -85,7 +85,7 @@ const converting = ref(false);
 
 const doConvert = (targetType?: string) => {
     converting.value = true;
-    router.post(route('documents.convert', { type: props.documentType, document: doc.id }), {
+    router.post(route('documents.convert', { type: props.documentType, document: doc.value.id }), {
         target_type: targetType || undefined,
     }, {
         onFinish: () => { converting.value = false; },
@@ -96,7 +96,7 @@ const isNonFiscal = ['quote', 'delivery_note'].includes(props.documentType);
 const isAccountable = ['invoice', 'rectificative', 'purchase_invoice'].includes(props.documentType);
 
 const toggleAccounted = () => {
-    router.post(route('documents.toggle-accounted', { type: props.documentType, document: doc.id }), {}, {
+    router.post(route('documents.toggle-accounted', { type: props.documentType, document: doc.value.id }), {}, {
         preserveScroll: true,
     });
 };
@@ -106,40 +106,40 @@ const creatingRect = ref(false);
 
 const doCreateRectificative = () => {
     creatingRect.value = true;
-    router.post(route('documents.rectificative', { document: doc.id }), {}, {
+    router.post(route('documents.rectificative', { document: doc.value.id }), {}, {
         onFinish: () => { creatingRect.value = false; },
     });
 };
 
 // Status update
 const updateStatus = (status: string) => {
-    router.patch(route('documents.update-status', { type: props.documentType, document: doc.id }), {
+    router.patch(route('documents.update-status', { type: props.documentType, document: doc.value.id }), {
         status,
     });
 };
 
 // PDF actions
 const downloadPdf = () => {
-    window.location.href = route('documents.download-pdf', { type: props.documentType, document: doc.id });
+    window.location.href = route('documents.download-pdf', { type: props.documentType, document: doc.value.id });
 };
 
 const previewPdf = () => {
-    window.open(route('documents.preview-pdf', { type: props.documentType, document: doc.id }), '_blank');
+    window.open(route('documents.preview-pdf', { type: props.documentType, document: doc.value.id }), '_blank');
 };
 
 // FacturaE export
 const canExportFacturae = computed(() =>
-    ['invoice', 'rectificative'].includes(props.documentType) && doc.status !== 'draft'
+    ['invoice', 'rectificative'].includes(props.documentType) && doc.value.status !== 'draft'
 );
 
 const downloadFacturae = () => {
-    window.location.href = route('documents.download-facturae', { type: props.documentType, document: doc.id });
+    window.location.href = route('documents.download-facturae', { type: props.documentType, document: doc.value.id });
 };
 
 // Email dialog
 const emailDialog = ref(false);
 const emailForm = useForm({
-    email: doc.client?.email || '',
+    email: props.document.client?.email || '',
     cc: '',
     bcc: '',
     subject: '',
@@ -149,18 +149,18 @@ const emailForm = useForm({
 const sendingEmail = ref(false);
 
 const openEmailDialog = () => {
-    emailForm.email = doc.client?.email || '';
+    emailForm.email = doc.value.client?.email || '';
     emailForm.cc = '';
     emailForm.bcc = '';
-    emailForm.subject = `${props.documentTypeLabel} ${doc.number}`;
-    emailForm.message = trans('documents.email_default_message', { type: props.documentTypeLabel, number: doc.number });
+    emailForm.subject = `${props.documentTypeLabel} ${doc.value.number}`;
+    emailForm.message = trans('documents.email_default_message', { type: props.documentTypeLabel, number: doc.value.number });
     emailForm.attachments = 'pdf';
     emailDialog.value = true;
 };
 
 const doSendEmail = () => {
     sendingEmail.value = true;
-    router.post(route('documents.send-email', { type: props.documentType, document: doc.id }), {
+    router.post(route('documents.send-email', { type: props.documentType, document: doc.value.id }), {
         email: emailForm.email,
         cc: emailForm.cc || undefined,
         bcc: emailForm.bcc || undefined,
