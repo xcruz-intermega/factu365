@@ -120,6 +120,19 @@ const seedDemoData = () => {
         },
     });
 };
+
+const showPurgeConfirm = ref(false);
+const purgeProcessing = ref(false);
+
+const purgeAllData = () => {
+    purgeProcessing.value = true;
+    router.post(route('settings.purge-all'), {}, {
+        onFinish: () => {
+            purgeProcessing.value = false;
+            showPurgeConfirm.value = false;
+        },
+    });
+};
 </script>
 
 <template>
@@ -370,7 +383,7 @@ const seedDemoData = () => {
                 {{ $t('settings.demo_description') }}
             </p>
 
-            <div v-if="!showDemoConfirm">
+            <div v-if="!showDemoConfirm && !showPurgeConfirm" class="flex gap-3">
                 <button
                     type="button"
                     @click="showDemoConfirm = true"
@@ -378,8 +391,15 @@ const seedDemoData = () => {
                 >
                     {{ $t('settings.generate_demo') }}
                 </button>
+                <button
+                    type="button"
+                    @click="showPurgeConfirm = true"
+                    class="inline-flex items-center rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500"
+                >
+                    {{ $t('settings.purge_all') }}
+                </button>
             </div>
-            <div v-else class="rounded-md border border-amber-400 bg-amber-100 p-3">
+            <div v-if="showDemoConfirm" class="rounded-md border border-amber-400 bg-amber-100 p-3">
                 <p class="mb-3 text-sm font-medium text-amber-900">
                     {{ $t('settings.demo_confirm') }}
                 </p>
@@ -396,6 +416,32 @@ const seedDemoData = () => {
                         type="button"
                         @click="showDemoConfirm = false"
                         :disabled="demoProcessing"
+                        class="inline-flex items-center rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:opacity-50"
+                    >
+                        {{ $t('common.cancel') }}
+                    </button>
+                </div>
+            </div>
+            <div v-if="showPurgeConfirm" class="rounded-md border border-red-400 bg-red-50 p-3">
+                <p class="mb-1 text-sm font-medium text-red-900">
+                    {{ $t('settings.purge_confirm') }}
+                </p>
+                <p class="mb-3 text-xs text-red-700">
+                    {{ $t('settings.purge_description') }}
+                </p>
+                <div class="flex gap-2">
+                    <button
+                        type="button"
+                        @click="purgeAllData"
+                        :disabled="purgeProcessing"
+                        class="inline-flex items-center rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 disabled:opacity-50"
+                    >
+                        {{ purgeProcessing ? $t('settings.purging') : $t('common.confirm') }}
+                    </button>
+                    <button
+                        type="button"
+                        @click="showPurgeConfirm = false"
+                        :disabled="purgeProcessing"
                         class="inline-flex items-center rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:opacity-50"
                     >
                         {{ $t('common.cancel') }}

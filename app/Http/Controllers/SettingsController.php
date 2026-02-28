@@ -2,14 +2,27 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AeatSubmission;
+use App\Models\BankAccount;
 use App\Models\Certificate;
+use App\Models\Client;
+use App\Models\ClientDiscount;
 use App\Models\CompanyProfile;
 use App\Models\Document;
+use App\Models\DocumentDueDate;
+use App\Models\DocumentLine;
 use App\Models\DocumentSeries;
+use App\Models\Expense;
+use App\Models\InvoicingRecord;
+use App\Models\Product;
+use App\Models\ProductComponent;
+use App\Models\StockMovement;
+use App\Models\TreasuryEntry;
 use App\Models\VatRate;
 use App\Services\ImageService;
 use App\Services\VeriFactu\CertificateManager;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
@@ -256,6 +269,32 @@ class SettingsController extends Controller
         $seeder->run();
 
         return back()->with('success', __('settings.flash_demo_generated'));
+    }
+
+    public function purgeAllData(): \Illuminate\Http\RedirectResponse
+    {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0');
+
+        TreasuryEntry::truncate();
+        DocumentDueDate::truncate();
+        DocumentLine::truncate();
+        InvoicingRecord::truncate();
+        AeatSubmission::truncate();
+        Document::truncate();
+        StockMovement::truncate();
+        ProductComponent::truncate();
+        Expense::truncate();
+        Product::truncate();
+        ClientDiscount::truncate();
+        Client::truncate();
+        BankAccount::truncate();
+
+        DB::statement('SET FOREIGN_KEY_CHECKS=1');
+
+        // Clean product images
+        Storage::disk('local')->deleteDirectory('products');
+
+        return back()->with('success', __('settings.flash_purge_completed'));
     }
 
     // ─── VAT Rates ───

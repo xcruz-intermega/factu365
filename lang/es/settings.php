@@ -37,10 +37,14 @@ return [
     'remove_logo' => 'Eliminar logo',
     'flash_logo_deleted' => 'Logo eliminado.',
     'section_demo' => 'Datos de prueba',
-    'demo_description' => 'Genera datos ficticios para demostración: ~100 clientes, 70 productos, 200 documentos (facturas, presupuestos, albaranes) y 100 gastos.',
+    'demo_description' => 'Genera datos ficticios para demostración: ~100 clientes, 70 productos con imágenes, 200 documentos (facturas, presupuestos, albaranes), 100 gastos y catálogo público activado.',
     'generate_demo' => 'Generar datos de prueba',
     'demo_confirm' => 'Se crearán ~1.000 registros ficticios. Esta acción no se puede deshacer fácilmente. ¿Continuar?',
     'generating' => 'Generando...',
+    'purge_all' => 'Borrar todo',
+    'purge_confirm' => '¿Estás seguro de que quieres borrar TODOS los datos transaccionales?',
+    'purge_description' => 'Se eliminarán clientes, productos, documentos, gastos, movimientos de stock, tesorería e imágenes de productos. La configuración de empresa, usuarios, series, plantillas y tipos de IVA se mantendrán.',
+    'purging' => 'Borrando...',
 
     // Series
     'series_title' => 'Series de numeración',
@@ -222,6 +226,7 @@ return [
     'flash_pdf_updated' => 'Plantilla actualizada.',
     'flash_pdf_deleted' => 'Plantilla eliminada.',
     'flash_demo_generated' => 'Datos de prueba generados correctamente.',
+    'flash_purge_completed' => 'Todos los datos transaccionales han sido eliminados.',
     'flash_user_created' => 'Usuario creado correctamente.',
     'flash_user_updated' => 'Usuario actualizado.',
     'flash_user_deleted' => 'Usuario eliminado.',

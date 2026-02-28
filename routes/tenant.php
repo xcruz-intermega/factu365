@@ -210,6 +210,7 @@ Route::prefix('/{tenant}')->middleware([
                 Route::post('/pdf-templates/import', [PdfTemplateController::class, 'import'])->name('pdf-templates.import');
 
                 Route::post('/demo-data', [SettingsController::class, 'seedDemoData'])->name('demo-data');
+                Route::post('/purge-all', [SettingsController::class, 'purgeAllData'])->name('purge-all');
 
 
                 Route::get('/vat-rates', [SettingsController::class, 'vatRates'])->name('vat-rates');

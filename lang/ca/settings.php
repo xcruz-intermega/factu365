@@ -37,10 +37,14 @@ return [
     'remove_logo' => 'Eliminar logo',
     'flash_logo_deleted' => 'Logo eliminat.',
     'section_demo' => 'Dades de prova',
-    'demo_description' => 'Genera dades fictícies per a demostració: ~100 clients, 70 productes, 200 documents (factures, pressupostos, albarans) i 100 despeses.',
+    'demo_description' => 'Genera dades fictícies per a demostració: ~100 clients, 70 productes amb imatges, 200 documents (factures, pressupostos, albarans), 100 despeses i catàleg públic activat.',
     'generate_demo' => 'Generar dades de prova',
     'demo_confirm' => 'Es crearan ~1.000 registres ficticis. Aquesta acció no es pot desfer fàcilment. Continuar?',
     'generating' => 'Generant...',
+    'purge_all' => 'Esborrar-ho tot',
+    'purge_confirm' => 'Esteu segur que voleu esborrar TOTES les dades transaccionals?',
+    'purge_description' => 'S\'eliminaran clients, productes, documents, despeses, moviments d\'estoc, tresoreria i imatges de productes. La configuració d\'empresa, usuaris, sèries, plantilles i tipus d\'IVA es mantindran.',
+    'purging' => 'Esborrant...',
 
     // Series
     'series_title' => 'Sèries de numeració',
@@ -222,6 +226,7 @@ return [
     'flash_pdf_updated' => 'Plantilla actualitzada.',
     'flash_pdf_deleted' => 'Plantilla eliminada.',
     'flash_demo_generated' => 'Dades de prova generades correctament.',
+    'flash_purge_completed' => 'Totes les dades transaccionals han estat eliminades.',
     'flash_user_created' => 'Usuari creat correctament.',
     'flash_user_updated' => 'Usuari actualitzat.',
     'flash_user_deleted' => 'Usuari eliminat.',

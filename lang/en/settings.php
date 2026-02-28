@@ -37,10 +37,14 @@ return [
     'remove_logo' => 'Remove logo',
     'flash_logo_deleted' => 'Logo deleted.',
     'section_demo' => 'Demo data',
-    'demo_description' => 'Generate fictitious data for demonstration: ~100 clients, 70 products, 200 documents (invoices, quotes, delivery notes) and 100 expenses.',
+    'demo_description' => 'Generate fictitious data for demonstration: ~100 clients, 70 products with images, 200 documents (invoices, quotes, delivery notes), 100 expenses and public catalogue enabled.',
     'generate_demo' => 'Generate demo data',
     'demo_confirm' => '~1,000 fictitious records will be created. This action cannot be easily undone. Continue?',
     'generating' => 'Generating...',
+    'purge_all' => 'Delete all data',
+    'purge_confirm' => 'Are you sure you want to delete ALL transactional data?',
+    'purge_description' => 'This will delete clients, products, documents, expenses, stock movements, treasury entries and product images. Company settings, users, series, templates and VAT rates will be kept.',
+    'purging' => 'Deleting...',
 
     // Series
     'series_title' => 'Numbering series',
@@ -222,6 +226,7 @@ return [
     'flash_pdf_updated' => 'Template updated.',
     'flash_pdf_deleted' => 'Template deleted.',
     'flash_demo_generated' => 'Demo data generated successfully.',
+    'flash_purge_completed' => 'All transactional data has been deleted.',
     'flash_user_created' => 'User created successfully.',
     'flash_user_updated' => 'User updated.',
     'flash_user_deleted' => 'User deleted.',

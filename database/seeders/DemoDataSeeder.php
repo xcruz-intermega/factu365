@@ -20,6 +20,9 @@ use App\Models\StockMovement;
 use App\Models\TreasuryEntry;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Laravel\Facades\Image;
+use Intervention\Image\Typography\FontFactory;
 
 class DemoDataSeeder extends Seeder
 {
@@ -202,6 +205,7 @@ class DemoDataSeeder extends Seeder
             'website' => 'https://factu01.es',
             'tax_regime' => 'general',
             'irpf_rate' => 15.00,
+            'catalog_enabled' => true,
         ]);
 
         $this->command?->info('Company profile created.');
@@ -351,11 +355,24 @@ class DemoDataSeeder extends Seeder
     private function seedProducts(): array
     {
         $products = [];
+        $placeholderColors = [
+            '#6366F1', '#8B5CF6', '#EC4899', '#EF4444', '#F97316',
+            '#EAB308', '#22C55E', '#14B8A6', '#06B6D4', '#3B82F6',
+        ];
+
         foreach ($this->productNames as $i => $p) {
             $isPhysical = $p['type'] === 'product';
             $trackStock = $isPhysical && ($i % 5 !== 0); // ~80% of physical products track stock
             $stockQty = $trackStock ? rand(10, 200) : 0;
             $minStock = $trackStock ? rand(5, 20) : 0;
+
+            $imagePath = null;
+            if ($isPhysical) {
+                $imagePath = $this->generatePlaceholderImage(
+                    $p['ref'],
+                    $placeholderColors[$i % count($placeholderColors)],
+                );
+            }
 
             $product = Product::create([
                 'type' => $p['type'],
@@ -368,6 +385,7 @@ class DemoDataSeeder extends Seeder
                 'track_stock' => $trackStock,
                 'stock_quantity' => $stockQty,
                 'minimum_stock' => $minStock,
+                'image_path' => $imagePath,
             ]);
 
             if ($trackStock) {
@@ -385,9 +403,29 @@ class DemoDataSeeder extends Seeder
         }
 
         $trackCount = collect($products)->where('track_stock', true)->count();
-        $this->command?->info(count($products) . " products created ({$trackCount} with stock tracking).");
+        $imageCount = collect($products)->whereNotNull('image_path')->count();
+        $this->command?->info(count($products) . " products created ({$trackCount} with stock, {$imageCount} with images).");
 
         return $products;
+    }
+
+    private function generatePlaceholderImage(string $ref, string $bgColor): string
+    {
+        $image = Image::create(400, 300)->fill($bgColor);
+
+        $image->text($ref, 200, 150, function (FontFactory $font) {
+            $font->size(36);
+            $font->color('#FFFFFF');
+            $font->align('center');
+            $font->valign('middle');
+        });
+
+        $filename = 'demo_' . strtolower(str_replace('-', '_', $ref)) . '.jpg';
+        $path = 'products/' . $filename;
+
+        Storage::disk('local')->put($path, (string) $image->toJpeg(85));
+
+        return $path;
     }
 
     private function seedDocuments(array $clients, array $products, ?BankAccount $bankAccount): void
