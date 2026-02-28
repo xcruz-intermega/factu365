@@ -7,6 +7,7 @@ use App\Models\CompanyProfile;
 use App\Models\Document;
 use App\Models\DocumentSeries;
 use App\Models\VatRate;
+use App\Services\ImageService;
 use App\Services\VeriFactu\CertificateManager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -56,7 +57,7 @@ class SettingsController extends Controller
             if ($company?->logo_path) {
                 Storage::disk('local')->delete($company->logo_path);
             }
-            $validated['logo_path'] = $request->file('logo')->store('logos', 'local');
+            $validated['logo_path'] = app(ImageService::class)->store($request->file('logo'), 'logos', 400);
         }
         unset($validated['logo']);
 

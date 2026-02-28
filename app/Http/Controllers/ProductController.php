@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\ProductComponent;
 use App\Models\ProductFamily;
 use App\Models\StockMovement;
+use App\Services\ImageService;
 use App\Services\StockService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -49,7 +50,7 @@ class ProductController extends Controller
         unset($validated['image']);
 
         if ($request->hasFile('image')) {
-            $validated['image_path'] = $request->file('image')->store('products', 'local');
+            $validated['image_path'] = app(ImageService::class)->store($request->file('image'), 'products', 800);
         }
 
         Product::create($validated);
@@ -78,7 +79,7 @@ class ProductController extends Controller
             if ($product->image_path) {
                 Storage::disk('local')->delete($product->image_path);
             }
-            $validated['image_path'] = $request->file('image')->store('products', 'local');
+            $validated['image_path'] = app(ImageService::class)->store($request->file('image'), 'products', 800);
         }
 
         $product->update($validated);
