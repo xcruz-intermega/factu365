@@ -34,6 +34,8 @@ return [
     'default_irpf' => 'Retenció IRPF predeterminada (%)',
     'section_logo' => 'Logo',
     'logo_exists' => 'Logo actual desat. Puja un de nou per substituir-lo.',
+    'remove_logo' => 'Eliminar logo',
+    'flash_logo_deleted' => 'Logo eliminat.',
     'section_demo' => 'Dades de prova',
     'demo_description' => 'Genera dades fictícies per a demostració: ~100 clients, 70 productes, 200 documents (factures, pressupostos, albarans) i 100 despeses.',
     'generate_demo' => 'Generar dades de prova',

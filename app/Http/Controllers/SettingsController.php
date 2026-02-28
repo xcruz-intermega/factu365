@@ -19,8 +19,13 @@ class SettingsController extends Controller
 
     public function companyProfile()
     {
+        $company = CompanyProfile::first();
+
         return Inertia::render('Settings/CompanyProfile', [
-            'company' => CompanyProfile::first(),
+            'company' => $company,
+            'logoUrl' => $company?->logo_path && Storage::disk('local')->exists($company->logo_path)
+                ? route('settings.company.logo')
+                : null,
         ]);
     }
 
@@ -62,6 +67,29 @@ class SettingsController extends Controller
         }
 
         return back()->with('success', __('settings.flash_company_updated'));
+    }
+
+    public function companyLogo()
+    {
+        $company = CompanyProfile::first();
+
+        if (! $company?->logo_path || ! Storage::disk('local')->exists($company->logo_path)) {
+            abort(404);
+        }
+
+        return response()->file(Storage::disk('local')->path($company->logo_path));
+    }
+
+    public function deleteCompanyLogo()
+    {
+        $company = CompanyProfile::first();
+
+        if ($company?->logo_path) {
+            Storage::disk('local')->delete($company->logo_path);
+            $company->update(['logo_path' => null]);
+        }
+
+        return back()->with('success', __('settings.flash_logo_deleted'));
     }
 
     // ─── Document Series ───

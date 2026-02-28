@@ -28,6 +28,7 @@ interface Company {
 
 const props = defineProps<{
     company: Company | null;
+    logoUrl: string | null;
 }>();
 
 const c = props.company;
@@ -55,11 +56,18 @@ const form = useForm({
     catalog_enabled: c?.catalog_enabled ?? false,
 });
 
+const logoPreview = ref<string | null>(null);
+
 const handleLogoChange = (e: Event) => {
     const input = e.target as HTMLInputElement;
     if (input.files?.length) {
         form.logo = input.files[0];
+        logoPreview.value = URL.createObjectURL(input.files[0]);
     }
+};
+
+const deleteLogo = () => {
+    router.delete(route('settings.company.logo.delete'));
 };
 
 const submit = () => {
@@ -212,9 +220,22 @@ const seedDemoData = () => {
                 <div class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
                     <h3 class="mb-3 text-sm font-semibold text-gray-900">{{ $t('settings.section_logo') }}</h3>
                     <div class="space-y-3">
+                        <!-- Current / new logo preview -->
+                        <div v-if="logoPreview || logoUrl" class="flex items-center gap-4">
+                            <img
+                                :src="logoPreview || logoUrl!"
+                                alt="Logo"
+                                class="h-16 w-auto max-w-[200px] rounded border border-gray-200 object-contain bg-white p-1"
+                            />
+                            <button
+                                v-if="!logoPreview && logoUrl"
+                                type="button"
+                                @click="deleteLogo"
+                                class="text-sm text-red-600 hover:text-red-800"
+                            >{{ $t('settings.remove_logo') }}</button>
+                        </div>
                         <input type="file" @change="handleLogoChange" accept=".jpg,.jpeg,.png,.svg,.webp" class="block w-full text-sm text-gray-500 file:mr-4 file:rounded-md file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-indigo-700 hover:file:bg-indigo-100" />
                         <p v-if="form.errors.logo" class="text-sm text-red-600">{{ form.errors.logo }}</p>
-                        <p v-if="company?.logo_path" class="text-xs text-gray-500">{{ $t('settings.logo_exists') }}</p>
                     </div>
                 </div>
             </div>

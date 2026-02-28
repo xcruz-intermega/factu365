@@ -34,6 +34,8 @@ return [
     'default_irpf' => 'Default IRPF withholding (%)',
     'section_logo' => 'Logo',
     'logo_exists' => 'Current logo saved. Upload a new one to replace it.',
+    'remove_logo' => 'Remove logo',
+    'flash_logo_deleted' => 'Logo deleted.',
     'section_demo' => 'Demo data',
     'demo_description' => 'Generate fictitious data for demonstration: ~100 clients, 70 products, 200 documents (invoices, quotes, delivery notes) and 100 expenses.',
     'generate_demo' => 'Generate demo data',

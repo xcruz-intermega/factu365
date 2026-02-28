@@ -185,6 +185,8 @@ Route::prefix('/{tenant}')->middleware([
                 Route::get('/company', [SettingsController::class, 'companyProfile'])->name('company');
                 Route::post('/company', [SettingsController::class, 'updateCompanyProfile'])->name('company.update');
                 Route::patch('/company/verifactu', [SettingsController::class, 'updateVerifactu'])->name('company.verifactu.update');
+                Route::get('/company/logo', [SettingsController::class, 'companyLogo'])->name('company.logo');
+                Route::delete('/company/logo', [SettingsController::class, 'deleteCompanyLogo'])->name('company.logo.delete');
 
                 Route::get('/series', [SettingsController::class, 'series'])->name('series');
                 Route::post('/series', [SettingsController::class, 'storeSeries'])->name('series.store');
