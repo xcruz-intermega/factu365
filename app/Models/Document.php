@@ -80,6 +80,7 @@ class Document extends Model
         'notes',
         'footer_text',
         'attachment_path',
+        'recurring_invoice_id',
     ];
 
     protected function casts(): array
@@ -131,6 +132,11 @@ class Document extends Model
     public function childDocuments(): HasMany
     {
         return $this->hasMany(self::class, 'parent_document_id');
+    }
+
+    public function recurringInvoice(): BelongsTo
+    {
+        return $this->belongsTo(RecurringInvoice::class);
     }
 
     public function dueDates(): HasMany

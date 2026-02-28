@@ -88,6 +88,7 @@ const sections = computed<NavSection[]>(() => [
             { name: trans('nav.quotes'), href: 'documents.index', routeParams: { type: 'quote' }, routeMatch: 'documents.*', icon: 'M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z' },
             { name: trans('nav.delivery_notes'), href: 'documents.index', routeParams: { type: 'delivery_note' }, routeMatch: 'documents.*', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01' },
             { name: trans('nav.rectificatives'), href: 'documents.index', routeParams: { type: 'rectificative' }, routeMatch: 'documents.*', icon: 'M11 15l-3-3m0 0l3-3m-3 3h8M3 12a9 9 0 1118 0 9 9 0 01-18 0z' },
+            { name: trans('nav.recurring_invoices'), href: 'recurring-invoices.index', routeMatch: 'recurring-invoices.*', activeUrls: ['/recurring-invoices'], icon: 'M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99' },
             { name: trans('nav.export_facturae'), href: 'documents.export-facturae', routeMatch: 'documents.export-facturae*', activeUrls: ['/documents/export-facturae'], icon: 'M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5' },
         ],
     },

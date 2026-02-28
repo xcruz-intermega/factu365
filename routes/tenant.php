@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\RecurringInvoiceController;
 use App\Http\Controllers\EInvoiceController;
 use App\Http\Controllers\FacturaEExportController;
 use App\Http\Controllers\ExpenseController;
@@ -76,6 +77,19 @@ Route::prefix('/{tenant}')->middleware([
         Route::post('/product-families', [ProductFamilyController::class, 'store'])->name('product-families.store');
         Route::put('/product-families/{family}', [ProductFamilyController::class, 'update'])->name('product-families.update');
         Route::delete('/product-families/{family}', [ProductFamilyController::class, 'destroy'])->name('product-families.destroy');
+
+        // Recurring Invoices (must be before documents/{type} to avoid capture)
+        Route::prefix('recurring-invoices')->name('recurring-invoices.')->group(function () {
+            Route::get('/', [RecurringInvoiceController::class, 'index'])->name('index');
+            Route::get('/create', [RecurringInvoiceController::class, 'create'])->name('create');
+            Route::post('/', [RecurringInvoiceController::class, 'store'])->name('store');
+            Route::get('/{recurringInvoice}', [RecurringInvoiceController::class, 'show'])->name('show');
+            Route::get('/{recurringInvoice}/edit', [RecurringInvoiceController::class, 'edit'])->name('edit');
+            Route::put('/{recurringInvoice}', [RecurringInvoiceController::class, 'update'])->name('update');
+            Route::delete('/{recurringInvoice}', [RecurringInvoiceController::class, 'destroy'])->name('destroy');
+            Route::post('/{recurringInvoice}/toggle-status', [RecurringInvoiceController::class, 'toggleStatus'])->name('toggle-status');
+            Route::post('/{recurringInvoice}/generate-now', [RecurringInvoiceController::class, 'generateNow'])->name('generate-now');
+        });
 
         // FacturaE bulk export (must be before documents/{type} to avoid capture)
         Route::get('/documents/export-facturae', [FacturaEExportController::class, 'index'])->name('documents.export-facturae');

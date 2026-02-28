@@ -16,6 +16,8 @@ use App\Models\Expense;
 use App\Models\InvoicingRecord;
 use App\Models\Product;
 use App\Models\ProductComponent;
+use App\Models\RecurringInvoice;
+use App\Models\RecurringInvoiceLine;
 use App\Models\StockMovement;
 use App\Models\TreasuryEntry;
 use App\Models\VatRate;
@@ -281,6 +283,8 @@ class SettingsController extends Controller
         InvoicingRecord::truncate();
         AeatSubmission::truncate();
         Document::truncate();
+        RecurringInvoiceLine::truncate();
+        RecurringInvoice::truncate();
         StockMovement::truncate();
         ProductComponent::truncate();
         Expense::truncate();

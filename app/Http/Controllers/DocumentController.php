@@ -203,7 +203,7 @@ class DocumentController extends Controller
         $this->validateDocumentType($type);
         $this->ensureDocumentMatchesType($document, $type);
 
-        $document->load(['lines' => fn ($q) => $q->orderBy('sort_order'), 'client', 'series', 'dueDates']);
+        $document->load(['lines' => fn ($q) => $q->orderBy('sort_order'), 'client', 'series', 'dueDates', 'recurringInvoice:id,name']);
 
         return Inertia::render('Documents/Edit', [
             'document' => $document,

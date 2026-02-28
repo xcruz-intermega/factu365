@@ -241,6 +241,9 @@ const formatCurrency = (val: number | string) => {
                 <Badge v-if="isAccountable && doc.accounted" color="green">
                     {{ $t('documents.filter_accounted') }}
                 </Badge>
+                <Badge v-if="doc.recurring_invoice_id && doc.recurring_invoice" color="purple">
+                    {{ $t('recurring.badge_from_recurring', { name: doc.recurring_invoice?.name || '' }) }}
+                </Badge>
             </div>
         </template>
 

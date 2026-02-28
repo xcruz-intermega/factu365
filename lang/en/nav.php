@@ -49,4 +49,5 @@ return [
     'export_facturae' => 'Export FacturaE',
     'vat_rates' => 'VAT Rates',
     'catalog' => 'Catalogue',
+    'recurring_invoices' => 'Recurring',
 ];

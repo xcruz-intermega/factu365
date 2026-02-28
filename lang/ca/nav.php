@@ -49,4 +49,5 @@ return [
     'export_facturae' => 'Exportar FacturaE',
     'vat_rates' => "Tipus d'IVA",
     'catalog' => 'Catàleg',
+    'recurring_invoices' => 'Recurrents',
 ];
