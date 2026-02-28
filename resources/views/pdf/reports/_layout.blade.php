@@ -146,7 +146,7 @@
                     </td>
                     <td style="width: 40%; text-align: right;">
                         @if($company->logo_path ?? false)
-                            <img src="{{ storage_path('app/public/' . $company->logo_path) }}" style="max-width: 140px; max-height: 50px;">
+                            <img src="{{ \Storage::disk('local')->path($company->logo_path) }}" style="max-width: 140px; max-height: 50px;">
                         @endif
                     </td>
                 </tr>

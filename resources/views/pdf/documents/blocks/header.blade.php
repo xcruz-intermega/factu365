@@ -31,14 +31,14 @@
                 @endif
                 <td style="width: {{ $showCompanyInfo ? '50' : '100' }}%; text-align: right;">
                     @if($showLogo && $company?->logo_path)
-                        <img src="{{ storage_path('app/private/' . $company->logo_path) }}" class="logo" alt="Logo">
+                        <img src="{{ \Storage::disk('local')->path($company->logo_path) }}" class="logo" alt="Logo">
                     @endif
                 </td>
             @elseif($logoPos === 'center')
                 {{-- Logo centered above --}}
                 <td style="width: 100%; text-align: center;">
                     @if($showLogo && $company?->logo_path)
-                        <img src="{{ storage_path('app/private/' . $company->logo_path) }}" class="logo" alt="Logo">
+                        <img src="{{ \Storage::disk('local')->path($company->logo_path) }}" class="logo" alt="Logo">
                         <br>
                     @endif
                     <span class="company-name">{{ $company?->trade_name ?: $company?->legal_name ?? '' }}</span>
@@ -63,7 +63,7 @@
                 {{-- Default: logo left, company info right --}}
                 <td style="width: 50%;">
                     @if($showLogo && $company?->logo_path)
-                        <img src="{{ storage_path('app/private/' . $company->logo_path) }}" class="logo" alt="Logo">
+                        <img src="{{ \Storage::disk('local')->path($company->logo_path) }}" class="logo" alt="Logo">
                         <br>
                     @endif
                     <span class="company-name">{{ $company?->trade_name ?: $company?->legal_name ?? '' }}</span>

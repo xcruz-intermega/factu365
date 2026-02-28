@@ -122,7 +122,7 @@
             <tr>
                 <td style="width: 50%;">
                     @if(($settings['show_logo'] ?? true) && $company?->logo_path)
-                        <img src="{{ storage_path('app/private/' . $company->logo_path) }}" class="logo" alt="Logo">
+                        <img src="{{ \Storage::disk('local')->path($company->logo_path) }}" class="logo" alt="Logo">
                         <br>
                     @endif
                     <span class="company-name">{{ $company?->trade_name ?: $company?->legal_name ?? '' }}</span>
