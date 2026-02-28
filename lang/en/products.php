@@ -126,4 +126,25 @@ return [
     'insufficient_stock' => 'Insufficient stock for \':name\' (available: :available).',
     'negative_stock_warning' => 'Stock will go negative',
     'stock_available' => 'Available: :qty',
+
+    // Image
+    'section_image' => 'Product image',
+    'image_help' => 'JPG, PNG or WebP. Max 2 MB.',
+    'remove_image' => 'Remove image',
+    'flash_image_deleted' => 'Image deleted.',
+    'col_image' => 'Image',
+    'no_image' => 'No image',
+
+    // Catalog
+    'catalog_title' => 'Product catalogue',
+    'public_catalog_title' => 'Catalogue',
+    'public_catalog_subtitle' => 'Products and services',
+    'catalog_pdf_title' => 'Product catalogue',
+    'download_catalog_pdf' => 'Download catalogue PDF',
+    'view_grid' => 'Grid view',
+    'view_table' => 'Table view',
+    'contact' => 'Contact',
+    'show_prices' => 'Show prices',
+    'show_images' => 'Show images',
+    'no_category' => 'Uncategorised',
 ];

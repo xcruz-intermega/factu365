@@ -29,6 +29,7 @@ class CompanyProfile extends Model
         'software_nif',
         'verifactu_enabled',
         'verifactu_environment',
+        'catalog_enabled',
     ];
 
     protected function casts(): array
@@ -36,6 +37,7 @@ class CompanyProfile extends Model
         return [
             'irpf_rate' => 'decimal:2',
             'verifactu_enabled' => 'boolean',
+            'catalog_enabled' => 'boolean',
         ];
     }
 }

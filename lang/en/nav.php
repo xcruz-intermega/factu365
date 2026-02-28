@@ -48,4 +48,5 @@ return [
     'bank_accounts' => 'Bank accounts',
     'export_facturae' => 'Export FacturaE',
     'vat_rates' => 'VAT Rates',
+    'catalog' => 'Catalogue',
 ];

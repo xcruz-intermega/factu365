@@ -41,6 +41,7 @@ class SettingsController extends Controller
             'tax_regime' => ['nullable', 'string', 'max:50'],
             'irpf_rate' => ['nullable', 'numeric', 'min:0', 'max:100'],
             'logo' => ['nullable', 'image', 'max:2048'],
+            'catalog_enabled' => ['boolean'],
         ]);
 
         $company = CompanyProfile::first();
@@ -50,7 +51,7 @@ class SettingsController extends Controller
             if ($company?->logo_path) {
                 Storage::disk('local')->delete($company->logo_path);
             }
-            $validated['logo_path'] = $request->file('logo')->store('logos', 'private');
+            $validated['logo_path'] = $request->file('logo')->store('logos', 'local');
         }
         unset($validated['logo']);
 

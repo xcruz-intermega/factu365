@@ -53,6 +53,7 @@ const props = defineProps<{
         exemption_code: string;
         irpf_applicable: boolean;
         unit: string;
+        image: File | null;
         track_stock: boolean;
         stock_quantity: number;
         minimum_stock: number;
@@ -64,7 +65,33 @@ const props = defineProps<{
     productId?: number;
     components?: ProductComponentData[];
     allProducts?: AllProduct[];
+    imageUrl?: string | null;
 }>();
+
+const imagePreview = ref<string | null>(props.imageUrl || null);
+
+const handleImageChange = (e: Event) => {
+    const input = e.target as HTMLInputElement;
+    if (input.files?.length) {
+        props.form.image = input.files[0];
+        imagePreview.value = URL.createObjectURL(input.files[0]);
+    }
+};
+
+const removeImage = () => {
+    if (props.productId) {
+        router.delete(route('products.image.delete', props.productId), {
+            preserveScroll: true,
+            onSuccess: () => {
+                props.form.image = null;
+                imagePreview.value = null;
+            },
+        });
+    } else {
+        props.form.image = null;
+        imagePreview.value = null;
+    }
+};
 
 const emit = defineEmits<{
     submit: [];
@@ -233,6 +260,39 @@ const units = computed(() => [
                         class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                     />
                     <InputError class="mt-2" :message="form.errors.description" />
+                </div>
+            </div>
+        </div>
+
+        <!-- Imagen del producto -->
+        <div class="rounded-lg bg-white p-6 shadow">
+            <h3 class="mb-4 text-base font-semibold text-gray-900">{{ $t('products.section_image') }}</h3>
+            <div class="flex items-start gap-6">
+                <div v-if="imagePreview" class="shrink-0">
+                    <img :src="imagePreview" alt="" class="h-32 w-32 rounded-lg border border-gray-200 object-cover" />
+                </div>
+                <div v-else class="flex h-32 w-32 shrink-0 items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50">
+                    <svg class="h-10 w-10 text-gray-300" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0 0 22.5 18.75V5.25A2.25 2.25 0 0 0 20.25 3H3.75A2.25 2.25 0 0 0 1.5 5.25v13.5A2.25 2.25 0 0 0 3.75 21Z" />
+                    </svg>
+                </div>
+                <div class="space-y-3">
+                    <input
+                        type="file"
+                        @change="handleImageChange"
+                        accept=".jpg,.jpeg,.png,.webp"
+                        class="block w-full text-sm text-gray-500 file:mr-4 file:rounded-md file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-indigo-700 hover:file:bg-indigo-100"
+                    />
+                    <p class="text-xs text-gray-500">{{ $t('products.image_help') }}</p>
+                    <InputError class="mt-1" :message="form.errors.image" />
+                    <button
+                        v-if="imagePreview"
+                        type="button"
+                        @click="removeImage"
+                        class="text-sm text-red-600 hover:text-red-800"
+                    >
+                        {{ $t('products.remove_image') }}
+                    </button>
                 </div>
             </div>
         </div>

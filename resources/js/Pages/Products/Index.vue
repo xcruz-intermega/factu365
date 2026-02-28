@@ -37,6 +37,7 @@ const sortBy = ref(props.filters.sort || '');
 const sortDir = ref<'asc' | 'desc'>((props.filters.dir as 'asc' | 'desc') || 'asc');
 
 const columns = computed<Column[]>(() => [
+    { key: 'image', label: trans('products.col_image'), class: 'w-12' },
     { key: 'reference', label: trans('products.col_ref'), sortable: true },
     { key: 'name', label: trans('products.col_name'), sortable: true },
     { key: 'family', label: trans('products.col_family') },
@@ -159,6 +160,20 @@ const executeDelete = () => {
             @sort="handleSort"
             :empty-message="$t('products.no_products')"
         >
+            <template #cell-image="{ row }">
+                <img
+                    v-if="row.image_path"
+                    :src="route('products.image', row.id)"
+                    alt=""
+                    class="h-8 w-8 rounded object-cover"
+                />
+                <div v-else class="flex h-8 w-8 items-center justify-center rounded bg-gray-100">
+                    <svg class="h-4 w-4 text-gray-300" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0 0 22.5 18.75V5.25A2.25 2.25 0 0 0 20.25 3H3.75A2.25 2.25 0 0 0 1.5 5.25v13.5A2.25 2.25 0 0 0 3.75 21Z" />
+                    </svg>
+                </div>
+            </template>
+
             <template #cell-family="{ row }">
                 <span v-if="row.family" class="text-sm text-gray-600">{{ row.family.name }}</span>
                 <span v-else class="text-gray-400">—</span>

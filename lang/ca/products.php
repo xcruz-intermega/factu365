@@ -126,4 +126,25 @@ return [
     'insufficient_stock' => 'Estoc insuficient per a \':name\' (disponible: :available).',
     'negative_stock_warning' => 'L\'estoc quedarà negatiu',
     'stock_available' => 'Disponible: :qty',
+
+    // Image
+    'section_image' => 'Imatge del producte',
+    'image_help' => 'JPG, PNG o WebP. Màxim 2 MB.',
+    'remove_image' => 'Eliminar imatge',
+    'flash_image_deleted' => 'Imatge eliminada.',
+    'col_image' => 'Imatge',
+    'no_image' => 'Sense imatge',
+
+    // Catalog
+    'catalog_title' => 'Catàleg de productes',
+    'public_catalog_title' => 'Catàleg',
+    'public_catalog_subtitle' => 'Productes i serveis',
+    'catalog_pdf_title' => 'Catàleg de productes',
+    'download_catalog_pdf' => 'Descarregar catàleg PDF',
+    'view_grid' => 'Vista quadrícula',
+    'view_table' => 'Vista taula',
+    'contact' => 'Contacte',
+    'show_prices' => 'Mostrar preus',
+    'show_images' => 'Mostrar imatges',
+    'no_category' => 'Sense categoria',
 ];

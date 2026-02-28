@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Head, useForm, Link, router } from '@inertiajs/vue3';
+import { Head, useForm, Link, router, usePage } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 
@@ -23,6 +23,7 @@ interface Company {
     logo_path: string | null;
     verifactu_enabled: boolean;
     verifactu_environment: string;
+    catalog_enabled: boolean;
 }
 
 const props = defineProps<{
@@ -30,6 +31,11 @@ const props = defineProps<{
 }>();
 
 const c = props.company;
+
+const tenantSlug = computed(() => (usePage().props as any).tenant?.slug || '');
+const catalogPublicUrl = computed(() => {
+    return `${window.location.origin}/${tenantSlug.value}/catalogo`;
+});
 
 const form = useForm({
     legal_name: c?.legal_name || '',
@@ -46,6 +52,7 @@ const form = useForm({
     tax_regime: c?.tax_regime || 'general',
     irpf_rate: c?.irpf_rate ? Number(c.irpf_rate) : 15,
     logo: null as File | null,
+    catalog_enabled: c?.catalog_enabled ?? false,
 });
 
 const handleLogoChange = (e: Event) => {
@@ -219,6 +226,45 @@ const seedDemoData = () => {
                 </button>
             </div>
         </form>
+
+        <!-- Public Catalog -->
+        <div class="mt-6 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+            <h3 class="mb-1 text-sm font-semibold text-gray-900">{{ $t('settings.section_catalog') }}</h3>
+            <p class="mb-4 text-sm text-gray-500">{{ $t('settings.catalog_description') }}</p>
+
+            <div class="flex items-center gap-3">
+                <button
+                    type="button"
+                    role="switch"
+                    :aria-checked="form.catalog_enabled"
+                    @click="form.catalog_enabled = !form.catalog_enabled; submit()"
+                    class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2"
+                    :class="form.catalog_enabled ? 'bg-indigo-600' : 'bg-gray-200'"
+                >
+                    <span
+                        class="pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                        :class="form.catalog_enabled ? 'translate-x-5' : 'translate-x-0'"
+                    />
+                </button>
+                <span class="text-sm font-medium text-gray-700">
+                    {{ form.catalog_enabled ? $t('settings.catalog_enabled') : $t('settings.catalog_disabled') }}
+                </span>
+            </div>
+
+            <div v-if="form.catalog_enabled" class="mt-4 rounded-md bg-indigo-50 p-3">
+                <p class="text-xs font-medium text-gray-600">{{ $t('settings.catalog_public_url') }}</p>
+                <a
+                    :href="catalogPublicUrl"
+                    target="_blank"
+                    class="mt-1 inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-800"
+                >
+                    {{ catalogPublicUrl }}
+                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                    </svg>
+                </a>
+            </div>
+        </div>
 
         <!-- VeriFactu -->
         <div class="mt-6 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">

@@ -18,6 +18,7 @@ const form = useForm({
     exemption_code: '',
     irpf_applicable: false,
     unit: 'unit',
+    image: null as File | null,
     track_stock: false,
     stock_quantity: 0,
     minimum_stock: 0,
@@ -26,7 +27,9 @@ const form = useForm({
 });
 
 const submit = () => {
-    form.post(route('products.store'));
+    form.post(route('products.store'), {
+        forceFormData: true,
+    });
 };
 </script>
 

@@ -10,6 +10,7 @@ use App\Http\Controllers\FacturaEExportController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\FiscalDeclarationController;
 use App\Http\Controllers\GlobalSearchController;
+use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RegisterBookController;
@@ -63,6 +64,12 @@ Route::prefix('/{tenant}')->middleware([
         Route::delete('/products/{product}/components/{component}', [ProductController::class, 'destroyComponent'])->name('products.components.destroy');
         Route::get('/products/{product}/stock-movements', [ProductController::class, 'stockMovements'])->name('products.stock-movements');
         Route::post('/products/{product}/stock-adjustment', [ProductController::class, 'stockAdjustment'])->name('products.stock-adjustment');
+        Route::get('/products/{product}/image', [ProductController::class, 'image'])->name('products.image');
+        Route::delete('/products/{product}/image', [ProductController::class, 'deleteImage'])->name('products.image.delete');
+
+        // Catalog (internal, auth)
+        Route::get('/catalog', [CatalogController::class, 'index'])->name('catalog.index');
+        Route::get('/catalog/pdf', [CatalogController::class, 'pdf'])->name('catalog.pdf');
 
         // Product Families
         Route::get('/product-families', [ProductFamilyController::class, 'index'])->name('product-families.index');
@@ -237,6 +244,11 @@ Route::prefix('/{tenant}')->middleware([
             });
         });
     });
+
+    // Public catalog (no auth)
+    Route::get('/catalogo', [CatalogController::class, 'publicIndex'])->name('catalog.public');
+    Route::get('/catalogo/pdf', [CatalogController::class, 'publicPdf'])->name('catalog.public.pdf');
+    Route::get('/catalogo/products/{product}/image', [CatalogController::class, 'productImage'])->name('catalog.product.image');
 
     require __DIR__.'/tenant-auth.php';
 });

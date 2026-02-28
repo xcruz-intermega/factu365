@@ -315,4 +315,11 @@ return [
     'error_upload_failed' => 'Upload failed: :error',
     'error_backup_owner_only' => 'Only the owner can create full backups.',
     'error_restore_owner_only' => 'Only the owner can restore backups.',
+
+    // Catalog
+    'section_catalog' => 'Public catalogue',
+    'catalog_description' => 'Share a product catalogue with your customers through a public URL.',
+    'catalog_enabled' => 'Public catalogue enabled',
+    'catalog_disabled' => 'Public catalogue disabled',
+    'catalog_public_url' => 'Public catalogue URL',
 ];

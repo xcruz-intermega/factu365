@@ -9,6 +9,7 @@ use App\Models\ProductFamily;
 use App\Models\StockMovement;
 use App\Services\StockService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class ProductController extends Controller
@@ -44,7 +45,14 @@ class ProductController extends Controller
 
     public function store(ProductRequest $request)
     {
-        Product::create($request->validated());
+        $validated = $request->validated();
+        unset($validated['image']);
+
+        if ($request->hasFile('image')) {
+            $validated['image_path'] = $request->file('image')->store('products', 'local');
+        }
+
+        Product::create($validated);
 
         return redirect()->route('products.index')
             ->with('success', __('products.flash_created'));
@@ -63,7 +71,17 @@ class ProductController extends Controller
 
     public function update(ProductRequest $request, Product $product)
     {
-        $product->update($request->validated());
+        $validated = $request->validated();
+        unset($validated['image']);
+
+        if ($request->hasFile('image')) {
+            if ($product->image_path) {
+                Storage::disk('local')->delete($product->image_path);
+            }
+            $validated['image_path'] = $request->file('image')->store('products', 'local');
+        }
+
+        $product->update($validated);
 
         return redirect()->route('products.index')
             ->with('success', __('products.flash_updated'));
@@ -71,10 +89,33 @@ class ProductController extends Controller
 
     public function destroy(Product $product)
     {
+        if ($product->image_path) {
+            Storage::disk('local')->delete($product->image_path);
+        }
+
         $product->delete();
 
         return redirect()->route('products.index')
             ->with('success', __('products.flash_deleted'));
+    }
+
+    public function image(Product $product)
+    {
+        if (! $product->image_path || ! Storage::disk('local')->exists($product->image_path)) {
+            abort(404);
+        }
+
+        return response()->file(Storage::disk('local')->path($product->image_path));
+    }
+
+    public function deleteImage(Product $product)
+    {
+        if ($product->image_path) {
+            Storage::disk('local')->delete($product->image_path);
+            $product->update(['image_path' => null]);
+        }
+
+        return back()->with('success', __('products.flash_image_deleted'));
     }
 
     public function storeComponent(Request $request, Product $product)

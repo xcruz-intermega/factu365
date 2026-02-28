@@ -25,6 +25,7 @@ class ProductRequest extends FormRequest
             'exemption_code' => 'nullable|string|max:10|required_if:vat_rate,0',
             'irpf_applicable' => 'boolean',
             'unit' => 'nullable|string|max:20',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'track_stock' => 'boolean',
             'stock_quantity' => 'nullable|numeric|min:0',
             'minimum_stock' => 'nullable|numeric|min:0',

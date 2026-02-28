@@ -31,6 +31,7 @@ const props = defineProps<{
         exemption_code: string;
         irpf_applicable: boolean;
         unit: string;
+        image_path: string | null;
         track_stock: boolean;
         stock_quantity: number;
         minimum_stock: number;
@@ -42,7 +43,12 @@ const props = defineProps<{
     allProducts: Array<{ id: number; name: string; reference: string; unit_price: number }>;
 }>();
 
+const imageUrl = props.product.image_path
+    ? route('products.image', props.product.id)
+    : null;
+
 const form = useForm({
+    _method: 'put',
     type: props.product.type || 'product',
     product_family_id: props.product.product_family_id ?? null,
     reference: props.product.reference || '',
@@ -53,6 +59,7 @@ const form = useForm({
     exemption_code: props.product.exemption_code || '',
     irpf_applicable: props.product.irpf_applicable || false,
     unit: props.product.unit || 'unit',
+    image: null as File | null,
     track_stock: props.product.track_stock || false,
     stock_quantity: Number(props.product.stock_quantity) || 0,
     minimum_stock: Number(props.product.minimum_stock) || 0,
@@ -61,7 +68,9 @@ const form = useForm({
 });
 
 const submit = () => {
-    form.put(route('products.update', props.product.id));
+    form.post(route('products.update', props.product.id), {
+        forceFormData: true,
+    });
 };
 </script>
 
@@ -79,6 +88,7 @@ const submit = () => {
             :product-id="product.id"
             :components="product.components"
             :all-products="allProducts"
+            :image-url="imageUrl"
             :submit-label="$t('common.save_changes')"
             @submit="submit"
         />

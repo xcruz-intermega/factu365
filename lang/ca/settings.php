@@ -315,4 +315,11 @@ return [
     'error_upload_failed' => 'Error en pujar la còpia: :error',
     'error_backup_owner_only' => 'Només el propietari pot crear còpies completes.',
     'error_restore_owner_only' => 'Només el propietari pot restaurar còpies.',
+
+    // Catalog
+    'section_catalog' => 'Catàleg públic',
+    'catalog_description' => 'Permet compartir un catàleg de productes amb els teus clients mitjançant una URL pública.',
+    'catalog_enabled' => 'Catàleg públic activat',
+    'catalog_disabled' => 'Catàleg públic desactivat',
+    'catalog_public_url' => 'URL pública del catàleg',
 ];

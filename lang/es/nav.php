@@ -48,4 +48,5 @@ return [
     'bank_accounts' => 'Cuentas bancarias',
     'export_facturae' => 'Exportar FacturaE',
     'vat_rates' => 'Tipos de IVA',
+    'catalog' => 'Catálogo',
 ];

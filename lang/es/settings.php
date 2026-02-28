@@ -315,4 +315,11 @@ return [
     'error_upload_failed' => 'Error al subir la copia: :error',
     'error_backup_owner_only' => 'Solo el propietario puede crear copias completas.',
     'error_restore_owner_only' => 'Solo el propietario puede restaurar copias.',
+
+    // Catalog
+    'section_catalog' => 'Catálogo público',
+    'catalog_description' => 'Permite compartir un catálogo de productos con tus clientes mediante una URL pública.',
+    'catalog_enabled' => 'Catálogo público activado',
+    'catalog_disabled' => 'Catálogo público desactivado',
+    'catalog_public_url' => 'URL pública del catálogo',
 ];

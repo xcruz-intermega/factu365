@@ -23,6 +23,7 @@ class Product extends Model
         'exemption_code',
         'irpf_applicable',
         'unit',
+        'image_path',
         'track_stock',
         'stock_quantity',
         'minimum_stock',
