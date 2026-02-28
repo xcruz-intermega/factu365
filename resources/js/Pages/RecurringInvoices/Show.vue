@@ -225,9 +225,9 @@ const executeDelete = () => {
                             <thead class="bg-gray-50">
                                 <tr>
                                     <th class="px-3 py-2 text-left font-medium text-gray-500">{{ $t('documents.col_concept') }}</th>
-                                    <th class="px-3 py-2 text-right font-medium text-gray-500">{{ $t('documents.col_qty') }}</th>
+                                    <th class="px-3 py-2 text-right font-medium text-gray-500">{{ $t('documents.col_quantity') }}</th>
                                     <th class="px-3 py-2 text-right font-medium text-gray-500">{{ $t('documents.col_price') }}</th>
-                                    <th class="px-3 py-2 text-right font-medium text-gray-500">{{ $t('documents.col_vat') }}</th>
+                                    <th class="px-3 py-2 text-right font-medium text-gray-500">{{ $t('common.vat') }}</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-100">

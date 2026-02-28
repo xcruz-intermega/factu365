@@ -319,9 +319,9 @@ const submit = () => {
                             v-model="form.invoice_type"
                             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                         >
-                            <option value="F1">F1 - {{ $t('documents.invoice_type_F1') }}</option>
-                            <option value="F2">F2 - {{ $t('documents.invoice_type_F2') }}</option>
-                            <option value="F3">F3 - {{ $t('documents.invoice_type_F3') }}</option>
+                            <option value="F1">{{ $t('common.invoice_type_f1') }}</option>
+                            <option value="F2">{{ $t('common.invoice_type_f2') }}</option>
+                            <option value="F3">{{ $t('common.invoice_type_f3') }}</option>
                         </select>
                     </div>
 

@@ -121,6 +121,8 @@ return [
     'no_client' => 'Sense client',
     'default' => 'Per defecte',
     'always' => 'Sempre',
+    'all' => 'Tots',
+    'view' => 'Veure',
     'collapse' => 'Replegar',
     'logout' => 'Tancar sessió',
     'mail_not_configured' => 'El servei de correu no està configurat. Contacteu amb l\'administrador.',

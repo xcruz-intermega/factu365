@@ -121,6 +121,8 @@ return [
     'no_client' => 'Sin cliente',
     'default' => 'Por defecto',
     'always' => 'Siempre',
+    'all' => 'Todos',
+    'view' => 'Ver',
     'collapse' => 'Colapsar',
     'logout' => 'Cerrar sesión',
     'mail_not_configured' => 'El servicio de email no está configurado. Contacte con el administrador.',
